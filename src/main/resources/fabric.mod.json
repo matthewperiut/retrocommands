@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "spc",
+  "version": "${version}",
+  "name": "Single Player Commands",
+  "description": "Adds commands to singleplayer!",
+  "authors": [
+    "slainlight"
+  ],
+  "contact": {
+    "homepage": "https://glass-launcher.net/",
+    "sources": "https://github.com/calmilamsy/BIN-fabric-example-mod"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/spc/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.matthewperiut.spc.SPC"
+    ]
+  },
+  "mixins": [
+    "spc.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "1.0.0-beta.7.3"
+  },
+  "suggests": {
+    "station-dimensions-v0": "*",
+    "bhcreative": "*"
+  },
+  "accessWidener": "spc.accesswidener"
+}

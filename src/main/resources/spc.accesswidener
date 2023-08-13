@@ -1,0 +1,4 @@
+accessWidener	v1 named
+accessible method net/minecraft/entity/EntityBase getStringId ()Ljava/lang/String;
+accessible field net/minecraft/entity/EntityRegistry STRING_ID_TO_CLASS Ljava/util/Map;
+accessible field net/minecraft/entity/EntityRegistry ID_TO_CLASS Ljava/util/Map;
