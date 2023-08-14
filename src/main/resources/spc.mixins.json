@@ -6,7 +6,8 @@
   "mixins": [
     "BlockBaseMixin",
     "EntityAccessor",
-    "PlayerBaseMixin"
+    "PlayerBaseMixin",
+    "MixinItemInstance"
   ],
   "server": [
     "CommandManagerMixin"

@@ -32,45 +32,10 @@ public class Summon implements Command {
                 e.setPosition(pos.x, pos.y, pos.z);
 
                 String extraMsg = "";
-                if (parameters.length == 6) {
+                if (parameters.length > 5) {
                     try {
-                        int meta = Integer.parseInt(parameters[5]);
-                        if (e instanceof Sheep sheep) {
-                            sheep.setColour(meta);
-                            extraMsg = ":" + meta;
-                        }
-                        if (e instanceof Creeper creeper) {
-                            if (meta != 0) {
-                                extraMsg = " with Lightning";
-                                meta = 1;
-                            } else {
-                                extraMsg = " without Lightning";
-                            }
-
-                            ((EntityAccessor) creeper).getDataTracker().setInt(17, (byte) meta);
-                        }
-                        if (e instanceof Pig pig) {
-                            if (meta != 0) {
-                                meta = 1;
-                                extraMsg = " with Saddle";
-                            } else {
-                                extraMsg = " without Saddle";
-                            }
-                            ((EntityAccessor) pig).getDataTracker().setInt(16, (byte) meta);
-                        }
-                        if (e instanceof Slime slime) {
-                            if (meta > 0) {
-                                extraMsg = " of size " + meta;
-                                ((EntityAccessor) slime).getDataTracker().setInt(16, (byte) meta);
-                            }
-                        }
-                        if (e instanceof PrimedTnt tnt) {
-                            if (meta > 0) {
-                                extraMsg = " with a fuse of " + meta + " ticks";
-                                tnt.fuse = meta;
-                            }
-                        }
-                    } catch (Exception ex) {
+                        extraMsg = EntityMetadataHandler(e, parameters);
+                    } catch (Exception ignored) {
                     }
 
                     if (extraMsg.isEmpty()) {
@@ -100,5 +65,52 @@ public class Summon implements Command {
         sendMessage("Usage: /summon {entity} {x} {y} {z}");
         sendMessage("Info: spawns a mob in the world at given position");
         sendMessage("entity: list of entities under /mobs");
+    }
+
+
+    private String EntityMetadataHandler(EntityBase e, String[] parameters) {
+        String extraMsg = "";
+        if (e instanceof Sheep sheep) {
+            int meta = Integer.parseInt(parameters[5]);
+            sheep.setColour(meta);
+            extraMsg = ":" + meta;
+        }
+        if (e instanceof Creeper creeper) {
+            int meta = Integer.parseInt(parameters[5]);
+            if (meta != 0) {
+                extraMsg = " with Lightning";
+                meta = 1;
+            } else {
+                extraMsg = " without Lightning";
+            }
+
+            ((EntityAccessor) creeper).getDataTracker().setInt(17, (byte) meta);
+        }
+        if (e instanceof Pig pig) {
+            int meta = Integer.parseInt(parameters[5]);
+            if (meta != 0) {
+                meta = 1;
+                extraMsg = " with Saddle";
+            } else {
+                extraMsg = " without Saddle";
+            }
+            ((EntityAccessor) pig).getDataTracker().setInt(16, (byte) meta);
+        }
+        if (e instanceof Slime slime) {
+            int meta = Integer.parseInt(parameters[5]);
+            if (meta > 0) {
+                extraMsg = " of size " + meta;
+                ((EntityAccessor) slime).getDataTracker().setInt(16, (byte) meta);
+            }
+        }
+        if (e instanceof PrimedTnt tnt) {
+            int meta = Integer.parseInt(parameters[5]);
+            if (meta > 0) {
+                extraMsg = " with a fuse of " + meta + " ticks";
+                tnt.fuse = meta;
+            }
+        }
+
+        return extraMsg;
     }
 }

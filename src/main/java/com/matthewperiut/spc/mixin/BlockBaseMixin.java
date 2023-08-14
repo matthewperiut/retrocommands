@@ -1,5 +1,6 @@
 package com.matthewperiut.spc.mixin;
 
+import com.matthewperiut.spc.api.ItemInstanceStr;
 import net.minecraft.block.BlockBase;
 import net.minecraft.entity.EntityBase;
 import net.minecraft.entity.EntityRegistry;
@@ -14,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
-import java.util.Map;
 
 @Mixin(BlockBase.class)
 public class BlockBaseMixin {
@@ -25,21 +25,23 @@ public class BlockBaseMixin {
             try {
                 Box b = Box.create(j - 5, k - 5, l - 5, j + 5, k + 5, l + 5);
                 List<PlayerBase> players = i.getEntities(PlayerBase.class, b);
-                int meta = 90; // default num for pig
+                String mob = null;
                 if (players.size() == 1) {
-                    meta = players.get(0).inventory.getHeldItem().getDamage();
+                    if (players.get(0).inventory.getHeldItem() != null)
+                        mob = ((ItemInstanceStr) (Object) players.get(0).inventory.getHeldItem()).spc$getStr();
                 } else {
                     for (PlayerBase p : players) {
                         if (p.getHeldItem().getType().getTranslatedName().startsWith("Mon")) {
-                            meta = p.getHeldItem().getDamage();
+                            if (p.inventory.getHeldItem() != null)
+                                mob = ((ItemInstanceStr) (Object) p.inventory.getHeldItem()).spc$getStr();
                             break;
                         }
                     }
                 }
+                if (mob == null)
+                    mob = "Pig";
 
-                Map<Integer, Class> map = EntityRegistry.ID_TO_CLASS;
-
-                EntityBase entity = (EntityBase) map.get(meta).getConstructor(Level.class).newInstance(i);
+                EntityBase entity = EntityRegistry.create(mob, i);
                 if (entity instanceof Living) {
                     ((TileEntityMobSpawner) i.getTileEntity(j, k, l)).setEntityId(entity.getStringId());
                 }

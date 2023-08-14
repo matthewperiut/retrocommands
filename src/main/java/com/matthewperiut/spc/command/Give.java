@@ -1,6 +1,7 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.api.ItemInstanceStr;
 import net.minecraft.entity.EntityBase;
 import net.minecraft.entity.EntityRegistry;
 import net.minecraft.entity.Living;
@@ -43,6 +44,9 @@ public class Give implements Command {
         if (parameters.length > 1 && !parameters[1].equals("help")) {
             int itemNumber;
             int meta = 0;
+
+            String setSPCStr = "";
+
             try {
                 itemNumber = Integer.parseInt(parameters[1]);
             } catch (NumberFormatException e) {
@@ -80,8 +84,8 @@ public class Give implements Command {
                             if (itemType.getTranslatedName().equals("Monster Spawner")) {
                                 EntityBase entity = EntityRegistry.create(parameters[3], player.level);
                                 if (entity instanceof Living l) {
-                                    meta = EntityRegistry.getId(entity);
-                                    sendMessage(l.getStringId() + " (" + meta + ") inside");
+                                    setSPCStr = l.getStringId();
+                                    sendMessage(l.getStringId() + " inside");
                                 } else if (entity != null) {
                                     sendMessage("Entity must be living in spawners");
                                 } else {
@@ -98,6 +102,11 @@ public class Give implements Command {
             }
 
             ItemInstance item = new ItemInstance(itemType, stackSize, meta);
+
+            if (!setSPCStr.isEmpty()) {
+                ((ItemInstanceStr) ((Object) item)).spc$setStr(setSPCStr);
+            }
+
             if (givePlayerItemInstance(player, item)) {
                 sendMessage("Gave " + item.count + " " + itemType.getTranslatedName());
             }
