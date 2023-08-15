@@ -2,21 +2,37 @@ package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.api.PosParse;
-import com.matthewperiut.spc.mixin.EntityAccessor;
+import com.matthewperiut.spc.api.SummonRegistry;
 import net.minecraft.entity.EntityBase;
 import net.minecraft.entity.EntityRegistry;
-import net.minecraft.entity.PrimedTnt;
-import net.minecraft.entity.animal.Pig;
-import net.minecraft.entity.animal.Sheep;
-import net.minecraft.entity.monster.Creeper;
-import net.minecraft.entity.monster.Slime;
 import net.minecraft.entity.player.PlayerBase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
 
 public class Summon implements Command {
+
+    public static Map<Class<? extends EntityBase>, String> help = new HashMap<>();
+
     @Override
     public void command(PlayerBase player, String[] parameters) {
+
+        // help
+        if (parameters.length == 2) {
+            try {
+                Class<? extends EntityBase> entityClass = (Class<? extends EntityBase>) EntityRegistry.STRING_ID_TO_CLASS.get(parameters[1]);
+                String msg = "Usage is /summon " + parameters[1] + " {x} {y} {z} ";
+                if (help.containsKey(entityClass)) {
+                    msg += help.get(entityClass);
+                }
+                sendMessage(msg);
+                return;
+            } catch (Exception e) {
+                sendMessage("Failure to find entity (probably not registered)");
+            }
+        }
 
         if (parameters.length > 4) {
             try {
@@ -28,22 +44,27 @@ public class Summon implements Command {
                     return;
                 }
 
-                EntityBase e = EntityRegistry.create(parameters[1], player.level);
-                e.setPosition(pos.x, pos.y, pos.z);
 
+                EntityBase entity;
                 String extraMsg = "";
                 if (parameters.length > 5) {
                     try {
-                        extraMsg = EntityMetadataHandler(e, parameters);
-                    } catch (Exception ignored) {
+                        Class<? extends EntityBase> entityClass = (Class<? extends EntityBase>) EntityRegistry.STRING_ID_TO_CLASS.get(parameters[1]);
+                        entity = SummonRegistry.create(entityClass, player.level, pos, parameters);
+                        if (entity == null) {
+                            sendMessage("Parameters caused entity to be null");
+                        }
+                    } catch (Exception e) {
+                        sendMessage("Failure to create entity (probably not registered)");
+                        return;
                     }
-
-                    if (extraMsg.isEmpty()) {
-                        sendMessage("Invalid meta");
-                    }
+                } else {
+                    entity = EntityRegistry.create(parameters[1], player.level);
                 }
 
-                player.level.spawnEntity(e);
+                entity.setPosition(pos.x, pos.y, pos.z);
+
+                player.level.spawnEntity(entity);
                 sendMessage("Summoned " + parameters[1] + extraMsg + " at " + pos);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -65,52 +86,6 @@ public class Summon implements Command {
         sendMessage("Usage: /summon {entity} {x} {y} {z}");
         sendMessage("Info: spawns a mob in the world at given position");
         sendMessage("entity: list of entities under /mobs");
-    }
-
-
-    private String EntityMetadataHandler(EntityBase e, String[] parameters) {
-        String extraMsg = "";
-        if (e instanceof Sheep sheep) {
-            int meta = Integer.parseInt(parameters[5]);
-            sheep.setColour(meta);
-            extraMsg = ":" + meta;
-        }
-        if (e instanceof Creeper creeper) {
-            int meta = Integer.parseInt(parameters[5]);
-            if (meta != 0) {
-                extraMsg = " with Lightning";
-                meta = 1;
-            } else {
-                extraMsg = " without Lightning";
-            }
-
-            ((EntityAccessor) creeper).getDataTracker().setInt(17, (byte) meta);
-        }
-        if (e instanceof Pig pig) {
-            int meta = Integer.parseInt(parameters[5]);
-            if (meta != 0) {
-                meta = 1;
-                extraMsg = " with Saddle";
-            } else {
-                extraMsg = " without Saddle";
-            }
-            ((EntityAccessor) pig).getDataTracker().setInt(16, (byte) meta);
-        }
-        if (e instanceof Slime slime) {
-            int meta = Integer.parseInt(parameters[5]);
-            if (meta > 0) {
-                extraMsg = " of size " + meta;
-                ((EntityAccessor) slime).getDataTracker().setInt(16, (byte) meta);
-            }
-        }
-        if (e instanceof PrimedTnt tnt) {
-            int meta = Integer.parseInt(parameters[5]);
-            if (meta > 0) {
-                extraMsg = " with a fuse of " + meta + " ticks";
-                tnt.fuse = meta;
-            }
-        }
-
-        return extraMsg;
+        sendMessage("For a specific entity do /summon {entity} for parameters");
     }
 }
