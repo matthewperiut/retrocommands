@@ -11,9 +11,23 @@
 + Use `/help` in-game
 
 ## API
-
-
 Note: Please make SPC optional!!
+
+build.gradle
+```gradle
+repositories {
+    maven {
+        name = "Jitpack"
+        url "https://jitpack.io/"
+    }
+}
+
+dependencies {
+    modImplementation('com.github.matthewperiut:spc-babric:0.1.2') {
+        transitive false
+    }
+}
+```
 
 fabric.mod.json
 ```json
@@ -32,31 +46,12 @@ public static void init_of_some_sort()
 }
 ```
 
-build.gradle
-```gradle
-repositories {
-    maven {
-        name = "Jitpack"
-        url "https://jitpack.io/"
-    }
-}
-
-dependencies {
-    modImplementation('com.github.matthewperiut:accessory-api:0.4.0') {
-        transitive false
-    }
-}
-```
-
-
 implement `com.matthewperiut.api.Command`  
-
-
 
 register with `com.matthewperiut.api.CommandRegistry`  
 `CommandRegistry.add(new Command())`  
 
-new Command() replaced with your custom command.
+new Command() replaced with your custom command.  
 
 ### Add your own summon command for your entities
 
