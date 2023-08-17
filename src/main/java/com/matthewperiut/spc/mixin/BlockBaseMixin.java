@@ -1,7 +1,10 @@
 package com.matthewperiut.spc.mixin;
 
 import com.matthewperiut.spc.api.ItemInstanceStr;
+import com.matthewperiut.spc.optionaldep.stapi.block.SpecialMobSpawnerBlock;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockBase;
+import net.minecraft.block.MobSpawner;
 import net.minecraft.entity.EntityBase;
 import net.minecraft.entity.EntityRegistry;
 import net.minecraft.entity.Living;
@@ -12,12 +15,21 @@ import net.minecraft.util.maths.Box;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
 @Mixin(BlockBase.class)
 public class BlockBaseMixin {
+    @Redirect(method = "<clinit>", at = @At(value = "NEW", target = "(II)Lnet/minecraft/block/MobSpawner;"))
+    private static MobSpawner staticBlock(int i, int j) {
+        if (FabricLoader.getInstance().isModLoaded("station-blockitems-v0"))
+            return new SpecialMobSpawnerBlock(i, j);
+        else
+            return new MobSpawner(i, j);
+    }
+
     @Inject(method = "onBlockPlaced(Lnet/minecraft/level/Level;IIII)V", at = @At("HEAD"))
     public void onBlockPlaced(Level i, int j, int k, int l, int par5, CallbackInfo ci) {
         if (BlockBase.BY_ID[i.getTileId(j, k, l)].getTranslatedName().startsWith("Mon")) //ster Spawner
@@ -48,7 +60,6 @@ public class BlockBaseMixin {
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-
         }
     }
 }
