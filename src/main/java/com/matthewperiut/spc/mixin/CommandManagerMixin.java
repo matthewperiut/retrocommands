@@ -28,6 +28,7 @@ public class CommandManagerMixin {
             if (p.name == par1.source.getName()) {
                 SPChatUtil.feedbackee = par1.source;
                 SPChatUtil.handleCommand(p, command);
+                ci.cancel();
             }
         }
 

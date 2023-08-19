@@ -36,6 +36,12 @@ public class SPChatUtil {
         commands.add(new Summon());
         commands.add(new Teleport());
         commands.add(new Time());
+        commands.add(new ToggleDownfall());
+        commands.add(new Ride());
+        commands.add(new Hat());
+        commands.add(new KillAll());
+        commands.add(new Kill());
+        commands.add(new Warp());
 
         for (Command c : commands) {
             Help.addHelpTip("/" + c.name());
@@ -55,7 +61,14 @@ public class SPChatUtil {
                 if (help) {
                     c.manual();
                 } else {
-                    c.command(player, segments);
+                    try
+                    {
+                        c.command(player, segments);
+                    }
+                    catch (Exception e)
+                    {
+                        sendMessage("Error: " + e.getMessage());
+                    }
                 }
                 return;
             }
@@ -64,7 +77,14 @@ public class SPChatUtil {
         if (segments[0].equals("help"))
             for (Command c : commands) {
                 if (c.name().equals("help")) {
-                    c.command(player, segments);
+                    try
+                    {
+                        c.command(player, segments);
+                    }
+                    catch (Exception e)
+                    {
+                        sendMessage("Error: " + e.getMessage());
+                    }
                     return;
                 }
             }

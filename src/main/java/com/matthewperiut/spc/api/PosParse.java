@@ -9,6 +9,13 @@ public class PosParse {
 
     public boolean valid = true;
 
+    public PosParse(PlayerBase player)
+    {
+        x = player.x;
+        y = player.y;
+        z = player.z;
+    }
+
     public PosParse(PlayerBase player, int start, String[] segments) {
         try {
             String sx = segments[start];
@@ -41,6 +48,6 @@ public class PosParse {
 
     @Override
     public String toString() {
-        return String.format("%.1f, %.1f, %.1f", x, y, z);
+        return String.format("%.1f %.1f %.1f", x, y, z);
     }
 }
