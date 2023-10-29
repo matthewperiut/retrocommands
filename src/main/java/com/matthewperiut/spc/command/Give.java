@@ -2,6 +2,7 @@ package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.api.ItemInstanceStr;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.EntityBase;
 import net.minecraft.entity.EntityRegistry;
 import net.minecraft.entity.Living;
@@ -9,11 +10,11 @@ import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.item.ItemBase;
 import net.minecraft.item.ItemInstance;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class Give implements Command {
 
-    public static boolean givePlayerItemInstance(PlayerBase player, ItemInstance instance) {
+    public static boolean givePlayerItemInstance(SharedCommandSource commandSource, PlayerBase player, ItemInstance instance) {
         ItemInstance[] inventory = player.inventory.main;
         for (int i = 0; i < inventory.length; i++) {
             if (inventory[i] == null) {
@@ -22,7 +23,7 @@ public class Give implements Command {
             }
         }
 
-        sendMessage("Cannot give " + instance.getType().getTranslatedName() + " because inventory is full");
+        commandSource.sendFeedback("Cannot give " + instance.getType().getTranslatedName() + " because inventory is full");
         return false;
     }
 
@@ -40,7 +41,7 @@ public class Give implements Command {
     }
 
     @Override
-    public void command(PlayerBase player, String[] parameters) {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
         if (parameters.length > 1 && !parameters[1].equals("help")) {
             int itemNumber;
             int meta = 0;
@@ -54,13 +55,13 @@ public class Give implements Command {
             }
 
             if (itemNumber == -1) {
-                sendMessage("Item not found");
+                commandSource.sendFeedback("Item not found");
                 return;
             }
 
             ItemBase itemType = ItemBase.byId[itemNumber];
             if (itemType == null) {
-                sendMessage("Item not found");
+                commandSource.sendFeedback("Item not found");
                 return;
             }
             int stackSize = itemType.getMaxStackSize();
@@ -71,7 +72,7 @@ public class Give implements Command {
                 try {
                     requestedCount = Integer.parseInt(parameters[2]);
                 } catch (NumberFormatException e) {
-                    sendMessage("Requested number of items '" + parameters[2] + "' is not a number");
+                    commandSource.sendFeedback("Requested number of items '" + parameters[2] + "' is not a number");
                     return;
                 }
                 stackSize = requestedCount;
@@ -82,21 +83,21 @@ public class Give implements Command {
                             meta = Integer.parseInt(parameters[3]);
                         } catch (NumberFormatException e) {
                             if (itemType.getTranslatedName().equals("Monster Spawner")) {
-                                EntityBase entity = EntityRegistry.create(parameters[3], player.level);
+                                EntityBase entity = EntityRegistry.create(parameters[3], commandSource.getPlayer().level);
                                 if (entity instanceof Living l) {
                                     setSPCStr = l.getStringId();
-                                    sendMessage(l.getStringId() + " inside");
+                                    commandSource.sendFeedback(l.getStringId() + " inside");
                                 } else if (entity != null) {
-                                    sendMessage("Entity must be living in spawners");
+                                    commandSource.sendFeedback("Entity must be living in spawners");
                                 } else {
-                                    sendMessage("Invalid entity parameter");
+                                    commandSource.sendFeedback("Invalid entity parameter");
                                 }
                             } else {
-                                sendMessage("Metadata not a number");
+                                commandSource.sendFeedback("Metadata not a number");
                             }
                         }
                     } else {
-                        sendMessage("Metadata not applicable");
+                        commandSource.sendFeedback("Metadata not applicable");
                     }
                 }
             }
@@ -107,12 +108,12 @@ public class Give implements Command {
                 ((ItemInstanceStr) ((Object) item)).spc$setStr(setSPCStr);
             }
 
-            if (givePlayerItemInstance(player, item)) {
-                sendMessage("Gave " + item.count + " " + itemType.getTranslatedName());
+            if (givePlayerItemInstance(commandSource, commandSource.getPlayer(), item)) {
+                commandSource.sendFeedback("Gave " + item.count + " " + itemType.getTranslatedName());
             }
             return;
         }
-        manual();
+        manual(commandSource);
     }
 
     @Override
@@ -121,12 +122,12 @@ public class Give implements Command {
     }
 
     @Override
-    public void manual() {
-        sendMessage("Usage: /give {id} {count} {optional:meta/mob_id}");
-        sendMessage("Info: gives the player items");
-        sendMessage("id: can be number or name");
-        sendMessage("count: number of item");
-        sendMessage("meta: sub-item selection");
-        sendMessage("list mobs with /mobs");
+    public void manual(SharedCommandSource commandSource) {
+        commandSource.sendFeedback("Usage: /give {id} {count} {optional:meta/mob_id}");
+        commandSource.sendFeedback("Info: gives the player items");
+        commandSource.sendFeedback("id: can be number or name");
+        commandSource.sendFeedback("count: number of item");
+        commandSource.sendFeedback("meta: sub-item selection");
+        commandSource.sendFeedback("list mobs with /mobs");
     }
 }

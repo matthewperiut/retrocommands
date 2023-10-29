@@ -1,4 +1,4 @@
-package com.matthewperiut.spc.mixin;
+package com.matthewperiut.spc.mixin.access;
 
 import net.minecraft.entity.EntityBase;
 import org.spongepowered.asm.mixin.Mixin;

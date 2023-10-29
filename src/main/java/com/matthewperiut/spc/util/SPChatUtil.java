@@ -2,6 +2,7 @@ package com.matthewperiut.spc.util;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.command.*;
+import com.matthewperiut.spc.command.server.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
@@ -14,23 +15,27 @@ import static java.lang.Character.isDigit;
 
 public class SPChatUtil {
     public static ArrayList<Command> commands = new ArrayList<>();
-    public static CommandSource feedbackee;
-
-    public static void sendMessage(String message) {
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            ((Minecraft) FabricLoader.getInstance().getGameInstance()).overlay.addChatMessage(message);
-        } else {
-            feedbackee.sendFeedback(message);
-        }
-    }
 
     public static void addDefaultCommands() {
+        commands.add(new Help());
+
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
+        {
+            commands.add(new Kick());
+            commands.add(new Ban());
+            commands.add(new Pardon());
+            commands.add(new BanIp());
+            commands.add(new PardonIp());
+            commands.add(new Stop());
+            commands.add(new List());
+            commands.add(new Say());
+        }
+
         commands.add(new Clear());
         commands.add(new Gamemode());
         commands.add(new Give());
         commands.add(new God());
         commands.add(new Heal());
-        commands.add(new Help());
         commands.add(new Id());
         commands.add(new Mobs());
         commands.add(new Summon());
@@ -42,13 +47,14 @@ public class SPChatUtil {
         commands.add(new KillAll());
         commands.add(new Kill());
         commands.add(new Warp());
+        commands.add(new WhoAmI());
 
         for (Command c : commands) {
             Help.addHelpTip("/" + c.name());
         }
     }
 
-    public static void handleCommand(PlayerBase player, String command) {
+    public static void handleCommand(SharedCommandSource commandSource, String command) {
         String[] segments = command.split(" ");
         boolean help = segments[0].equals("help") && segments.length > 1;
         boolean page = help && isDigit(segments[1].charAt(0));
@@ -59,15 +65,15 @@ public class SPChatUtil {
 
             if (c.name().equals(wanted)) {
                 if (help) {
-                    c.manual();
+                    c.manual(commandSource);
                 } else {
                     try
                     {
-                        c.command(player, segments);
+                        c.command(commandSource, segments);
                     }
                     catch (Exception e)
                     {
-                        sendMessage("Error: " + e.getMessage());
+                        commandSource.sendFeedback("Error: " + e.getMessage());
                     }
                 }
                 return;
@@ -79,17 +85,16 @@ public class SPChatUtil {
                 if (c.name().equals("help")) {
                     try
                     {
-                        c.command(player, segments);
+                        c.command(commandSource, segments);
                     }
                     catch (Exception e)
                     {
-                        sendMessage("Error: " + e.getMessage());
+                        commandSource.sendFeedback("Error: " + e.getMessage());
                     }
                     return;
                 }
             }
 
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
-            sendMessage("Command '" + segments[0] + "' not found. Try /help");
+        commandSource.sendFeedback("Command '" + segments[0] + "' not found. Try /help");
     }
 }

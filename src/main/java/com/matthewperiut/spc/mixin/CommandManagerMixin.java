@@ -1,6 +1,7 @@
 package com.matthewperiut.spc.mixin;
 
 import com.matthewperiut.spc.util.SPChatUtil;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.server.MinecraftServer;
@@ -17,26 +18,10 @@ import java.util.List;
 public class CommandManagerMixin {
     @Inject(method = "processCommand", at = @At(value = "HEAD"), cancellable = true)
     private void processSPCommands(Command par1, CallbackInfo ci) {
-
-        List<PlayerBase> players = ((MinecraftServer) FabricLoader.getInstance().getGameInstance()).serverPlayerConnectionManager.players;
         String command = par1.commandString;
-        if (command.startsWith("spchelp")) {
-            command = command.replace("spchelp", "help");
-        }
 
-        for (PlayerBase p : players) {
-            if (p.name == par1.source.getName()) {
-                SPChatUtil.feedbackee = par1.source;
-                SPChatUtil.handleCommand(p, command);
-                ci.cancel();
-            }
-        }
+        SPChatUtil.handleCommand(new SharedCommandSource(par1.source), command);
 
-        String[] cancels = {"give", "time", "tp"};
-
-        for (String cancel : cancels) {
-            if (command.startsWith(cancel))
-                ci.cancel();
-        }
+        ci.cancel();
     }
 }

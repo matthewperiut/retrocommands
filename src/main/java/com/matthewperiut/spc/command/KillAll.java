@@ -1,21 +1,27 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.EntityBase;
 import net.minecraft.entity.player.PlayerBase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class KillAll implements Command
 {
 
     @Override
-    public void command(PlayerBase player, String[] parameters)
+    public void command(SharedCommandSource commandSource, String[] parameters)
     {
-        System.out.println("killall");
+        PlayerBase player = commandSource.getPlayer();
+        if (player == null)
+        {
+            return;
+        }
+
         List<EntityBase> entities_to_kill = new ArrayList<>();
         for (int i = 0; i < player.level.entities.size(); i++)
         {
@@ -29,7 +35,7 @@ public class KillAll implements Command
             e.damage(null, 1000);
         }
 
-        sendMessage("Killed " + entities_to_kill.size() + " entities");
+        commandSource.sendFeedback("Killed " + entities_to_kill.size() + " entities");
     }
 
     @Override
@@ -39,9 +45,9 @@ public class KillAll implements Command
     }
 
     @Override
-    public void manual()
+    public void manual(SharedCommandSource commandSource)
     {
-        sendMessage("Usage: /killall");
-        sendMessage("Info: Kills all entities in the world");
+        commandSource.sendFeedback("Usage: /killall");
+        commandSource.sendFeedback("Info: Kills all entities in the world");
     }
 }

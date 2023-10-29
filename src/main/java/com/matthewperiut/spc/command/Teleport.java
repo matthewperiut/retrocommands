@@ -3,12 +3,13 @@ package com.matthewperiut.spc.command;
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.api.PosParse;
 import com.matthewperiut.spc.optionaldep.stapi.SwitchDimension;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.entity.player.ServerPlayer;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class Teleport implements Command {
 
@@ -26,41 +27,47 @@ public class Teleport implements Command {
         }
     }
 
-    public static boolean switchDimensions(PlayerBase player, String id)
+    public static boolean switchDimensions(SharedCommandSource commandSource, String id)
     {
         if (FabricLoader.getInstance().isModLoaded("station-dimensions-v0"))
         {
-            SwitchDimension.go(player, id);
+            SwitchDimension.go(commandSource, id);
             return true;
         }
         else
         {
-            sendMessage("Cannot switch dimensions without Station API Dimensions");
+            commandSource.sendFeedback("Cannot switch dimensions without Station API Dimensions");
             return false;
         }
     }
 
     @Override
-    public void command(PlayerBase player, String[] parameters) {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
+        PlayerBase player = commandSource.getPlayer();
+        if (player == null)
+        {
+            return;
+        }
+
         if (parameters.length == 4 || parameters.length == 5) {
             PosParse pos = new PosParse(player, 1, parameters);
 
             if (!pos.valid) {
-                sendMessage("Non-number position");
+                commandSource.sendFeedback("Non-number position");
                 return;
             }
 
             if (parameters.length > 4)
             {
-                if (!switchDimensions(player, parameters[4])) return;
+                if (!switchDimensions(commandSource, parameters[4])) return;
             }
 
-            sendMessage("Teleporting to " + pos);
+            commandSource.sendFeedback("Teleporting to " + pos);
             teleport(player, pos.x, pos.y, pos.z);
             return;
         }
 
-        manual();
+        manual(commandSource);
     }
 
     @Override
@@ -69,9 +76,9 @@ public class Teleport implements Command {
     }
 
     @Override
-    public void manual() {
-        sendMessage("Usage: /tp {x} {y} {z} {optional: dimension identifier}");
-        sendMessage("Info: moves a player to a desired coordinate and/or dimension");
-        sendMessage("dimension identifier: e.g. \"minecraft:overworld\"");
+    public void manual(SharedCommandSource commandSource) {
+        commandSource.sendFeedback("Usage: /tp {x} {y} {z} {optional: dimension identifier}");
+        commandSource.sendFeedback("Info: moves a player to a desired coordinate and/or dimension");
+        commandSource.sendFeedback("dimension identifier: e.g. \"minecraft:overworld\"");
     }
 }

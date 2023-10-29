@@ -1,11 +1,12 @@
 package com.matthewperiut.spc.api;
 
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
 public interface Command {
-    void command(PlayerBase player, String[] parameters);
+    void command(SharedCommandSource commandSource, String[] parameters);
 
     String name();
 
-    void manual();
+    void manual(SharedCommandSource commandSource);
 }

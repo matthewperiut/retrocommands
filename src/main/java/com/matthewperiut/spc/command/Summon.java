@@ -3,6 +3,7 @@ package com.matthewperiut.spc.command;
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.api.PosParse;
 import com.matthewperiut.spc.api.SummonRegistry;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.EntityBase;
 import net.minecraft.entity.EntityRegistry;
 import net.minecraft.entity.player.PlayerBase;
@@ -10,14 +11,19 @@ import net.minecraft.entity.player.PlayerBase;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class Summon implements Command {
 
     public static Map<Class<? extends EntityBase>, String> help = new HashMap<>();
 
     @Override
-    public void command(PlayerBase player, String[] parameters) {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
+        PlayerBase player = commandSource.getPlayer();
+        if (player == null)
+        {
+            return;
+        }
 
         // help
         if (parameters.length == 2) {
@@ -27,10 +33,10 @@ public class Summon implements Command {
                 if (help.containsKey(entityClass)) {
                     msg += help.get(entityClass);
                 }
-                sendMessage(msg);
+                commandSource.sendFeedback(msg);
                 return;
             } catch (Exception e) {
-                sendMessage("Failure to find entity (probably not registered)");
+                commandSource.sendFeedback("Failure to find entity (probably not registered)");
             }
         }
 
@@ -40,7 +46,7 @@ public class Summon implements Command {
                 PosParse pos = new PosParse(player, 2, parameters);
 
                 if (!pos.valid) {
-                    sendMessage("Non-number position");
+                    commandSource.sendFeedback("Non-number position");
                     return;
                 }
 
@@ -52,10 +58,10 @@ public class Summon implements Command {
                         Class<? extends EntityBase> entityClass = (Class<? extends EntityBase>) EntityRegistry.STRING_ID_TO_CLASS.get(parameters[1]);
                         entity = SummonRegistry.create(entityClass, player.level, pos, parameters);
                         if (entity == null) {
-                            sendMessage("Parameters caused entity to be null");
+                            commandSource.sendFeedback("Parameters caused entity to be null");
                         }
                     } catch (Exception e) {
-                        sendMessage("Failure to create entity (probably not registered)");
+                        commandSource.sendFeedback("Failure to create entity (probably not registered)");
                         return;
                     }
                 } else {
@@ -65,15 +71,15 @@ public class Summon implements Command {
                 entity.setPosition(pos.x, pos.y, pos.z);
 
                 player.level.spawnEntity(entity);
-                sendMessage("Summoned " + parameters[1] + extraMsg + " at " + pos);
+                commandSource.sendFeedback("Summoned " + parameters[1] + extraMsg + " at " + pos);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
 
-                sendMessage("Invalid Entity");
+                commandSource.sendFeedback("Invalid Entity");
             }
             return;
         }
-        manual();
+        manual(commandSource);
     }
 
     @Override
@@ -82,10 +88,10 @@ public class Summon implements Command {
     }
 
     @Override
-    public void manual() {
-        sendMessage("Usage: /summon {entity} {x} {y} {z}");
-        sendMessage("Info: spawns a mob in the world at given position");
-        sendMessage("entity: list of entities under /mobs");
-        sendMessage("For a specific entity do /summon {entity} for parameters");
+    public void manual(SharedCommandSource commandSource) {
+        commandSource.sendFeedback("Usage: /summon {entity} {x} {y} {z}");
+        commandSource.sendFeedback("Info: spawns a mob in the world at given position");
+        commandSource.sendFeedback("entity: list of entities under /mobs");
+        commandSource.sendFeedback("For a specific entity do /summon {entity} for parameters");
     }
 }

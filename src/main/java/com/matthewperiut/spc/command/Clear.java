@@ -1,17 +1,21 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerBase;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class Clear implements Command {
 
     @Override
-    public void command(PlayerBase player, String[] parameters) {
-        ((Minecraft) FabricLoader.getInstance().getGameInstance()).overlay.clearChat();
+    public void command(SharedCommandSource commandSource, String[] parameters) {
+        if (commandSource.isClient())
+            ((Minecraft) FabricLoader.getInstance().getGameInstance()).overlay.clearChat();
+        else
+            commandSource.sendFeedback("Intended to clear chat for client only");
     }
 
     @Override
@@ -20,8 +24,8 @@ public class Clear implements Command {
     }
 
     @Override
-    public void manual() {
-        sendMessage("Usage: /clear");
-        sendMessage("Info: Clears chat history");
+    public void manual(SharedCommandSource commandSource) {
+        commandSource.sendFeedback("Usage: /clear");
+        commandSource.sendFeedback("Info: Clears chat history");
     }
 }

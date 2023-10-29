@@ -1,11 +1,12 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
 import java.util.ArrayList;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class Help implements Command {
     static ArrayList<Page> pages = new ArrayList<>();
@@ -28,22 +29,22 @@ public class Help implements Command {
     }
 
     @Override
-    public void command(PlayerBase player, String[] parameters) {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
         int pg = 1;
         if (parameters.length > 1) {
             try {
                 pg = Integer.parseInt(parameters[1]);
                 if (pg > pages.size() || pg < 1) {
-                    sendMessage("Page out of bounds");
+                    commandSource.sendFeedback("Page out of bounds");
                     return;
                 }
             } catch (NumberFormatException e) {
-                sendMessage(parameters[1] + " is not a number");
+                commandSource.sendFeedback(parameters[1] + " is not a number");
             }
         }
-        sendMessage("For these commands, use \"/help {command}\" for more info:");
-        sendMessage("pg " + (pg) + "/" + pages.size());
-        pages.get(pg - 1).send();
+        commandSource.sendFeedback("For these commands, use \"/help {command}\" for more info:");
+        commandSource.sendFeedback("pg " + (pg) + "/" + pages.size());
+        pages.get(pg - 1).send(commandSource);
     }
 
     @Override
@@ -52,9 +53,9 @@ public class Help implements Command {
     }
 
     @Override
-    public void manual() {
-        sendMessage("Usage: /help {pg}");
-        sendMessage("Info: gives the list of commands available");
+    public void manual(SharedCommandSource commandSource) {
+        commandSource.sendFeedback("Usage: /help {pg}");
+        commandSource.sendFeedback("Info: gives the list of commands available");
     }
 
     private static class Page {
@@ -64,9 +65,9 @@ public class Help implements Command {
 
         }
 
-        public void send() {
+        public void send(SharedCommandSource commandSource) {
             for (String s : strings)
-                sendMessage(s);
+                commandSource.sendFeedback(s);
         }
     }
 }

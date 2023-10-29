@@ -1,20 +1,28 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class God implements Command {
 
     public static Map<String, Boolean> isPlayerInvincible = new HashMap<>();
 
     @Override
-    public void command(PlayerBase player, String[] parameters) {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
         boolean god = false;
+
+        PlayerBase player = commandSource.getPlayer();
+        if (player == null)
+        {
+            return;
+        }
+
         if (isPlayerInvincible.get(player.name) != null) {
             god = !isPlayerInvincible.get(player.name);
             isPlayerInvincible.replace(player.name, god);
@@ -23,7 +31,7 @@ public class God implements Command {
             god = true;
         }
 
-        sendMessage("God mode " + (god ? "activated" : "deactivated"));
+        commandSource.sendFeedback("God mode " + (god ? "activated" : "deactivated"));
     }
 
     @Override
@@ -32,8 +40,8 @@ public class God implements Command {
     }
 
     @Override
-    public void manual() {
-        sendMessage("Usage: /god");
-        sendMessage("Info: Activates or deactivates invincibility");
+    public void manual(SharedCommandSource commandSource) {
+        commandSource.sendFeedback("Usage: /god");
+        commandSource.sendFeedback("Info: Activates or deactivates invincibility");
     }
 }

@@ -1,12 +1,19 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class Time implements Command {
-    public void command(PlayerBase player, String[] parameters) {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
+        PlayerBase player = commandSource.getPlayer();
+        if (player == null)
+        {
+            return;
+        }
+
         if (parameters.length > 2) {
             switch (parameters[1]) {
                 case "set":
@@ -34,19 +41,19 @@ public class Time implements Command {
                                 time = 23000;
                                 break;
                             default:
-                                sendMessage("Time is not properly formatted");
+                                commandSource.sendFeedback("Time is not properly formatted");
                                 return;
                         }
                     }
                     player.level.setLevelTime(time);
-                    sendMessage("Time set to " + time);
+                    commandSource.sendFeedback("Time set to " + time);
                     break;
             }
 
             return;
         }
 
-        manual();
+        manual(commandSource);
     }
 
     @Override
@@ -55,10 +62,10 @@ public class Time implements Command {
     }
 
     @Override
-    public void manual() {
-        sendMessage("Usage: /time set {levelTime}");
-        sendMessage("Info: sets the time of day");
-        sendMessage("levelTime can be an integer usually between 0 and 24000 or keyword");
-        sendMessage("preset keywords are day, noon, sunset, night, midnight, sunrise");
+    public void manual(SharedCommandSource commandSource) {
+        commandSource.sendFeedback("Usage: /time set {levelTime}");
+        commandSource.sendFeedback("Info: sets the time of day");
+        commandSource.sendFeedback("levelTime can be an integer usually between 0 and 24000 or keyword");
+        commandSource.sendFeedback("preset keywords are day, noon, sunset, night, midnight, sunrise");
     }
 }

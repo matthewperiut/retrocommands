@@ -1,29 +1,29 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.EntityRegistry;
 import net.minecraft.entity.player.PlayerBase;
 
 import java.util.Map;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class Mobs implements Command {
     @Override
-    public void command(PlayerBase player, String[] parameters) {
-
-        sendMessage("Mobs that can be spawned, Case-Sensitive usage!");
+    public void command(SharedCommandSource commandSource, String[] parameters) {
+        commandSource.sendFeedback("Mobs that can be spawned, Case-Sensitive usage!");
         Map<String, Class> map = EntityRegistry.STRING_ID_TO_CLASS;
 
         String msg = "";
         for (Map.Entry<String, Class> entry : map.entrySet()) {
             msg += "\"" + entry.getKey() + "\", ";
             if (msg.length() > 50) {
-                sendMessage(msg);
+                commandSource.sendFeedback(msg);
                 msg = "";
             }
         }
-        sendMessage(msg.substring(0, msg.length() - 2)); // removes last comma then sends
+        commandSource.sendFeedback(msg.substring(0, msg.length() - 2)); // removes last comma then sends
     }
 
     @Override
@@ -32,8 +32,8 @@ public class Mobs implements Command {
     }
 
     @Override
-    public void manual() {
-        sendMessage("Usage: /mobs");
-        sendMessage("Info: gives the list of mobs");
+    public void manual(SharedCommandSource commandSource) {
+        commandSource.sendFeedback("Usage: /mobs");
+        commandSource.sendFeedback("Info: gives the list of mobs");
     }
 }

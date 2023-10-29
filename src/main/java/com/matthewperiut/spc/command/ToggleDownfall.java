@@ -1,13 +1,14 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.level.Level;
 import net.minecraft.level.LevelProperties;
 
 import java.lang.reflect.Field;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class ToggleDownfall implements Command
 {
@@ -35,8 +36,14 @@ public class ToggleDownfall implements Command
     }
 
     @Override
-    public void command(PlayerBase player, String[] parameters)
+    public void command(SharedCommandSource commandSource, String[] parameters)
     {
+        PlayerBase player = commandSource.getPlayer();
+        if (player == null)
+        {
+            return;
+        }
+        
         LevelProperties worldInfo = null;
         try
         {
@@ -58,7 +65,7 @@ public class ToggleDownfall implements Command
             e.printStackTrace();
         }
 
-        sendMessage("Toggled downfall");
+        commandSource.sendFeedback("Toggled downfall");
     }
 
     @Override
@@ -68,9 +75,9 @@ public class ToggleDownfall implements Command
     }
 
     @Override
-    public void manual()
+    public void manual(SharedCommandSource commandSource)
     {
-        sendMessage("Usage: /toggledownfall");
-        sendMessage("Info: Toggles the weather");
+        commandSource.sendFeedback("Usage: /toggledownfall");
+        commandSource.sendFeedback("Info: Toggles the weather");
     }
 }

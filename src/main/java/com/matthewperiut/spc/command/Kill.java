@@ -1,18 +1,25 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class Kill implements Command
 {
 
     @Override
-    public void command(PlayerBase player, String[] parameters)
+    public void command(SharedCommandSource commandSource, String[] parameters)
     {
+        PlayerBase player = commandSource.getPlayer();
+        if (player == null)
+        {
+            return;
+        }
+
         player.damage(null, 1000);
-        sendMessage("Killed player");
+        commandSource.sendFeedback("Killed player");
     }
 
     @Override
@@ -22,9 +29,9 @@ public class Kill implements Command
     }
 
     @Override
-    public void manual()
+    public void manual(SharedCommandSource commandSource)
     {
-        sendMessage("Usage: /kill");
-        sendMessage("Info: Kills the current player");
+        commandSource.sendFeedback("Usage: /kill");
+        commandSource.sendFeedback("Info: Kills the current player");
     }
 }

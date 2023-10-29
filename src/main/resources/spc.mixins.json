@@ -5,12 +5,14 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "BlockBaseMixin",
-    "EntityAccessor",
+    "MixinItemInstance",
     "PlayerBaseMixin",
-    "MixinItemInstance"
+    "access.EntityAccessor"
   ],
   "server": [
-    "CommandManagerMixin"
+    "CommandManagerMixin",
+    "ServerGuiMixin",
+    "access.ServerPlayerPacketHandlerAccessor"
   ],
   "client": [
     "AbstractClientPlayerMixin",

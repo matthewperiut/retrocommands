@@ -1,23 +1,30 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class Heal implements Command {
     @Override
-    public void command(PlayerBase player, String[] parameters) {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
+
+        PlayerBase player = commandSource.getPlayer();
+        if (player == null)
+        {
+            return;
+        }
 
         if (parameters.length > 1)
         {
             int amount = Integer.parseInt(parameters[1]);
-            sendMessage((amount > 0 ? "Healed" : "Damaged") + " " + Math.abs(amount) / 2.f + " hearts!");
+            commandSource.sendFeedback((amount > 0 ? "Healed" : "Damaged") + " " + Math.abs(amount) / 2.f + " hearts!");
             player.health += amount;
             return;
         }
 
-        sendMessage("Healed fully!");
+        commandSource.sendFeedback("Healed fully!");
         player.health = 20;
     }
 
@@ -27,8 +34,8 @@ public class Heal implements Command {
     }
 
     @Override
-    public void manual() {
-        sendMessage("Usage: /heal {optional: amount}");
-        sendMessage("Info: Restores health");
+    public void manual(SharedCommandSource commandSource) {
+        commandSource.sendFeedback("Usage: /heal {optional: amount}");
+        commandSource.sendFeedback("Info: Restores health");
     }
 }

@@ -1,19 +1,26 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.EntityBase;
 import net.minecraft.entity.EntityRegistry;
 import net.minecraft.entity.player.PlayerBase;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class Ride implements Command
 {
 
 
     @Override
-    public void command(PlayerBase player, String[] parameters)
+    public void command(SharedCommandSource commandSource, String[] parameters)
     {
+        PlayerBase player = commandSource.getPlayer();
+        if (player == null)
+        {
+            return;
+        }
+
         if (parameters.length < 3)
         {
             if (player.vehicle != null)
@@ -21,7 +28,7 @@ public class Ride implements Command
                 player.startRiding(null);
                 return;
             }
-            manual();
+            manual(commandSource);
             return;
         }
 
@@ -55,7 +62,7 @@ public class Ride implements Command
         }
         catch (Exception e)
         {
-            sendMessage("Invalid entity id");
+            commandSource.sendFeedback("Invalid entity id");
         }
 
         for (Object o : player.level.entities)
@@ -74,14 +81,14 @@ public class Ride implements Command
 
         if (riderEntity == null || vehicleEntity == null)
         {
-            sendMessage("Invalid entity id");
+            commandSource.sendFeedback("Invalid entity id");
             return;
         }
 
         riderEntity.startRiding(vehicleEntity);
         String riderString = riderEntity instanceof PlayerBase ? ((PlayerBase) riderEntity).name : "The " + (String) EntityRegistry.CLASS_TO_STRING_ID.get(riderEntity.getClass());
         String vehicleString = vehicleEntity instanceof PlayerBase ? ((PlayerBase) vehicleEntity).name : "the " + (String) EntityRegistry.CLASS_TO_STRING_ID.get(vehicleEntity.getClass());
-        sendMessage(riderString + " is now on " + vehicleString);
+        commandSource.sendFeedback(riderString + " is now on " + vehicleString);
     }
 
     @Override
@@ -91,11 +98,11 @@ public class Ride implements Command
     }
 
     @Override
-    public void manual()
+    public void manual(SharedCommandSource commandSource)
     {
-        sendMessage("Usage: /ride {rider entity id} {vehicle entity id}");
-        sendMessage("Info: Puts an entity on an entity");
-        sendMessage("You can find entity id in the F3 menu");
-        sendMessage("You can also use player names instead");
+        commandSource.sendFeedback("Usage: /ride {rider entity id} {vehicle entity id}");
+        commandSource.sendFeedback("Info: Puts an entity on an entity");
+        commandSource.sendFeedback("You can find entity id in the F3 menu");
+        commandSource.sendFeedback("You can also use player names instead");
     }
 }

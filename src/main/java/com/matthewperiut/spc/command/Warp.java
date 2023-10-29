@@ -3,20 +3,26 @@ package com.matthewperiut.spc.command;
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.api.PlayerWarps;
 import com.matthewperiut.spc.api.PosParse;
+import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
-import static com.matthewperiut.spc.util.SPChatUtil.sendMessage;
+
 
 public class Warp implements Command
 {
 
     @Override
-    public void command(PlayerBase player, String[] parameters)
+    public void command(SharedCommandSource commandSource, String[] parameters)
     {
+        PlayerBase player = commandSource.getPlayer();
+        if (player == null)
+        {
+            return;
+        }
 
         if (parameters.length < 2)
         {
-            manual();
+            manual(commandSource);
             return;
         }
 
@@ -24,7 +30,7 @@ public class Warp implements Command
         {
             if (parameters[2].contains("|"))
             {
-                sendMessage("Warp name cannot contain '|'");
+                commandSource.sendFeedback("Warp name cannot contain '|'");
                 return;
             }
 
@@ -33,7 +39,7 @@ public class Warp implements Command
             String newStr = pw.spc$getWarpString() + parameters[2] + " " + pos.toString() + " ";
 
             pw.spc$setWarpString(newStr);
-            sendMessage("Added " + parameters[2] + " to warps");
+            commandSource.sendFeedback("Added " + parameters[2] + " to warps");
             return;
         }
 
@@ -50,14 +56,14 @@ public class Warp implements Command
                     PosParse pos = new PosParse(player, i + 1, segments);
                     if (pos.valid)
                     {
-                        sendMessage("Teleported to " + parameters[2]);
+                        commandSource.sendFeedback("Teleported to " + parameters[2]);
                         Teleport.teleport(player, pos.x, pos.y + 0.1, pos.z);
                         return;
                     }
                 }
             }
 
-            sendMessage("Warp not found");
+            commandSource.sendFeedback("Warp not found");
             return;
         }
 
@@ -79,24 +85,24 @@ public class Warp implements Command
 
             if (numSkipped > segments.length || numSkipped < 0)
             {
-                sendMessage("Page not found");
+                commandSource.sendFeedback("Page not found");
                 return;
             }
 
             int end = numSkipped + (4 * 5);
             if (end > segments.length) end = segments.length;
 
-            sendMessage("Page " + (pg + 1) + "/" + pages);
+            commandSource.sendFeedback("Page " + (pg + 1) + "/" + pages);
             for (int i = numSkipped; i < end; i += 4)
             {
                 System.out.println(numSkipped + " " + i + " " + (numSkipped + (4 * 5)));
-                sendMessage(segments[i] + ": " + segments[i + 1] + " " + segments[i + 2] + " " + segments[i + 3]);
+                commandSource.sendFeedback(segments[i] + ": " + segments[i + 1] + " " + segments[i + 2] + " " + segments[i + 3]);
             }
 
             return;
         }
 
-        manual();
+        manual(commandSource);
     }
 
     @Override
@@ -106,10 +112,10 @@ public class Warp implements Command
     }
 
     @Override
-    public void manual()
+    public void manual(SharedCommandSource commandSource)
     {
-        sendMessage("Usage 1: /warp {set/tp} {name}");
-        sendMessage("Usage 2: /warp list {pg}");
-        sendMessage("Info: Sets or teleports to a set point");
+        commandSource.sendFeedback("Usage 1: /warp {set/tp} {name}");
+        commandSource.sendFeedback("Usage 2: /warp list {pg}");
+        commandSource.sendFeedback("Info: Sets or teleports to a set point");
     }
 }

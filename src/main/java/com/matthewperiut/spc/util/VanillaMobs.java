@@ -1,7 +1,7 @@
 package com.matthewperiut.spc.util;
 
 import com.matthewperiut.spc.api.SummonRegistry;
-import com.matthewperiut.spc.mixin.EntityAccessor;
+import com.matthewperiut.spc.mixin.access.EntityAccessor;
 import net.minecraft.entity.PrimedTnt;
 import net.minecraft.entity.animal.Pig;
 import net.minecraft.entity.animal.Sheep;
