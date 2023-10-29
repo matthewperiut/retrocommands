@@ -12,8 +12,7 @@ import net.minecraft.server.network.ServerPlayerPacketHandler;
 public class SharedCommandSource {
     private final Object actualSource;
 
-    public SharedCommandSource(Object source)
-    {
+    public SharedCommandSource(Object source) {
         this.actualSource = source;
     }
 
@@ -25,41 +24,31 @@ public class SharedCommandSource {
             default -> throw new IllegalArgumentException("Unknown side " + side + "!");
         }
     }
+
     public String getName() {
-        if (actualSource instanceof PlayerBase player)
-        {
+        if (actualSource instanceof PlayerBase player) {
             return player.name;
-        }
-        else
-        {
+        } else {
             EnvType side = FabricLoader.getInstance().getEnvironmentType();
-            if (side == EnvType.CLIENT)
-            {
+            if (side == EnvType.CLIENT) {
                 return getNameClient();
             }
-            if (side == EnvType.SERVER)
-            {
+            if (side == EnvType.SERVER) {
                 return getNameServer();
             }
         }
         return "unknown";
     }
 
-    public PlayerBase getPlayer()
-    {
-        if (actualSource instanceof PlayerBase player)
-        {
+    public PlayerBase getPlayer() {
+        if (actualSource instanceof PlayerBase player) {
             return player;
-        }
-        else
-        {
+        } else {
             EnvType side = FabricLoader.getInstance().getEnvironmentType();
-            if (side == EnvType.CLIENT)
-            {
+            if (side == EnvType.CLIENT) {
                 return getPlayerClient();
             }
-            if (side == EnvType.SERVER)
-            {
+            if (side == EnvType.SERVER) {
                 return getPlayerServer();
             }
         }
@@ -67,54 +56,43 @@ public class SharedCommandSource {
     }
 
     @Environment(EnvType.CLIENT)
-    private PlayerBase getPlayerClient()
-    {
+    private PlayerBase getPlayerClient() {
         return ((Minecraft) FabricLoader.getInstance().getGameInstance()).player;
     }
 
     @Environment(EnvType.SERVER)
-    private PlayerBase getPlayerServer()
-    {
-        if (actualSource instanceof ServerPlayerPacketHandler playerPacketHandler)
-        {
-            return ((ServerPlayerPacketHandlerAccessor)playerPacketHandler).getServerPlayer();
-        }
-        else
-        {
+    private PlayerBase getPlayerServer() {
+        if (actualSource instanceof ServerPlayerPacketHandler playerPacketHandler) {
+            return ((ServerPlayerPacketHandlerAccessor) playerPacketHandler).getServerPlayer();
+        } else {
             return null;
         }
     }
 
     @Environment(EnvType.CLIENT)
-    private String getNameClient()
-    {
+    private String getNameClient() {
         return "client";
     }
 
     @Environment(EnvType.SERVER)
-    private String getNameServer()
-    {
-        if (actualSource instanceof CommandSource cmdSrc)
-        {
+    private String getNameServer() {
+        if (actualSource instanceof CommandSource cmdSrc) {
             return cmdSrc.getName();
         }
         return "unknown";
     }
 
     @Environment(EnvType.CLIENT)
-    private void sendClientFeedback(String feedback)
-    {
+    private void sendClientFeedback(String feedback) {
         ((Minecraft) FabricLoader.getInstance().getGameInstance()).overlay.addChatMessage(feedback);
     }
 
     @Environment(EnvType.SERVER)
-    private void sendServerFeedback(String feedback)
-    {
+    private void sendServerFeedback(String feedback) {
         ((CommandSource) actualSource).sendFeedback(feedback);
     }
 
-    public boolean isClient()
-    {
+    public boolean isClient() {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
     }
 }

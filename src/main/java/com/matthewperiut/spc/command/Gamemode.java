@@ -4,9 +4,6 @@ import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.optionaldep.bhcreative.ChangeGamemode;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.player.PlayerBase;
-
-
 
 
 public class Gamemode implements Command {
@@ -17,8 +14,7 @@ public class Gamemode implements Command {
             return;
         }
 
-        if (commandSource.getPlayer() == null)
-        {
+        if (commandSource.getPlayer() == null) {
             return;
         }
 

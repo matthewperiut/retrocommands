@@ -6,8 +6,7 @@ import com.matthewperiut.spc.util.SharedCommandSource;
 public class Pardon implements Command {
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        if (parameters.length < 2)
-        {
+        if (parameters.length < 2) {
             manual(commandSource);
             return;
         }

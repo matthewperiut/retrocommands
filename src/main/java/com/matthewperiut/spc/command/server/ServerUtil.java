@@ -9,13 +9,11 @@ import java.util.logging.Logger;
 public class ServerUtil {
     public static Logger LOGGER = Logger.getLogger("Minecraft");
 
-    public static MinecraftServer getServer()
-    {
+    public static MinecraftServer getServer() {
         return (MinecraftServer) FabricLoader.getInstance().getGameInstance();
     }
 
-    public static ServerPlayerConnectionManager getConnectionManager()
-    {
+    public static ServerPlayerConnectionManager getConnectionManager() {
         return getServer().serverPlayerConnectionManager;
     }
 
@@ -25,11 +23,9 @@ public class ServerUtil {
         LOGGER.info(str);
     }
 
-    public static String appendEnd(int start, String[] parameters)
-    {
+    public static String appendEnd(int start, String[] parameters) {
         StringBuilder joinedString = new StringBuilder();
-        for (int i = start; i < parameters.length; i++)
-        {
+        for (int i = start; i < parameters.length; i++) {
             joinedString.append(parameters[i]).append(" ");
         }
 

@@ -8,8 +8,7 @@ import net.minecraft.server.ServerPlayerConnectionManager;
 public class Kick implements Command {
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        if (parameters.length < 2)
-        {
+        if (parameters.length < 2) {
             manual(commandSource);
             return;
         }
@@ -17,8 +16,8 @@ public class Kick implements Command {
         ServerPlayer player = null;
         ServerPlayerConnectionManager scm = ServerUtil.getConnectionManager();
 
-        for(int i = 0; i < scm.players.size(); ++i) {
-            ServerPlayer var9 = (ServerPlayer)scm.players.get(i);
+        for (int i = 0; i < scm.players.size(); ++i) {
+            ServerPlayer var9 = (ServerPlayer) scm.players.get(i);
             if (var9.name.equalsIgnoreCase(parameters[1])) {
                 player = var9;
             }

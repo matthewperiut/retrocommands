@@ -2,8 +2,6 @@ package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.player.PlayerBase;
-
 
 
 public class Id implements Command {

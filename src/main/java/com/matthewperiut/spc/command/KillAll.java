@@ -9,29 +9,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
-public class KillAll implements Command
-{
+public class KillAll implements Command {
 
     @Override
-    public void command(SharedCommandSource commandSource, String[] parameters)
-    {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
         PlayerBase player = commandSource.getPlayer();
-        if (player == null)
-        {
+        if (player == null) {
             return;
         }
 
         List<EntityBase> entities_to_kill = new ArrayList<>();
-        for (int i = 0; i < player.level.entities.size(); i++)
-        {
+        for (int i = 0; i < player.level.entities.size(); i++) {
             EntityBase e = (EntityBase) player.level.entities.get(i);
             if (e instanceof PlayerBase) continue;
             entities_to_kill.add(e);
         }
 
-        for (EntityBase e : entities_to_kill)
-        {
+        for (EntityBase e : entities_to_kill) {
             e.damage(null, 1000);
         }
 
@@ -39,14 +33,12 @@ public class KillAll implements Command
     }
 
     @Override
-    public String name()
-    {
+    public String name() {
         return "killall";
     }
 
     @Override
-    public void manual(SharedCommandSource commandSource)
-    {
+    public void manual(SharedCommandSource commandSource) {
         commandSource.sendFeedback("Usage: /killall");
         commandSource.sendFeedback("Info: Kills all entities in the world");
     }

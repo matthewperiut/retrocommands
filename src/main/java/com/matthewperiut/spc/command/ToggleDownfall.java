@@ -9,9 +9,7 @@ import net.minecraft.level.LevelProperties;
 import java.lang.reflect.Field;
 
 
-
-public class ToggleDownfall implements Command
-{
+public class ToggleDownfall implements Command {
     // Thank you mine_diver for this code, it's beautiful
 
     private static final Field worldInfoField = getField(Level.class, new String[]{"properties", "field_220"});
@@ -19,14 +17,10 @@ public class ToggleDownfall implements Command
     // from HMI, blame mine_diver
     //clean mine_diver code
     //Used for easy reflection with obfuscated or regular fields
-    public static Field getField(Class<?> target, String[] names)
-    {
-        for (Field field : target.getDeclaredFields())
-        {
-            for (String name : names)
-            {
-                if (field.getName().equals(name))
-                {
+    public static Field getField(Class<?> target, String[] names) {
+        for (Field field : target.getDeclaredFields()) {
+            for (String name : names) {
+                if (field.getName().equals(name)) {
                     field.setAccessible(true);
                     return field;
                 }
@@ -36,32 +30,24 @@ public class ToggleDownfall implements Command
     }
 
     @Override
-    public void command(SharedCommandSource commandSource, String[] parameters)
-    {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
         PlayerBase player = commandSource.getPlayer();
-        if (player == null)
-        {
+        if (player == null) {
             return;
         }
-        
+
         LevelProperties worldInfo = null;
-        try
-        {
+        try {
             worldInfo = (LevelProperties) worldInfoField.get(player.level);
-        }
-        catch (Exception ignored)
-        {
+        } catch (Exception ignored) {
 
         }
 
-        try
-        {
+        try {
             assert worldInfo != null;
             worldInfo.setThundering(!worldInfo.isThundering());
             worldInfo.setRaining(!worldInfo.isRaining());
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
 
@@ -69,14 +55,12 @@ public class ToggleDownfall implements Command
     }
 
     @Override
-    public String name()
-    {
+    public String name() {
         return "toggledownfall";
     }
 
     @Override
-    public void manual(SharedCommandSource commandSource)
-    {
+    public void manual(SharedCommandSource commandSource) {
         commandSource.sendFeedback("Usage: /toggledownfall");
         commandSource.sendFeedback("Info: Toggles the weather");
     }

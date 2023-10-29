@@ -3,10 +3,8 @@ package com.matthewperiut.spc.command;
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.EntityRegistry;
-import net.minecraft.entity.player.PlayerBase;
 
 import java.util.Map;
-
 
 
 public class Mobs implements Command {

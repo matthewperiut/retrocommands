@@ -5,16 +5,12 @@ import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
 
-
-public class Kill implements Command
-{
+public class Kill implements Command {
 
     @Override
-    public void command(SharedCommandSource commandSource, String[] parameters)
-    {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
         PlayerBase player = commandSource.getPlayer();
-        if (player == null)
-        {
+        if (player == null) {
             return;
         }
 
@@ -23,14 +19,12 @@ public class Kill implements Command
     }
 
     @Override
-    public String name()
-    {
+    public String name() {
         return "kill";
     }
 
     @Override
-    public void manual(SharedCommandSource commandSource)
-    {
+    public void manual(SharedCommandSource commandSource) {
         commandSource.sendFeedback("Usage: /kill");
         commandSource.sendFeedback("Info: Kills the current player");
     }

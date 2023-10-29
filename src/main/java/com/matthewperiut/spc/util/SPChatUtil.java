@@ -5,9 +5,6 @@ import com.matthewperiut.spc.command.*;
 import com.matthewperiut.spc.command.server.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.server.command.CommandSource;
 
 import java.util.ArrayList;
 
@@ -19,16 +16,19 @@ public class SPChatUtil {
     public static void addDefaultCommands() {
         commands.add(new Help());
 
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
-        {
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
             commands.add(new Kick());
             commands.add(new Ban());
             commands.add(new Pardon());
             commands.add(new BanIp());
             commands.add(new PardonIp());
+            commands.add(new Op());
+            commands.add(new Deop());
             commands.add(new Stop());
+            commands.add(new Save());
             commands.add(new List());
             commands.add(new Say());
+            commands.add(new Whitelist());
         }
 
         commands.add(new Clear());
@@ -63,16 +63,16 @@ public class SPChatUtil {
 
         for (Command c : commands) {
 
+            if (c.name() == null)
+                continue;
+
             if (c.name().equals(wanted)) {
                 if (help) {
                     c.manual(commandSource);
                 } else {
-                    try
-                    {
+                    try {
                         c.command(commandSource, segments);
-                    }
-                    catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         commandSource.sendFeedback("Error: " + e.getMessage());
                     }
                 }
@@ -83,12 +83,9 @@ public class SPChatUtil {
         if (segments[0].equals("help"))
             for (Command c : commands) {
                 if (c.name().equals("help")) {
-                    try
-                    {
+                    try {
                         c.command(commandSource, segments);
-                    }
-                    catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         commandSource.sendFeedback("Error: " + e.getMessage());
                     }
                     return;

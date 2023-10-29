@@ -2,11 +2,9 @@ package com.matthewperiut.spc.optionaldep.stapi;
 
 import com.matthewperiut.spc.dimension.BareTravelAgent;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.player.PlayerBase;
 import net.modificationstation.stationapi.api.registry.DimensionRegistry;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.world.dimension.DimensionHelper;
-
 
 
 public class SwitchDimension {

@@ -2,7 +2,6 @@ package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.server.command.CommandSource;
 
 public class WhoAmI implements Command {
     @Override

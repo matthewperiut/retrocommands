@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-
 public class God implements Command {
 
     public static Map<String, Boolean> isPlayerInvincible = new HashMap<>();
@@ -18,8 +17,7 @@ public class God implements Command {
         boolean god = false;
 
         PlayerBase player = commandSource.getPlayer();
-        if (player == null)
-        {
+        if (player == null) {
             return;
         }
 

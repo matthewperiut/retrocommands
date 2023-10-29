@@ -9,8 +9,7 @@ public class PosParse {
 
     public boolean valid = true;
 
-    public PosParse(PlayerBase player)
-    {
+    public PosParse(PlayerBase player) {
         x = player.x;
         y = player.y;
         z = player.z;

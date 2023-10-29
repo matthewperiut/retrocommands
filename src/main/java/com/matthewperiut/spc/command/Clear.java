@@ -4,8 +4,6 @@ import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerBase;
-
 
 
 public class Clear implements Command {

@@ -5,12 +5,10 @@ import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
 
-
 public class Time implements Command {
     public void command(SharedCommandSource commandSource, String[] parameters) {
         PlayerBase player = commandSource.getPlayer();
-        if (player == null)
-        {
+        if (player == null) {
             return;
         }
 

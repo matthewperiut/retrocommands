@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-
 public class Summon implements Command {
 
     public static Map<Class<? extends EntityBase>, String> help = new HashMap<>();
@@ -20,8 +19,7 @@ public class Summon implements Command {
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
         PlayerBase player = commandSource.getPlayer();
-        if (player == null)
-        {
+        if (player == null) {
             return;
         }
 

@@ -7,8 +7,7 @@ import net.minecraft.packet.play.ChatMessage0x3Packet;
 public class Say implements Command {
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        if (parameters.length < 2)
-        {
+        if (parameters.length < 2) {
             manual(commandSource);
             return;
         }

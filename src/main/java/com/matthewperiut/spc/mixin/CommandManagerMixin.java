@@ -2,17 +2,12 @@ package com.matthewperiut.spc.mixin;
 
 import com.matthewperiut.spc.util.SPChatUtil;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.Command;
 import net.minecraft.server.command.CommandManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.List;
 
 @Mixin(CommandManager.class)
 public class CommandManagerMixin {

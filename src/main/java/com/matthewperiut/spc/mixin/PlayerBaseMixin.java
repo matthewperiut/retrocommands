@@ -15,8 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 // Priority 999 to cancel fire even when in creative, because creative also cancels here.
 // BHCreative uses priority 1000
 @Mixin(value = PlayerBase.class, priority = 999)
-public class PlayerBaseMixin implements PlayerWarps
-{
+public class PlayerBaseMixin implements PlayerWarps {
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     public void onGod(EntityBase i, int par2, CallbackInfoReturnable<Boolean> cir) {
         PlayerBase player = (PlayerBase) (Object) this;
@@ -34,26 +33,22 @@ public class PlayerBaseMixin implements PlayerWarps
     String warpStr = "";
 
     @Override
-    public void spc$setWarpString(String warp)
-    {
+    public void spc$setWarpString(String warp) {
         warpStr = warp;
     }
 
     @Override
-    public String spc$getWarpString()
-    {
+    public String spc$getWarpString() {
         return warpStr;
     }
 
     @Inject(method = "readCustomDataFromTag", at = @At("TAIL"))
-    private void readFromTag(CompoundTag tag, CallbackInfo ci)
-    {
+    private void readFromTag(CompoundTag tag, CallbackInfo ci) {
         if (tag.containsKey("warps")) warpStr = tag.getString("warps");
     }
 
     @Inject(method = "writeCustomDataToTag", at = @At("TAIL"))
-    private void writeToTag(CompoundTag tag, CallbackInfo ci)
-    {
+    private void writeToTag(CompoundTag tag, CallbackInfo ci) {
         if (!warpStr.isEmpty()) tag.put("warps", warpStr);
     }
 }

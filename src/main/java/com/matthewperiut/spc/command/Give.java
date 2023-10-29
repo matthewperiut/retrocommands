@@ -11,7 +11,6 @@ import net.minecraft.item.ItemBase;
 import net.minecraft.item.ItemInstance;
 
 
-
 public class Give implements Command {
 
     public static boolean givePlayerItemInstance(SharedCommandSource commandSource, PlayerBase player, ItemInstance instance) {

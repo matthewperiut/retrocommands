@@ -7,29 +7,22 @@ import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
 
-
-public class Warp implements Command
-{
+public class Warp implements Command {
 
     @Override
-    public void command(SharedCommandSource commandSource, String[] parameters)
-    {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
         PlayerBase player = commandSource.getPlayer();
-        if (player == null)
-        {
+        if (player == null) {
             return;
         }
 
-        if (parameters.length < 2)
-        {
+        if (parameters.length < 2) {
             manual(commandSource);
             return;
         }
 
-        if (parameters[1].equals("set"))
-        {
-            if (parameters[2].contains("|"))
-            {
+        if (parameters[1].equals("set")) {
+            if (parameters[2].contains("|")) {
                 commandSource.sendFeedback("Warp name cannot contain '|'");
                 return;
             }
@@ -43,19 +36,15 @@ public class Warp implements Command
             return;
         }
 
-        if (parameters[1].equals("tp"))
-        {
+        if (parameters[1].equals("tp")) {
             PlayerWarps pw = (PlayerWarps) player;
             String warps = pw.spc$getWarpString();
             String[] segments = warps.split(" ");
 
-            for (int i = 0; i < segments.length; i += 4)
-            {
-                if (parameters[2].equals(segments[i]))
-                {
+            for (int i = 0; i < segments.length; i += 4) {
+                if (parameters[2].equals(segments[i])) {
                     PosParse pos = new PosParse(player, i + 1, segments);
-                    if (pos.valid)
-                    {
+                    if (pos.valid) {
                         commandSource.sendFeedback("Teleported to " + parameters[2]);
                         Teleport.teleport(player, pos.x, pos.y + 0.1, pos.z);
                         return;
@@ -67,8 +56,7 @@ public class Warp implements Command
             return;
         }
 
-        if (parameters[1].equals("list"))
-        {
+        if (parameters[1].equals("list")) {
             PlayerWarps pw = (PlayerWarps) player;
             String warps = pw.spc$getWarpString();
             String[] segments = warps.split(" ");
@@ -83,8 +71,7 @@ public class Warp implements Command
 
             int numSkipped = pg * 4 * 5;
 
-            if (numSkipped > segments.length || numSkipped < 0)
-            {
+            if (numSkipped > segments.length || numSkipped < 0) {
                 commandSource.sendFeedback("Page not found");
                 return;
             }
@@ -93,8 +80,7 @@ public class Warp implements Command
             if (end > segments.length) end = segments.length;
 
             commandSource.sendFeedback("Page " + (pg + 1) + "/" + pages);
-            for (int i = numSkipped; i < end; i += 4)
-            {
+            for (int i = numSkipped; i < end; i += 4) {
                 System.out.println(numSkipped + " " + i + " " + (numSkipped + (4 * 5)));
                 commandSource.sendFeedback(segments[i] + ": " + segments[i + 1] + " " + segments[i + 2] + " " + segments[i + 3]);
             }
@@ -106,14 +92,12 @@ public class Warp implements Command
     }
 
     @Override
-    public String name()
-    {
+    public String name() {
         return "warp";
     }
 
     @Override
-    public void manual(SharedCommandSource commandSource)
-    {
+    public void manual(SharedCommandSource commandSource) {
         commandSource.sendFeedback("Usage 1: /warp {set/tp} {name}");
         commandSource.sendFeedback("Usage 2: /warp list {pg}");
         commandSource.sendFeedback("Info: Sets or teleports to a set point");

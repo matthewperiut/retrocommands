@@ -6,15 +6,11 @@ import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.item.ItemInstance;
 
 
-
-public class Hat implements Command
-{
+public class Hat implements Command {
     @Override
-    public void command(SharedCommandSource commandSource, String[] parameters)
-    {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
         PlayerBase player = commandSource.getPlayer();
-        if (player == null)
-        {
+        if (player == null) {
             return;
         }
 
@@ -28,14 +24,12 @@ public class Hat implements Command
     }
 
     @Override
-    public String name()
-    {
+    public String name() {
         return "hat";
     }
 
     @Override
-    public void manual(SharedCommandSource commandSource)
-    {
+    public void manual(SharedCommandSource commandSource) {
         commandSource.sendFeedback("Usage: /hat");
         commandSource.sendFeedback("Info: Puts the item in your hand on your head");
     }

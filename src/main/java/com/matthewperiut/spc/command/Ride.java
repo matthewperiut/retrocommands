@@ -7,24 +7,18 @@ import net.minecraft.entity.EntityRegistry;
 import net.minecraft.entity.player.PlayerBase;
 
 
-
-public class Ride implements Command
-{
+public class Ride implements Command {
 
 
     @Override
-    public void command(SharedCommandSource commandSource, String[] parameters)
-    {
+    public void command(SharedCommandSource commandSource, String[] parameters) {
         PlayerBase player = commandSource.getPlayer();
-        if (player == null)
-        {
+        if (player == null) {
             return;
         }
 
-        if (parameters.length < 3)
-        {
-            if (player.vehicle != null)
-            {
+        if (parameters.length < 3) {
+            if (player.vehicle != null) {
                 player.startRiding(null);
                 return;
             }
@@ -38,16 +32,13 @@ public class Ride implements Command
         EntityBase riderEntity = null;
         EntityBase vehicleEntity = null;
 
-        for (Object o : player.level.players)
-        {
+        for (Object o : player.level.players) {
             PlayerBase p = (PlayerBase) o;
             System.out.println(p.name);
-            if (p.name.equals(rider))
-            {
+            if (p.name.equals(rider)) {
                 riderEntity = p;
             }
-            if (p.name.equals(vehicle))
-            {
+            if (p.name.equals(vehicle)) {
                 vehicleEntity = p;
             }
         }
@@ -55,32 +46,25 @@ public class Ride implements Command
         int riderId = -1;
         int vehicleId = -1;
 
-        try
-        {
+        try {
             if (riderEntity == null) riderId = Integer.parseInt(rider);
             if (vehicleEntity == null) vehicleId = Integer.parseInt(vehicle);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             commandSource.sendFeedback("Invalid entity id");
         }
 
-        for (Object o : player.level.entities)
-        {
+        for (Object o : player.level.entities) {
             EntityBase e = (EntityBase) o;
 
-            if (e.entityId == riderId)
-            {
+            if (e.entityId == riderId) {
                 riderEntity = e;
             }
-            if (e.entityId == vehicleId)
-            {
+            if (e.entityId == vehicleId) {
                 vehicleEntity = e;
             }
         }
 
-        if (riderEntity == null || vehicleEntity == null)
-        {
+        if (riderEntity == null || vehicleEntity == null) {
             commandSource.sendFeedback("Invalid entity id");
             return;
         }
@@ -92,14 +76,12 @@ public class Ride implements Command
     }
 
     @Override
-    public String name()
-    {
+    public String name() {
         return "ride";
     }
 
     @Override
-    public void manual(SharedCommandSource commandSource)
-    {
+    public void manual(SharedCommandSource commandSource) {
         commandSource.sendFeedback("Usage: /ride {rider entity id} {vehicle entity id}");
         commandSource.sendFeedback("Info: Puts an entity on an entity");
         commandSource.sendFeedback("You can find entity id in the F3 menu");
