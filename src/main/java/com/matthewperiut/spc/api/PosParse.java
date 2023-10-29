@@ -17,6 +17,10 @@ public class PosParse {
     }
 
     public PosParse(PlayerBase player, int start, String[] segments) {
+        this(player.x, player.y, player.z, start, segments);
+    }
+
+    public PosParse(double x, double y, double z, int start, String[] segments) {
         try {
             String sx = segments[start];
             String sy = segments[start + 1];
@@ -24,23 +28,23 @@ public class PosParse {
 
             if (sx.charAt(0) == '~') {
                 sx = sx.substring(1);
-                x += player.x;
+                this.x += x;
             }
             if (sy.charAt(0) == '~') {
                 sy = sy.substring(1);
-                y += player.y;
+                this.y += y;
             }
             if (sz.charAt(0) == '~') {
                 sz = sz.substring(1);
-                z += player.z;
+                this.z += z;
             }
 
             if (!sx.isEmpty())
-                x += Double.parseDouble(sx);
+                this.x += Double.parseDouble(sx);
             if (!sy.isEmpty())
-                y += Double.parseDouble(sy);
+                this.y += Double.parseDouble(sy);
             if (!sz.isEmpty())
-                z += Double.parseDouble(sz);
+                this.z += Double.parseDouble(sz);
         } catch (NumberFormatException e) {
             valid = false;
         }
