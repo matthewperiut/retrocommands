@@ -21,4 +21,9 @@ public class BanIp implements Command {
         commandSource.sendFeedback("Usage: /ban-ip {ip}");
         commandSource.sendFeedback("Info: bans an IP address from the server");
     }
+
+    @Override
+    public boolean isOnlyServer() {
+        return true;
+    }
 }

@@ -20,4 +20,9 @@ public class Stop implements Command {
         commandSource.sendFeedback("Usage: /stop");
         commandSource.sendFeedback("Info: Gracefully stops the server");
     }
+
+    @Override
+    public boolean isOnlyServer() {
+        return true;
+    }
 }

@@ -5,6 +5,8 @@ import com.matthewperiut.spc.optionaldep.bhcreative.ChangeGamemode;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
 
+import java.util.ArrayList;
+
 
 public class Gamemode implements Command {
     @Override
@@ -44,5 +46,23 @@ public class Gamemode implements Command {
         commandSource.sendFeedback("Info: changes player's gamemode");
         commandSource.sendFeedback("mode can be 0/s/survival for survival mode");
         commandSource.sendFeedback("mode can be 1/c/creative for creative mode");
+    }
+
+    @Override
+    public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput) {
+        if (parameterNum == 1)
+        {
+            String[] options = {"survival", "creative"};
+            ArrayList<String> output = new ArrayList<>();
+            for (String option : options)
+            {
+                if (option.startsWith(currentInput))
+                {
+                    output.add(option.substring(currentInput.length()));
+                }
+            }
+            return output.toArray(new String[0]);
+        }
+        return new String[0];
     }
 }

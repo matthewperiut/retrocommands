@@ -70,4 +70,14 @@ public class Teleport implements Command {
         commandSource.sendFeedback("Info: moves a player to a desired coordinate and/or dimension");
         commandSource.sendFeedback("dimension identifier: e.g. \"minecraft:overworld\"");
     }
+
+    @Override
+    public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput) {
+        if (parameterNum > 0 && parameterNum < 4 && currentInput.isEmpty())
+        {
+            return new String[]{"~"};
+        }
+
+        return new String[0];
+    }
 }

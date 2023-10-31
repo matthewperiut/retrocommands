@@ -26,4 +26,9 @@ public class Op implements Command {
         commandSource.sendFeedback("Usage: /op {player}");
         commandSource.sendFeedback("Info: Turns a player into an op");
     }
+
+    @Override
+    public boolean isOnlyServer() {
+        return true;
+    }
 }

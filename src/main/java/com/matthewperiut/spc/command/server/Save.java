@@ -58,4 +58,9 @@ public class Save implements Command {
         commandSource.sendFeedback("      save off | disables terrain saving (useful for backup scripts)");
         commandSource.sendFeedback("      save on  | re-enables terrain saving");
     }
+
+    @Override
+    public boolean isOnlyServer() {
+        return true;
+    }
 }

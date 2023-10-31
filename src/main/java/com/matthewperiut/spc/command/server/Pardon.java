@@ -24,4 +24,9 @@ public class Pardon implements Command {
         commandSource.sendFeedback("Usage: /pardon {player}");
         commandSource.sendFeedback("Info: Pardons a banned player so that they can connect again");
     }
+
+    @Override
+    public boolean isOnlyServer() {
+        return true;
+    }
 }

@@ -30,4 +30,9 @@ public class Ban implements Command {
         commandSource.sendFeedback("Usage: /ban {player}");
         commandSource.sendFeedback("Info: Bans a player from the server");
     }
+
+    @Override
+    public boolean isOnlyServer() {
+        return true;
+    }
 }

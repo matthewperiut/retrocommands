@@ -26,4 +26,9 @@ public class Deop implements Command {
         commandSource.sendFeedback("Usage: /deop {player}");
         commandSource.sendFeedback("Info: Removes op status from a player");
     }
+
+    @Override
+    public boolean isOnlyServer() {
+        return true;
+    }
 }

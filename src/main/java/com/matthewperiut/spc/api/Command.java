@@ -7,10 +7,15 @@ public interface Command {
 
     String name();
 
-    default String suggestion(int parameterNum, String currentInput, String totalInput)
+    default String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput)
     {
-        return "";
+        return new String[0];
     }
 
     void manual(SharedCommandSource commandSource);
+
+    default boolean isOnlyServer()
+    {
+        return false;
+    }
 }

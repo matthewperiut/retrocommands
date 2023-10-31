@@ -6,6 +6,8 @@ import com.matthewperiut.spc.api.PosParse;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
+import java.util.ArrayList;
+
 
 public class Warp implements Command {
 
@@ -101,5 +103,46 @@ public class Warp implements Command {
         commandSource.sendFeedback("Usage 1: /warp {set/tp} {name}");
         commandSource.sendFeedback("Usage 2: /warp list {pg}");
         commandSource.sendFeedback("Info: Sets or teleports to a set point");
+    }
+
+    @Override
+    public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput) {
+        if (parameterNum == 1)
+        {
+            String[] options = {"set", "tp", "list"};
+            ArrayList<String> output = new ArrayList<>();
+            for (String option : options)
+            {
+                if (option.startsWith(currentInput))
+                {
+                    output.add(option.substring(currentInput.length()));
+                }
+            }
+            return output.toArray(new String[0]);
+        }
+        if (parameterNum == 2)
+        {
+            if (totalInput.contains("tp"))
+            {
+                PlayerWarps pw = (PlayerWarps) source.getPlayer();
+                String warps = pw.spc$getWarpString();
+                String[] segments = warps.split(" ");
+                ArrayList<String> names = new ArrayList<>();
+                for (int i = 0; i < segments.length; i += 4) {
+                    names.add(segments[i]);
+                }
+
+                ArrayList<String> output = new ArrayList<>();
+                for (String name : names)
+                {
+                    if (name.startsWith(currentInput))
+                    {
+                        output.add(name.substring(currentInput.length()));
+                    }
+                }
+                return output.toArray(new String[0]);
+            }
+        }
+        return new String[0];
     }
 }

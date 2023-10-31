@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityBase;
 import net.minecraft.entity.EntityRegistry;
 import net.minecraft.entity.player.PlayerBase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,28 +95,30 @@ public class Summon implements Command {
     }
 
     @Override
-    public String suggestion(int parameterNum, String currentInput, String totalInput)
+    public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput)
     {
         if (parameterNum == 1)
         {
             Map<String, Class> map = Mobs.getMobSet();
 
+            ArrayList<String> outputs = new ArrayList<>();
             String msg = "";
             for (Map.Entry<String, Class> entry : map.entrySet()) {
                 String key = entry.getKey();
                 if (key.startsWith(currentInput)) {
-                    return key.substring(currentInput.length());
+                    outputs.add(key.substring(currentInput.length()));
                 }
             }
+            return outputs.toArray(new String[0]);
         }
         else if (parameterNum > 1 && parameterNum < 5)
         {
             if (currentInput.length() == 0)
             {
-                return "~";
+                return new String[]{"~"};
             }
         }
 
-        return "";
+        return new String[0];
     }
 }

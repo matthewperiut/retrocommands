@@ -26,4 +26,9 @@ public class Say implements Command {
         commandSource.sendFeedback("Usage: /say");
         commandSource.sendFeedback("Info: Broadcasts a message to all players");
     }
+
+    @Override
+    public boolean isOnlyServer() {
+        return true;
+    }
 }

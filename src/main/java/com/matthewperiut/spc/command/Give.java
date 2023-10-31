@@ -3,6 +3,7 @@ package com.matthewperiut.spc.command;
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.api.ItemInstanceStr;
 import com.matthewperiut.spc.util.SharedCommandSource;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.EntityBase;
 import net.minecraft.entity.EntityRegistry;
 import net.minecraft.entity.Living;
@@ -12,6 +13,7 @@ import net.minecraft.item.ItemInstance;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.registry.ItemRegistry;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 
@@ -59,7 +61,10 @@ public class Give implements Command {
             try {
                 itemNumber = Integer.parseInt(parameters[1]);
             } catch (NumberFormatException e) {
-                itemNumber = identifierToItemId(parameters[1]);
+                itemNumber =
+                        FabricLoader.getInstance().isModLoaded("station-registry-api-v0") ?
+                                identifierToItemId(parameters[1]) :
+                                nameToItemId(parameters[1]);
             }
 
             if (itemNumber == -1) {
@@ -142,42 +147,14 @@ public class Give implements Command {
 
 
     @Override
-    public String suggestion(int parameterNum, String currentInput, String totalInput)
+    public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput)
     {
+        if (!FabricLoader.getInstance().isModLoaded("station-registry-api-v0"))
+            return new String[0];
+
         if (parameterNum == 1)
         {
-            boolean autofillingModId = !currentInput.contains(":");
-            String modId = "";
-            if (!autofillingModId)
-            {
-                modId = currentInput.split(":")[0];
-            }
-
-
-            for (Identifier id : ItemRegistry.INSTANCE.getIds())
-            {
-                if (autofillingModId)
-                {
-                    if (id.modID.toString().startsWith(currentInput))
-                    {
-                        return id.modID.toString().substring(currentInput.length()) + ":";
-                    }
-                }
-                else
-                {
-                    if (id.modID.toString().equals(modId))
-                    {
-                        String[] segments = currentInput.split(":");
-                        if (segments.length > 1)
-                        {
-                            if (id.id.startsWith(segments[1]))
-                            {
-                                return id.id.substring(segments[1].length());
-                            }
-                        }
-                    }
-                }
-            }
+            return processSuggestItemIdentifier(currentInput);
         }
 
         if (parameterNum == 2 && currentInput.length() == 0)
@@ -190,10 +167,47 @@ public class Give implements Command {
                 Optional<ItemBase> id = ItemRegistry.INSTANCE.getOrEmpty(Identifier.of(itemId));
                 if (id.isPresent())
                 {
-                    return String.valueOf(id.get().getMaxStackSize());
+                    return new String[]{ String.valueOf(id.get().getMaxStackSize()) };
                 }
             }
         }
-        return "";
+        return new String[0];
+    }
+
+    public static String[] processSuggestItemIdentifier(String currentInput)
+    {
+        boolean autofillingModId = !currentInput.contains(":");
+        String modId = "";
+        if (!autofillingModId)
+        {
+            modId = currentInput.split(":")[0];
+        }
+
+        HashSet<String> outputs = new HashSet<>();
+        for (Identifier id : ItemRegistry.INSTANCE.getIds())
+        {
+            if (autofillingModId)
+            {
+                if (id.modID.toString().startsWith(currentInput))
+                {
+                    outputs.add(id.modID.toString().substring(currentInput.length()) + ":");
+                }
+            }
+            else
+            {
+                if (id.modID.toString().equals(modId))
+                {
+                    String[] segments = currentInput.split(":");
+                    if (segments.length > 1)
+                    {
+                        if (id.id.startsWith(segments[1]))
+                        {
+                            outputs.add(id.id.substring(segments[1].length()));
+                        }
+                    }
+                }
+            }
+        }
+        return outputs.toArray(new String[0]);
     }
 }

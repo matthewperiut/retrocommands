@@ -41,4 +41,9 @@ public class Kick implements Command {
         commandSource.sendFeedback("Usage: /kick {player}");
         commandSource.sendFeedback("Info: Removes a player from the server");
     }
+
+    @Override
+    public boolean isOnlyServer() {
+        return true;
+    }
 }

@@ -21,4 +21,9 @@ public class PardonIp implements Command {
         commandSource.sendFeedback("Usage: /pardon-ip {ip}");
         commandSource.sendFeedback("Info: pardons a banned IP address so that they can connect again");
     }
+
+    @Override
+    public boolean isOnlyServer() {
+        return true;
+    }
 }

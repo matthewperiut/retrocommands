@@ -3,6 +3,7 @@ package com.matthewperiut.spc.command.server;
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -60,5 +61,28 @@ public class Whitelist implements Command {
         } else {
             manual(arg);
         }
+    }
+
+    @Override
+    public boolean isOnlyServer() {
+        return true;
+    }
+
+    @Override
+    public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput) {
+        if (parameterNum == 1)
+        {
+            String[] options = {"add", "on", "list", "reload", "remove", "off"};
+            ArrayList<String> output = new ArrayList<>();
+            for (String option : options)
+            {
+                if (option.startsWith(currentInput))
+                {
+                    output.add(option.substring(currentInput.length()));
+                }
+            }
+            return output.toArray(new String[0]);
+        }
+        return new String[0];
     }
 }

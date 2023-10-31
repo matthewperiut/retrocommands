@@ -16,20 +16,18 @@ public class SPChatUtil {
     public static void addDefaultCommands() {
         commands.add(new Help());
 
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
-            commands.add(new Kick());
-            commands.add(new Ban());
-            commands.add(new Pardon());
-            commands.add(new BanIp());
-            commands.add(new PardonIp());
-            commands.add(new Op());
-            commands.add(new Deop());
-            commands.add(new Stop());
-            commands.add(new Save());
-            commands.add(new List());
-            commands.add(new Say());
-            commands.add(new Whitelist());
-        }
+        commands.add(new Kick());
+        commands.add(new Ban());
+        commands.add(new Pardon());
+        commands.add(new BanIp());
+        commands.add(new PardonIp());
+        commands.add(new Op());
+        commands.add(new Deop());
+        commands.add(new Stop());
+        commands.add(new Save());
+        commands.add(new List());
+        commands.add(new Say());
+        commands.add(new Whitelist());
 
         commands.add(new Clear());
         commands.add(new Gamemode());
@@ -50,7 +48,8 @@ public class SPChatUtil {
         commands.add(new WhoAmI());
 
         for (Command c : commands) {
-            Help.addHelpTip("/" + c.name());
+            if (!c.isOnlyServer() || FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
+                Help.addHelpTip("/" + c.name());
         }
     }
 
@@ -67,6 +66,9 @@ public class SPChatUtil {
                 continue;
 
             if (c.name().equals(wanted)) {
+                if (c.isOnlyServer() && FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
+                    continue;
+
                 if (help) {
                     c.manual(commandSource);
                 } else {

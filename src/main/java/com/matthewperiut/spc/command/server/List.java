@@ -19,4 +19,9 @@ public class List implements Command {
         commandSource.sendFeedback("Usage: /list");
         commandSource.sendFeedback("Info: Lists all currently connected players");
     }
+
+    @Override
+    public boolean isOnlyServer() {
+        return true;
+    }
 }

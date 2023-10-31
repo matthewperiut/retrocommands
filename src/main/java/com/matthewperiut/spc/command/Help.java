@@ -68,4 +68,18 @@ public class Help implements Command {
                 commandSource.sendFeedback(s);
         }
     }
+
+    @Override
+    public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput) {
+        if (parameterNum == 1 && currentInput.isEmpty())
+        {
+            String[] output = new String[pages.size()];
+            for (int i = 1; i < pages.size()+1; i++)
+            {
+                output[i-1] = String.valueOf(i);
+            }
+            return output;
+        }
+        return new String[0];
+    }
 }

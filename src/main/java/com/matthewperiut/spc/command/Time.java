@@ -4,6 +4,8 @@ import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
+import java.util.ArrayList;
+
 
 public class Time implements Command {
     public void command(SharedCommandSource commandSource, String[] parameters) {
@@ -65,5 +67,36 @@ public class Time implements Command {
         commandSource.sendFeedback("Info: sets the time of day");
         commandSource.sendFeedback("levelTime can be an integer usually between 0 and 24000 or keyword");
         commandSource.sendFeedback("preset keywords are day, noon, sunset, night, midnight, sunrise");
+    }
+
+    @Override
+    public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput) {
+        if (parameterNum == 1)
+        {
+            String[] options = {"set"};
+            ArrayList<String> output = new ArrayList<>();
+            for (String option : options)
+            {
+                if (option.startsWith(currentInput))
+                {
+                    output.add(option.substring(currentInput.length()));
+                }
+            }
+            return output.toArray(new String[0]);
+        }
+        if (parameterNum == 2 && totalInput.contains("set"))
+        {
+            String[] options = {"day", "noon", "sunset", "night", "midnight", "sunrise"};
+            ArrayList<String> output = new ArrayList<>();
+            for (String option : options)
+            {
+                if (option.startsWith(currentInput))
+                {
+                    output.add(option.substring(currentInput.length()));
+                }
+            }
+            return output.toArray(new String[0]);
+        }
+        return new String[0];
     }
 }
