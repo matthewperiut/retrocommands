@@ -9,6 +9,10 @@ import net.minecraft.entity.Living;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.item.ItemBase;
 import net.minecraft.item.ItemInstance;
+import net.modificationstation.stationapi.api.registry.Identifier;
+import net.modificationstation.stationapi.api.registry.ItemRegistry;
+
+import java.util.Optional;
 
 
 public class Give implements Command {
@@ -39,6 +43,11 @@ public class Give implements Command {
         return -1;
     }
 
+    public static int identifierToItemId(String n) {
+        Optional<ItemBase> item = ItemRegistry.INSTANCE.getOrEmpty(Identifier.of(n));
+        return item.map(itemBase -> itemBase.id).orElse(-1);
+    }
+
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
         if (parameters.length > 1 && !parameters[1].equals("help")) {
@@ -50,7 +59,7 @@ public class Give implements Command {
             try {
                 itemNumber = Integer.parseInt(parameters[1]);
             } catch (NumberFormatException e) {
-                itemNumber = nameToItemId(parameters[1]);
+                itemNumber = identifierToItemId(parameters[1]);
             }
 
             if (itemNumber == -1) {
@@ -128,5 +137,63 @@ public class Give implements Command {
         commandSource.sendFeedback("count: number of item");
         commandSource.sendFeedback("meta: sub-item selection");
         commandSource.sendFeedback("list mobs with /mobs");
+    }
+
+
+
+    @Override
+    public String suggestion(int parameterNum, String currentInput, String totalInput)
+    {
+        if (parameterNum == 1)
+        {
+            boolean autofillingModId = !currentInput.contains(":");
+            String modId = "";
+            if (!autofillingModId)
+            {
+                modId = currentInput.split(":")[0];
+            }
+
+
+            for (Identifier id : ItemRegistry.INSTANCE.getIds())
+            {
+                if (autofillingModId)
+                {
+                    if (id.modID.toString().startsWith(currentInput))
+                    {
+                        return id.modID.toString().substring(currentInput.length()) + ":";
+                    }
+                }
+                else
+                {
+                    if (id.modID.toString().equals(modId))
+                    {
+                        String[] segments = currentInput.split(":");
+                        if (segments.length > 1)
+                        {
+                            if (id.id.startsWith(segments[1]))
+                            {
+                                return id.id.substring(segments[1].length());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (parameterNum == 2 && currentInput.length() == 0)
+        {
+            String itemId = totalInput.split(" ")[1];
+            boolean hasModId = itemId.contains(":");
+
+            if (hasModId)
+            {
+                Optional<ItemBase> id = ItemRegistry.INSTANCE.getOrEmpty(Identifier.of(itemId));
+                if (id.isPresent())
+                {
+                    return String.valueOf(id.get().getMaxStackSize());
+                }
+            }
+        }
+        return "";
     }
 }

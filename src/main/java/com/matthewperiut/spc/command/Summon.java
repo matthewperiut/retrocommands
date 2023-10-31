@@ -92,4 +92,30 @@ public class Summon implements Command {
         commandSource.sendFeedback("entity: list of entities under /mobs");
         commandSource.sendFeedback("For a specific entity do /summon {entity} for parameters");
     }
+
+    @Override
+    public String suggestion(int parameterNum, String currentInput, String totalInput)
+    {
+        if (parameterNum == 1)
+        {
+            Map<String, Class> map = Mobs.getMobSet();
+
+            String msg = "";
+            for (Map.Entry<String, Class> entry : map.entrySet()) {
+                String key = entry.getKey();
+                if (key.startsWith(currentInput)) {
+                    return key.substring(currentInput.length());
+                }
+            }
+        }
+        else if (parameterNum > 1 && parameterNum < 5)
+        {
+            if (currentInput.length() == 0)
+            {
+                return "~";
+            }
+        }
+
+        return "";
+    }
 }

@@ -16,6 +16,7 @@
   ],
   "client": [
     "AbstractClientPlayerMixin",
+    "ChatScreenMixin",
     "ClientPlayerMixin",
     "MinecraftMixinChatEnabler"
   ],

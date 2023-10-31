@@ -7,5 +7,10 @@ public interface Command {
 
     String name();
 
+    default String suggestion(int parameterNum, String currentInput, String totalInput)
+    {
+        return "";
+    }
+
     void manual(SharedCommandSource commandSource);
 }

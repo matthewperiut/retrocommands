@@ -8,10 +8,15 @@ import java.util.Map;
 
 
 public class Mobs implements Command {
+    public static Map<String, Class> getMobSet()
+    {
+        return EntityRegistry.STRING_ID_TO_CLASS;
+    }
+
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
         commandSource.sendFeedback("Mobs that can be spawned, Case-Sensitive usage!");
-        Map<String, Class> map = EntityRegistry.STRING_ID_TO_CLASS;
+        Map<String, Class> map = getMobSet();
 
         String msg = "";
         for (Map.Entry<String, Class> entry : map.entrySet()) {
