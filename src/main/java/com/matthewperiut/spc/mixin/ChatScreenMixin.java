@@ -28,7 +28,7 @@ public abstract class ChatScreenMixin extends ScreenBase {
 
     @Inject(method = "keyPressed", at = @At("HEAD"))
     private void keyPressedInit(char i, int par2, CallbackInfo ci) {
-        if ((par2 == 15 || par2 == 42) && suggestions.length > 0) {
+        if (par2 == 15 && suggestions.length > 0) {
             autocomplete = true;
         }
     }
