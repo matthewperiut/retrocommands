@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Chat.class)
+@Mixin(value = Chat.class, priority = 900)
 public abstract class ChatScreenMixin extends ScreenBase {
     @Shadow protected String getText;
 
@@ -33,7 +33,7 @@ public abstract class ChatScreenMixin extends ScreenBase {
         }
     }
 
-    @Inject(method = "keyPressed", at = @At("TAIL"))
+    @Inject(method = "keyPressed", at = @At("TAIL"), cancellable = true)
     private void processInput(char i, int par2, CallbackInfo ci) {
         resetValues();
 
@@ -49,13 +49,16 @@ public abstract class ChatScreenMixin extends ScreenBase {
         currentWord = sections[sections.length - 1];
         fetchSuggestionsForCurrentWord(sections);
 
-        if (suggestions.length > 1) {
-            adjustChosenSuggestion(par2);
-            calculateTextWidthPixelsBeforeCurrentWord(sections);
-        }
+
 
         if (getText.endsWith(" "))
             currentWord = "";
+
+        if (suggestions.length > 1) {
+            calculateTextWidthPixelsBeforeCurrentWord(sections);
+            if (adjustChosenSuggestion(par2))
+                ci.cancel();
+        }
     }
 
     private void resetValues() {
@@ -86,11 +89,13 @@ public abstract class ChatScreenMixin extends ScreenBase {
         textWidthPixels = this.textManager.getTextWidth("> " + this.getText);
     }
 
-    private void adjustChosenSuggestion(int par2) {
+    private boolean adjustChosenSuggestion(int par2) {
+        int initial = chosen;
         if (par2 == 200) { chosen++; }
         if (par2 == 208) { chosen--; }
         if (chosen < 0) { chosen = suggestions.length - 1; }
         if (chosen >= suggestions.length) { chosen = 0; }
+        return initial != chosen;
     }
 
     private void calculateTextWidthPixelsBeforeCurrentWord(String[] sections) {
