@@ -86,6 +86,10 @@ dependencies {
 	modImplementation("net.glasslauncher:HowManyItems-Fabric-Unofficial:${project.howmanyitems_version}") {
 		transitive false
 	}
+	modImplementation("com.github.matthewperiut:accessory-api:${project.accessory_version}") {
+		transitive false
+	}
+
 }
 
 processResources {

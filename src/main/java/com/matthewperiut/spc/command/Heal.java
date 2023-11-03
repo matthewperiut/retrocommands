@@ -1,7 +1,9 @@
 package com.matthewperiut.spc.command;
 
+import com.matthewperiut.accessoryapi.api.PlayerExtraHP;
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerBase;
 
 
@@ -22,7 +24,14 @@ public class Heal implements Command {
         }
 
         commandSource.sendFeedback("Healed fully!");
-        player.health = 20;
+
+        if (FabricLoader.getInstance().isModLoaded("accessoryapi")) {
+            player.health = 20 + ((PlayerExtraHP)player).getExtraHP();
+        }
+        else
+        {
+            player.health = 20;
+        }
     }
 
     @Override
