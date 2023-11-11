@@ -89,6 +89,7 @@ dependencies {
 	modImplementation("com.github.matthewperiut:accessory-api:${project.accessory_version}") {
 		transitive false
 	}
+	modImplementation files("lib/mojangfix-0.5.2+stripped.jar")
 
 }
 

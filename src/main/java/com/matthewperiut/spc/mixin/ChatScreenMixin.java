@@ -1,6 +1,7 @@
 package com.matthewperiut.spc.mixin;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.optionaldep.mojangfix.MJFChatAccess;
 import com.matthewperiut.spc.util.SPChatUtil;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
@@ -15,7 +16,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = Chat.class, priority = 900)
+import static com.matthewperiut.spc.SPC.mjf;
+
+@Mixin(value = Chat.class, priority = 1100)
 public abstract class ChatScreenMixin extends ScreenBase {
     @Shadow protected String getText;
 
@@ -26,22 +29,54 @@ public abstract class ChatScreenMixin extends ScreenBase {
     @Unique private int textWidthPixelsBeforeCurrentWord = 0;
     @Unique private String currentWord = "";
 
-    @Inject(method = "keyPressed", at = @At("HEAD"))
+    @Unique void setText(String s) {
+        if (mjf) {
+            MJFChatAccess.setText(s);
+        }
+
+        if (getText != null)
+            getText = s;
+    }
+
+    @Unique String getText() {
+        String result;
+        if (mjf) {
+            result = MJFChatAccess.getText();
+        } else {
+            result = getText;
+        }
+
+        if (result == null)
+            result = "";
+
+        return result;
+    }
+
+    @Unique void appendText(String s) {
+        setText(getText + s);
+    }
+
+    @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void keyPressedInit(char i, int par2, CallbackInfo ci) {
         if (par2 == 15 && suggestions.length > 0) {
             autocomplete = true;
         }
+
+        if (suggestions.length > 1) {
+            if (adjustChosenSuggestion(par2))
+                ci.cancel();
+        }
     }
 
-    @Inject(method = "keyPressed", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "keyPressed", at = @At("TAIL"))
     private void processInput(char i, int par2, CallbackInfo ci) {
         resetValues();
 
-        if (getText.isEmpty()) {
+        if (getText().isEmpty()) {
             return;
         }
 
-        String[] sections = getText.split(" ");
+        String[] sections = getText().split(" ");
         if (sections.length == 0) {
             return;
         }
@@ -49,15 +84,11 @@ public abstract class ChatScreenMixin extends ScreenBase {
         currentWord = sections[sections.length - 1];
         fetchSuggestionsForCurrentWord(sections);
 
-
-
-        if (getText.endsWith(" "))
+        if (getText().endsWith(" "))
             currentWord = "";
 
         if (suggestions.length > 1) {
             calculateTextWidthPixelsBeforeCurrentWord(sections);
-            if (adjustChosenSuggestion(par2))
-                ci.cancel();
         }
     }
 
@@ -69,11 +100,11 @@ public abstract class ChatScreenMixin extends ScreenBase {
     private void fetchSuggestionsForCurrentWord(String[] sections) {
         Minecraft mc = ((Minecraft) FabricLoader.getInstance().getGameInstance());
 
-        if (sections.length == 1 && currentWord.length() > 1 && currentWord.charAt(0) == '/' && !getText.endsWith(" ")) {
+        if (sections.length == 1 && currentWord.length() > 1 && currentWord.charAt(0) == '/' && !getText().endsWith(" ")) {
             suggestions = SPChatUtil.commands.stream()
                     .filter(c -> c.name().startsWith(currentWord.substring(1)))
                     .filter(c -> (!c.isOnlyServer() || mc.level.isServerSide))
-                    .map(c -> c.name().substring(getText.length() - 1))
+                    .map(c -> c.name().substring(getText().length() - 1))
                     .toArray(String[]::new);
         } else {
             Command command = SPChatUtil.commands.stream()
@@ -82,11 +113,11 @@ public abstract class ChatScreenMixin extends ScreenBase {
             if (command != null && (!command.isOnlyServer() || mc.level.isServerSide)) {
                 PlayerBase player = mc.player;
                 SharedCommandSource source = new SharedCommandSource(player);
-                suggestions = getText.endsWith(" ") ? command.suggestion(source, sections.length, "", getText) : command.suggestion(source, sections.length - 1, currentWord, getText);
+                suggestions = getText().endsWith(" ") ? command.suggestion(source, sections.length, "", getText()) : command.suggestion(source, sections.length - 1, currentWord, getText());
             }
         }
 
-        textWidthPixels = this.textManager.getTextWidth("> " + this.getText);
+        textWidthPixels = this.textManager.getTextWidth("> " + this.getText());
     }
 
     private boolean adjustChosenSuggestion(int par2) {
@@ -129,7 +160,7 @@ public abstract class ChatScreenMixin extends ScreenBase {
     private void renderChosenSuggestion() {
         this.drawTextWithShadow(this.textManager, suggestions[chosen], 4 + textWidthPixels, this.height - 12, 8362928);
         if (autocomplete) {
-            this.getText += suggestions[chosen];
+            appendText(suggestions[chosen]);
             autocomplete = false;
             suggestions = new String[0];
         }
@@ -137,7 +168,7 @@ public abstract class ChatScreenMixin extends ScreenBase {
 
     private void renderMultipleSuggestions() {
         int textWidthCurrentWord = textManager.getTextWidth(currentWord);
-        textWidthPixelsBeforeCurrentWord = textManager.getTextWidth("> " + getText) - textWidthCurrentWord;
+        textWidthPixelsBeforeCurrentWord = textManager.getTextWidth("> " + getText()) - textWidthCurrentWord;
         fill(textWidthPixelsBeforeCurrentWord + 4,
                 this.height - 14 - (10 * suggestions.length),
                 textWidthPixelsBeforeCurrentWord + textWidthCurrentWord + getMaxSuggestionWidth() + 4,
