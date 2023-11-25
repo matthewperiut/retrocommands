@@ -3,7 +3,7 @@ package com.matthewperiut.spc.optionaldep.stapi;
 import com.matthewperiut.spc.dimension.BareTravelAgent;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.modificationstation.stationapi.api.registry.DimensionRegistry;
-import net.modificationstation.stationapi.api.registry.Identifier;
+import net.modificationstation.stationapi.api.util.Identifier;
 import net.modificationstation.stationapi.api.world.dimension.DimensionHelper;
 
 

@@ -10,8 +10,8 @@ import net.minecraft.entity.Living;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.item.ItemBase;
 import net.minecraft.item.ItemInstance;
-import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.registry.ItemRegistry;
+import net.modificationstation.stationapi.api.util.Identifier;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -81,7 +81,7 @@ public class Give implements Command {
 
 
             if (parameters.length > 2) {
-                int requestedCount = 0;
+                int requestedCount;
                 try {
                     requestedCount = Integer.parseInt(parameters[2]);
                 } catch (NumberFormatException e) {
@@ -157,7 +157,7 @@ public class Give implements Command {
             return processSuggestItemIdentifier(currentInput);
         }
 
-        if (parameterNum == 2 && currentInput.length() == 0)
+        if (parameterNum == 2 && currentInput.isEmpty())
         {
             String itemId = totalInput.split(" ")[1];
             boolean hasModId = itemId.contains(":");
@@ -188,21 +188,21 @@ public class Give implements Command {
         {
             if (autofillingModId)
             {
-                if (id.modID.toString().startsWith(currentInput))
+                if (id.namespace.toString().startsWith(currentInput))
                 {
-                    outputs.add(id.modID.toString().substring(currentInput.length()) + ":");
+                    outputs.add(id.namespace.toString().substring(currentInput.length()) + ":");
                 }
             }
             else
             {
-                if (id.modID.toString().equals(modId))
+                if (id.namespace.toString().equals(modId))
                 {
                     String[] segments = currentInput.split(":");
                     if (segments.length > 1)
                     {
-                        if (id.id.startsWith(segments[1]))
+                        if (id.path.startsWith(segments[1]))
                         {
-                            outputs.add(id.id.substring(segments[1].length()));
+                            outputs.add(id.path.substring(segments[1].length()));
                         }
                     }
                 }

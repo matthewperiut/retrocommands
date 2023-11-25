@@ -2,10 +2,10 @@ package com.matthewperiut.spc.optionaldep.stapi.item;
 
 import com.matthewperiut.spc.api.ItemInstanceStr;
 import net.minecraft.item.ItemInstance;
-import net.modificationstation.stationapi.api.client.gui.CustomTooltipProvider;
-import net.modificationstation.stationapi.api.template.item.TemplateBlock;
+import net.modificationstation.stationapi.api.client.item.CustomTooltipProvider;
+import net.modificationstation.stationapi.api.template.item.TemplateBlockItem;
 
-public class MobSpawnerBlockItem extends TemplateBlock implements CustomTooltipProvider {
+public class MobSpawnerBlockItem extends TemplateBlockItem implements CustomTooltipProvider {
     public MobSpawnerBlockItem(int i) {
         super(i);
     }
@@ -23,16 +23,16 @@ public class MobSpawnerBlockItem extends TemplateBlock implements CustomTooltipP
                 if (og[0].startsWith("_")) {
                     og[0] = og[0].substring(1);
                 }
-                String construct = "";
+                StringBuilder construct = new StringBuilder();
                 for (int i = 0; i < og[0].length(); i++) {
                     char c = og[0].charAt(i);
                     if (Character.isUpperCase(c)) {
                         if (i > 0)
-                            construct += " ";
+                            construct.append(" ");
                     }
-                    construct += c;
+                    construct.append(c);
                 }
-                og[0] = construct;
+                og[0] = construct.toString();
 
                 og[0] = og[0].substring(0, 1).toUpperCase() + og[0].substring(1);
             } else
