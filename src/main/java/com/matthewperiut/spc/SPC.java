@@ -11,6 +11,6 @@ public class SPC implements ModInitializer {
     public void onInitialize() {
         SPChatUtil.addDefaultCommands();
         VanillaMobs.setupSummons();
-        mjf = FabricLoader.getInstance().isModLoaded("mojangfix");
+        mjf = FabricLoader.getInstance().isModLoaded("mojangfixstationapi");
     }
 }

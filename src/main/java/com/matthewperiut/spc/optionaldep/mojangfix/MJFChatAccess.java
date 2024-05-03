@@ -1,6 +1,6 @@
 package com.matthewperiut.spc.optionaldep.mojangfix;
 
-import pl.js6pak.mojangfix.client.text.chat.ChatScreenVariables;
+import pl.telvarost.mojangfixstationapi.client.text.chat.ChatScreenVariables;
 
 import static com.matthewperiut.spc.SPC.mjf;
 
