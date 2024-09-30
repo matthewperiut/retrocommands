@@ -19,4 +19,8 @@ public class WhoAmI implements Command {
         commandSource.sendFeedback("Usage: /whoami");
         commandSource.sendFeedback("Tells you your name");
     }
+
+    public boolean needsPermissions() {
+        return false;
+    }
 }

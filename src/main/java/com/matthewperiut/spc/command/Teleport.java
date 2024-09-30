@@ -73,6 +73,10 @@ public class Teleport implements Command {
 
     @Override
     public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput) {
+        if (parameterNum == 1) {
+
+        }
+
         if (parameterNum > 0 && parameterNum < 4 && currentInput.isEmpty())
         {
             return new String[]{"~"};

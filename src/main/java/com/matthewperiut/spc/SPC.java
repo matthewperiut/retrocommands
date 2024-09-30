@@ -7,6 +7,8 @@ import net.fabricmc.loader.api.FabricLoader;
 
 public class SPC implements ModInitializer {
     public static boolean mjf = false;
+    public static boolean mp_spc = false;
+    public static boolean mp_op = false;
     @Override
     public void onInitialize() {
         SPChatUtil.addDefaultCommands();

@@ -26,4 +26,9 @@ public class Clear implements Command {
         commandSource.sendFeedback("Usage: /clear");
         commandSource.sendFeedback("Info: Clears chat history");
     }
+
+    @Override
+    public boolean needsPermissions() {
+        return false;
+    }
 }

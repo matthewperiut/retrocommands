@@ -60,7 +60,7 @@ public class Save implements Command {
     }
 
     @Override
-    public boolean isOnlyServer() {
+    public boolean disableInSingleplayer() {
         return true;
     }
 }

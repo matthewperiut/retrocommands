@@ -4,6 +4,8 @@ import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
 
+import static com.matthewperiut.spc.util.ParameterSuggestUtil.suggestItemIdentifier;
+
 
 public class Id implements Command {
     @Override
@@ -34,12 +36,14 @@ public class Id implements Command {
 
     @Override
     public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput) {
-        if (!FabricLoader.getInstance().isModLoaded("station-registry-api-v0"))
-            return new String[0];
         if (parameterNum == 1)
         {
-            return Give.processSuggestItemIdentifier(currentInput);
+            return suggestItemIdentifier(currentInput);
         }
         return new String[0];
+    }
+
+    public boolean needsPermissions() {
+        return false;
     }
 }

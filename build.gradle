@@ -73,9 +73,11 @@ dependencies {
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
 	implementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.2'
 
+	implementation("io.github.llamalad7:mixinextras-fabric:${mixinextras_version}")
+
 	modImplementation "net.modificationstation:StationAPI:${project.stapi_version}"
 
-	modImplementation "com.github.paulevsGitch:BHCreative:${project.bhcreative_version}"
+	modImplementation("maven.modrinth:bh-creative:${project.bhcreative_version}") { transitive false }
 
 	// Optional, but convenient mods for mod creators and users alike.
 	/*implementation "blue.endless:jankson:1.2.1"

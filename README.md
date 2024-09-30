@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    modImplementation('com.github.matthewperiut:spc-babric:0.1.2') {
+    modImplementation('com.github.matthewperiut:spc-babric:0.5.0') {
         transitive false
     }
 }

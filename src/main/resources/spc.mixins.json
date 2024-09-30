@@ -13,13 +13,16 @@
   "server": [
     "CommandManagerMixin",
     "ServerGuiMixin",
-    "access.ServerPlayerPacketHandlerAccessor"
+    "ServerPlayerPacketHandlerMixin",
+    "access.ServerPlayerPacketHandlerAccessor",
+    "communicate.ServerPlayPacketHandlerMixin"
   ],
   "client": [
     "AbstractClientPlayerMixin",
     "ChatScreenMixin",
     "ClientPlayerMixin",
-    "MinecraftMixinChatEnabler"
+    "MinecraftMixinChatEnabler",
+    "communicate.ClientPlayNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

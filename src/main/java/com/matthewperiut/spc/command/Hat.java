@@ -33,4 +33,9 @@ public class Hat implements Command {
         commandSource.sendFeedback("Usage: /hat");
         commandSource.sendFeedback("Info: Puts the item in your hand on your head");
     }
+
+    @Override
+    public boolean needsPermissions() {
+        return false;
+    }
 }

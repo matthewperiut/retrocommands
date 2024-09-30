@@ -14,8 +14,13 @@ public interface Command {
 
     void manual(SharedCommandSource commandSource);
 
-    default boolean isOnlyServer()
+    default boolean disableInSingleplayer()
     {
         return false;
+    }
+
+    default boolean
+    needsPermissions() {
+        return true;
     }
 }

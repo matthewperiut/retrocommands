@@ -1,5 +1,6 @@
 package com.matthewperiut.spc.mixin;
 
+import com.matthewperiut.spc.SPC;
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.optionaldep.mojangfix.MJFChatAccess;
 import com.matthewperiut.spc.util.SPChatUtil;
@@ -8,20 +9,29 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ScreenBase;
 import net.minecraft.client.gui.screen.ingame.Chat;
+import net.minecraft.client.render.TextRenderer;
 import net.minecraft.entity.player.PlayerBase;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static com.matthewperiut.spc.SPC.mjf;
+import static com.matthewperiut.spc.SPC.mp_op;
 
 @Mixin(value = Chat.class, priority = 1100)
 public abstract class ChatScreenMixin extends ScreenBase {
     @Shadow protected String getText;
 
+    @Shadow private int ticksRan;
     @Unique private boolean autocomplete = false;
     @Unique private String[] suggestions = new String[0];
     @Unique private int chosen = 0;
@@ -97,20 +107,38 @@ public abstract class ChatScreenMixin extends ScreenBase {
         suggestions = new String[0];
     }
 
+    private static final List<String> list = Collections.unmodifiableList(
+            new ArrayList<String>() {{
+                add("me");
+                add("kill");
+                add("tell");
+            }});
+
     private void fetchSuggestionsForCurrentWord(String[] sections) {
         Minecraft mc = ((Minecraft) FabricLoader.getInstance().getGameInstance());
 
         if (sections.length == 1 && currentWord.length() > 1 && currentWord.charAt(0) == '/' && !getText().endsWith(" ")) {
-            suggestions = SPChatUtil.commands.stream()
-                    .filter(c -> c.name().startsWith(currentWord.substring(1)))
-                    .filter(c -> (!c.isOnlyServer() || mc.level.isServerSide))
-                    .map(c -> c.name().substring(getText().length() - 1))
-                    .toArray(String[]::new);
+
+            if (mc.level.isServerSide && !SPC.mp_spc) {
+                suggestions = list.stream()
+                        .filter(s -> s.startsWith(currentWord.substring(1)))
+                        .map(s -> s.substring(getText().length() - 1))
+                        .toArray(String[]::new);
+            } else {
+                suggestions = SPChatUtil.commands.stream()
+                        .filter(c -> c.name().startsWith(currentWord.substring(1)))
+                        .filter(c -> (!c.disableInSingleplayer() || mc.level.isServerSide))
+                        .filter(c -> (SPC.mp_op || !c.needsPermissions() || !mc.level.isServerSide))
+                        .map(c -> c.name().substring(getText().length() - 1))
+                        .toArray(String[]::new);
+            }
         } else {
             Command command = SPChatUtil.commands.stream()
                     .filter(c -> c.name().equals(sections[0].substring(1)))
+                    .filter(c -> (!c.disableInSingleplayer() || mc.level.isServerSide))
+                    .filter(c -> (SPC.mp_op || !c.needsPermissions() || !mc.level.isServerSide))
                     .findFirst().orElse(null);
-            if (command != null && (!command.isOnlyServer() || mc.level.isServerSide)) {
+            if (command != null && (!command.disableInSingleplayer() || mc.level.isServerSide)) {
                 PlayerBase player = mc.player;
                 SharedCommandSource source = new SharedCommandSource(player);
                 suggestions = getText().endsWith(" ") ? command.suggestion(source, sections.length, "", getText()) : command.suggestion(source, sections.length - 1, currentWord, getText());
@@ -135,8 +163,64 @@ public abstract class ChatScreenMixin extends ScreenBase {
         }
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/Chat;drawTextWithShadow(Lnet/minecraft/client/render/TextRenderer;Ljava/lang/String;III)V"))
-    public void renderSuggestions(int j, int f, float par3, CallbackInfo ci) {
+    @Unique boolean tryMatch(String s) {
+
+        try {
+            AtomicBoolean valid = new AtomicBoolean(false);
+            SPChatUtil.commands.stream().forEach(a -> {
+                if (a.name().equals(s)) {
+                    if (!minecraft.level.isServerSide) {
+                        valid.set(true);
+                    } else {
+                        if (mp_op) {
+                            valid.set(true);
+                        } else {
+                            if (!a.needsPermissions()) {
+                                valid.set(true);
+                            }
+                        }
+                    }
+                }
+            });
+            if (valid.get()) {
+                 return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+
+    @Inject(method = "render", at = @At(value = "HEAD"), cancellable = true)
+    public void replace(int i, int j, float f, CallbackInfo ci) {
+        this.fill(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
+        renderSuggestions(i,j,f);
+        String alreadyRendered = "";
+        drawTextWithShadow(this.textManager, "> ", 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 14737632);
+        alreadyRendered += "> ";
+        if (getText().startsWith("/") && !getText().contains(" ") && !tryMatch(getText().substring(1))) {
+            drawTextWithShadow(this.textManager,  "/", 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 14737632);
+            alreadyRendered += "/";
+            drawTextWithShadow(this.textManager,  this.getText().substring(1), 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 0xFC5454);
+            alreadyRendered += this.getText().substring(1);
+        } else if (getText().startsWith("/")){
+            if (!tryMatch(getText().split(" ")[0].substring(1))) {
+                drawTextWithShadow(this.textManager,  this.getText(), 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 0xFC5454);
+            } else {
+                drawTextWithShadow(this.textManager,  this.getText(), 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 14737632);
+            }
+            alreadyRendered += this.getText();
+        } else {
+            drawTextWithShadow(this.textManager,  this.getText(), 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 14737632);
+            alreadyRendered += this.getText();
+        }
+        drawTextWithShadow(this.textManager,  (ticksRan / 6 % 2 == 0 ? "_" : ""), 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 14737632);
+        alreadyRendered += (ticksRan / 6 % 2 == 0 ? "_" : "");
+        super.render(i, j, f);
+        ci.cancel();
+    }
+
+    public void renderSuggestions(int j, int f, float par3) {
         try {
             if (suggestions.length > 0) {
                 ensureChosenIsInRange();
@@ -158,7 +242,7 @@ public abstract class ChatScreenMixin extends ScreenBase {
     }
 
     private void renderChosenSuggestion() {
-        this.drawTextWithShadow(this.textManager, suggestions[chosen], 4 + textWidthPixels, this.height - 12, 8362928);
+        this.drawTextWithShadow(this.textManager, suggestions[chosen], 4 + textWidthPixels, this.height - 12, 0xAAAAAA);
         if (autocomplete) {
             appendText(suggestions[chosen]);
             autocomplete = false;
@@ -176,7 +260,7 @@ public abstract class ChatScreenMixin extends ScreenBase {
                 0xFF000000);
 
         for (int i = 0; i < suggestions.length; i++) {
-            this.drawTextWithShadow(this.textManager, currentWord + suggestions[i], textWidthPixelsBeforeCurrentWord + 4, this.height - 12 - (10 * (i + 1)), i == chosen ? 15454772 : 14737632);
+            this.drawTextWithShadow(this.textManager, currentWord + suggestions[i], textWidthPixelsBeforeCurrentWord + 4, this.height - 12 - (10 * (i + 1)), i == chosen ? 0xfcfc00 : 0xFFFFFF);
         }
     }
 

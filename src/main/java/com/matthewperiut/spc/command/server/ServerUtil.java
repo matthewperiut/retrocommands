@@ -1,6 +1,8 @@
 package com.matthewperiut.spc.command.server;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.packet.play.EntityVelocity0x1CS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerPlayerConnectionManager;
 
@@ -30,5 +32,9 @@ public class ServerUtil {
         }
 
         return joinedString.toString();
+    }
+
+    public static boolean isOp(String name) {
+        return getServer().serverPlayerConnectionManager.isOp(name);
     }
 }

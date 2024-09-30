@@ -1,5 +1,6 @@
 package com.matthewperiut.spc.mixin;
 
+import com.matthewperiut.spc.command.server.ServerUtil;
 import com.matthewperiut.spc.util.SPChatUtil;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.server.command.Command;
@@ -15,7 +16,7 @@ public class CommandManagerMixin {
     private void processSPCommands(Command par1, CallbackInfo ci) {
         String command = par1.commandString;
 
-        SPChatUtil.handleCommand(new SharedCommandSource(par1.source), command);
+        SPChatUtil.handleCommand(new SharedCommandSource(par1.source), command, true);
 
         ci.cancel();
     }

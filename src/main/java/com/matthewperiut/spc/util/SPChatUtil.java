@@ -15,6 +15,7 @@ public class SPChatUtil {
 
     public static void addDefaultCommands() {
         commands.add(new Help());
+        commands.add(new Mods());
 
         commands.add(new Kick());
         commands.add(new Ban());
@@ -48,12 +49,12 @@ public class SPChatUtil {
         commands.add(new WhoAmI());
 
         for (Command c : commands) {
-            if (!c.isOnlyServer() || FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
-                Help.addHelpTip("/" + c.name());
+            if (!c.disableInSingleplayer() || FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
+                Help.addHelpTip("/" + c.name(), c.needsPermissions());
         }
     }
 
-    public static void handleCommand(SharedCommandSource commandSource, String command) {
+    public static boolean handleCommand(SharedCommandSource commandSource, String command, boolean operator) {
         String[] segments = command.split(" ");
         boolean help = segments[0].equals("help") && segments.length > 1;
         boolean page = help && isDigit(segments[1].charAt(0));
@@ -61,24 +62,29 @@ public class SPChatUtil {
         String wanted = help ? segments[1] : segments[0];
 
         for (Command c : commands) {
-
             if (c.name() == null)
                 continue;
 
+            if (!operator && c.needsPermissions()) {
+                continue;
+            }
+
             if (c.name().equals(wanted)) {
-                if (c.isOnlyServer() && FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
+                if (c.disableInSingleplayer() && FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
                     continue;
 
                 if (help) {
                     c.manual(commandSource);
+                    return true;
                 } else {
                     try {
                         c.command(commandSource, segments);
+                        return true;
                     } catch (Exception e) {
                         commandSource.sendFeedback("Error: " + e.getMessage());
+                        return false;
                     }
                 }
-                return;
             }
         }
 
@@ -87,13 +93,15 @@ public class SPChatUtil {
                 if (c.name().equals("help")) {
                     try {
                         c.command(commandSource, segments);
+                        return true;
                     } catch (Exception e) {
                         commandSource.sendFeedback("Error: " + e.getMessage());
+                        return false;
                     }
-                    return;
                 }
             }
 
         commandSource.sendFeedback("Command '" + segments[0] + "' not found. Try /help");
+        return false;
     }
 }

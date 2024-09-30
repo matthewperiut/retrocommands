@@ -13,8 +13,9 @@ import net.minecraft.item.ItemInstance;
 import net.modificationstation.stationapi.api.registry.ItemRegistry;
 import net.modificationstation.stationapi.api.util.Identifier;
 
-import java.util.HashSet;
 import java.util.Optional;
+
+import static com.matthewperiut.spc.util.ParameterSuggestUtil.suggestItemIdentifier;
 
 
 public class Give implements Command {
@@ -144,8 +145,6 @@ public class Give implements Command {
         commandSource.sendFeedback("list mobs with /mobs");
     }
 
-
-
     @Override
     public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput)
     {
@@ -154,7 +153,7 @@ public class Give implements Command {
 
         if (parameterNum == 1)
         {
-            return processSuggestItemIdentifier(currentInput);
+            return suggestItemIdentifier(currentInput);
         }
 
         if (parameterNum == 2 && currentInput.isEmpty())
@@ -172,42 +171,5 @@ public class Give implements Command {
             }
         }
         return new String[0];
-    }
-
-    public static String[] processSuggestItemIdentifier(String currentInput)
-    {
-        boolean autofillingModId = !currentInput.contains(":");
-        String modId = "";
-        if (!autofillingModId)
-        {
-            modId = currentInput.split(":")[0];
-        }
-
-        HashSet<String> outputs = new HashSet<>();
-        for (Identifier id : ItemRegistry.INSTANCE.getIds())
-        {
-            if (autofillingModId)
-            {
-                if (id.namespace.toString().startsWith(currentInput))
-                {
-                    outputs.add(id.namespace.toString().substring(currentInput.length()) + ":");
-                }
-            }
-            else
-            {
-                if (id.namespace.toString().equals(modId))
-                {
-                    String[] segments = currentInput.split(":");
-                    if (segments.length > 1)
-                    {
-                        if (id.path.startsWith(segments[1]))
-                        {
-                            outputs.add(id.path.substring(segments[1].length()));
-                        }
-                    }
-                }
-            }
-        }
-        return outputs.toArray(new String[0]);
     }
 }

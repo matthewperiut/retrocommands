@@ -39,4 +39,8 @@ public class Mobs implements Command {
         commandSource.sendFeedback("Usage: /mobs");
         commandSource.sendFeedback("Info: gives the list of mobs");
     }
+
+    public boolean needsPermissions() {
+        return false;
+    }
 }

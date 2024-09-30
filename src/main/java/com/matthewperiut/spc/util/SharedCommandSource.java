@@ -19,7 +19,7 @@ public class SharedCommandSource {
     public void sendFeedback(String feedback) {
         EnvType side = FabricLoader.getInstance().getEnvironmentType();
         switch (side) {
-            case CLIENT -> sendClientFeedback(feedback);
+            case CLIENT -> sendClientFeedback("§7" + feedback);
             case SERVER -> sendServerFeedback(feedback);
             default -> throw new IllegalArgumentException("Unknown side " + side + "!");
         }

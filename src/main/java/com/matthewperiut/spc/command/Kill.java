@@ -1,6 +1,7 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
+import com.matthewperiut.spc.util.ParameterSuggestUtil;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.minecraft.entity.player.PlayerBase;
 
@@ -26,6 +27,16 @@ public class Kill implements Command {
     @Override
     public void manual(SharedCommandSource commandSource) {
         commandSource.sendFeedback("Usage: /kill");
-        commandSource.sendFeedback("Info: Kills the current player");
+        commandSource.sendFeedback("Info: Kills the player");
+    }
+
+    @Override
+    public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput) {
+        return new String[0];
+    }
+
+    @Override
+    public boolean needsPermissions() {
+        return false;
     }
 }
