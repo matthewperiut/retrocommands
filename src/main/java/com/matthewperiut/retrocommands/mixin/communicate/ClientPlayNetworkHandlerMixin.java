@@ -1,6 +1,6 @@
 package com.matthewperiut.retrocommands.mixin.communicate;
 
-import com.matthewperiut.retrocommands.SPC;
+import com.matthewperiut.retrocommands.RetroCommands;
 import net.minecraft.client.network.ClientNetworkHandler;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.login.LoginHelloPacket;
@@ -20,16 +20,16 @@ public abstract class ClientPlayNetworkHandlerMixin {
         String[] contents = new String[]{"", "", "", ""};
         contents[0] = "op?";
         sendPacket(new UpdateSignPacket(0,-1,0, contents));
-        SPC.mp_spc = false;
-        SPC.mp_op = false;
+        RetroCommands.mp_spc = false;
+        RetroCommands.mp_op = false;
     }
 
     @Inject(method = "handleUpdateSign", at = @At("HEAD"))
     void customPacket(UpdateSignPacket par1, CallbackInfo ci) {
         if (par1.x == 0 && par1.y == -1 && par1.z == 0) {
             if (par1.size() > 0) {
-                SPC.mp_spc = true;
-                SPC.mp_op = par1.text[0].startsWith("1");
+                RetroCommands.mp_spc = true;
+                RetroCommands.mp_op = par1.text[0].startsWith("1");
             }
         }
     }

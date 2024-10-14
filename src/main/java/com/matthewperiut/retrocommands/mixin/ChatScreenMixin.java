@@ -1,9 +1,9 @@
 package com.matthewperiut.retrocommands.mixin;
 
-import com.matthewperiut.retrocommands.SPC;
+import com.matthewperiut.retrocommands.RetroCommands;
 import com.matthewperiut.retrocommands.api.Command;
 import com.matthewperiut.retrocommands.optionaldep.mojangfix.MJFChatAccess;
-import com.matthewperiut.retrocommands.util.SPChatUtil;
+import com.matthewperiut.retrocommands.util.RetroChatUtil;
 import com.matthewperiut.retrocommands.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.matthewperiut.retrocommands.SPC.mjf;
-import static com.matthewperiut.retrocommands.SPC.mp_op;
+import static com.matthewperiut.retrocommands.RetroCommands.mjf;
+import static com.matthewperiut.retrocommands.RetroCommands.mp_op;
 
 @Mixin(value = ChatScreen.class, priority = 1100)
 public abstract class ChatScreenMixin extends Screen {
@@ -117,24 +117,24 @@ public abstract class ChatScreenMixin extends Screen {
 
         if (sections.length == 1 && currentWord.length() > 1 && currentWord.charAt(0) == '/' && !getText().endsWith(" ")) {
 
-            if (mc.world.isRemote && !SPC.mp_spc) {
+            if (mc.world.isRemote && !RetroCommands.mp_spc) {
                 suggestions = list.stream()
                         .filter(s -> s.startsWith(currentWord.substring(1)))
                         .map(s -> s.substring(getText().length() - 1))
                         .toArray(String[]::new);
             } else {
-                suggestions = SPChatUtil.commands.stream()
+                suggestions = RetroChatUtil.commands.stream()
                         .filter(c -> c.name().startsWith(currentWord.substring(1)))
                         .filter(c -> (!c.disableInSingleplayer() || mc.world.isRemote))
-                        .filter(c -> (SPC.mp_op || !c.needsPermissions() || !mc.world.isRemote))
+                        .filter(c -> (RetroCommands.mp_op || !c.needsPermissions() || !mc.world.isRemote))
                         .map(c -> c.name().substring(getText().length() - 1))
                         .toArray(String[]::new);
             }
         } else {
-            Command command = SPChatUtil.commands.stream()
+            Command command = RetroChatUtil.commands.stream()
                     .filter(c -> c.name().equals(sections[0].substring(1)))
                     .filter(c -> (!c.disableInSingleplayer() || mc.world.isRemote))
-                    .filter(c -> (SPC.mp_op || !c.needsPermissions() || !mc.world.isRemote))
+                    .filter(c -> (RetroCommands.mp_op || !c.needsPermissions() || !mc.world.isRemote))
                     .findFirst().orElse(null);
             if (command != null && (!command.disableInSingleplayer() || mc.world.isRemote)) {
                 PlayerEntity player = mc.player;
@@ -165,7 +165,7 @@ public abstract class ChatScreenMixin extends Screen {
 
         try {
             AtomicBoolean valid = new AtomicBoolean(false);
-            SPChatUtil.commands.stream().forEach(a -> {
+            RetroChatUtil.commands.stream().forEach(a -> {
                 if (a.name().equals(s)) {
                     if (!minecraft.world.isRemote) {
                         valid.set(true);

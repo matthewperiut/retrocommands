@@ -1,6 +1,6 @@
 package com.matthewperiut.retrocommands.mixin;
 
-import com.matthewperiut.retrocommands.util.SPChatUtil;
+import com.matthewperiut.retrocommands.util.RetroChatUtil;
 import com.matthewperiut.retrocommands.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
@@ -24,7 +24,7 @@ public class AbstractClientPlayerMixin {
             PlayerEntity player = ((PlayerEntity) (Object) this);
             if (par1.charAt(0) == '/') {
                 // handle commands
-                SPChatUtil.handleCommand(new SharedCommandSource(player), par1.substring(1), true);
+                RetroChatUtil.handleCommand(new SharedCommandSource(player), par1.substring(1), true);
             } else {
                 ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage("<" + player.name + "> " + par1);
             }

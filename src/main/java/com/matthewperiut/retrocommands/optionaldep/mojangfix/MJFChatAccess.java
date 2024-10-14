@@ -2,7 +2,7 @@ package com.matthewperiut.retrocommands.optionaldep.mojangfix;
 
 import pl.telvarost.mojangfixstationapi.client.text.chat.ChatScreenVariables;
 
-import static com.matthewperiut.retrocommands.SPC.mjf;
+import static com.matthewperiut.retrocommands.RetroCommands.mjf;
 
 public class MJFChatAccess {
     public static String getText() {

@@ -1,7 +1,7 @@
 package com.matthewperiut.retrocommands.mixin;
 
 import com.matthewperiut.retrocommands.command.server.ServerUtil;
-import com.matthewperiut.retrocommands.util.SPChatUtil;
+import com.matthewperiut.retrocommands.util.RetroChatUtil;
 import com.matthewperiut.retrocommands.util.SharedCommandSource;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.packet.Packet;
@@ -21,7 +21,7 @@ public abstract class ServerPlayerPacketHandlerMixin {
     @Inject(method = "handleCommand", at = @At(value = "HEAD"), cancellable = true)
     private void parseRegularCommand(String string, CallbackInfo ci) {
         if (!ServerUtil.getConnectionManager().isOperator(player.name))
-            if (SPChatUtil.handleCommand(new SharedCommandSource(this), string.substring(1), false))
+            if (RetroChatUtil.handleCommand(new SharedCommandSource(this), string.substring(1), false))
                 ci.cancel();
     }
 }

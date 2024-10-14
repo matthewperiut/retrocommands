@@ -1,6 +1,6 @@
 package com.matthewperiut.retrocommands.mixin;
 
-import com.matthewperiut.retrocommands.util.SPChatUtil;
+import com.matthewperiut.retrocommands.util.RetroChatUtil;
 import com.matthewperiut.retrocommands.util.SharedCommandSource;
 import net.minecraft.server.command.Command;
 import net.minecraft.server.command.ServerCommandHandler;
@@ -15,7 +15,7 @@ public class CommandManagerMixin {
     private void processSPCommands(Command par1, CallbackInfo ci) {
         String command = par1.commandAndArgs;
 
-        SPChatUtil.handleCommand(new SharedCommandSource(par1.output), command, true);
+        RetroChatUtil.handleCommand(new SharedCommandSource(par1.output), command, true);
 
         ci.cancel();
     }

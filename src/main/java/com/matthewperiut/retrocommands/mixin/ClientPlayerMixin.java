@@ -1,6 +1,6 @@
 package com.matthewperiut.retrocommands.mixin;
 
-import com.matthewperiut.retrocommands.SPC;
+import com.matthewperiut.retrocommands.RetroCommands;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.MultiplayerClientPlayerEntity;
@@ -18,8 +18,8 @@ public class ClientPlayerMixin {
             ci.cancel();
         }
         if (par1.startsWith("/perm")) {
-            ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage("mp_op: " + SPC.mp_op);
-            ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage("mp_spc: " + SPC.mp_op);
+            ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage("mp_op: " + RetroCommands.mp_op);
+            ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage("mp_spc: " + RetroCommands.mp_op);
             ci.cancel();
         }
     }

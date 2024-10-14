@@ -11,7 +11,7 @@
 + Use `/help` in-game
 
 ## API
-Note: Please make SPC optional!!
+Note: Please make Retro Commands optional!!
 
 build.gradle
 ```gradle
@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    modImplementation('com.github.matthewperiut:retro-commands:0.5.1') {
+    modImplementation('com.github.matthewperiut:retrocommands:0.5.2') {
         transitive false
     }
 }

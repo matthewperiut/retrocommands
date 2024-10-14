@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import static java.lang.Character.isDigit;
 
-public class SPChatUtil {
+public class RetroChatUtil {
     public static ArrayList<Command> commands = new ArrayList<>();
 
     public static void addDefaultCommands() {
