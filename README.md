@@ -32,7 +32,7 @@ dependencies {
 fabric.mod.json
 ```json
   "suggests": {
-    "spc": "*"
+    "retrocommands": "*"
   },
 ```
 
@@ -40,22 +40,22 @@ in your mods initialization
 ```java
 public static void init_of_some_sort()
 {
-    if (FabricLoader.getInstance().isModLoaded("spc")){
+    if (FabricLoader.getInstance().isModLoaded("retrocommands")){
         MyModsCommands.add();
     }
 }
 ```
 
-implement `com.matthewperiut.api.Command`  
+implement `com.matthewperiut.retrocommands.api.Command`  
 
-register with `com.matthewperiut.api.CommandRegistry`  
+register with `com.matthewperiut.retrocommands.api.CommandRegistry`  
 `CommandRegistry.add(new Command())`  
 
 new Command() replaced with your custom command.  
 
 ### Add your own summon command for your entities
 
-Use `com.matthewperiut.api.SummonRegistry`  
+Use `com.matthewperiut.retrocommands.api.SummonRegistry`  
 SummonRegistry.add(...)  
 
 
