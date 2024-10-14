@@ -1,9 +1,9 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.matthewperiut.spc.mixin",
+  "package": "com.matthewperiut.retrocommands.mixin",
   "compatibilityLevel": "JAVA_8",
-  "plugin": "com.matthewperiut.spc.mixin.SPCMixinPlugin",
+  "plugin": "com.matthewperiut.retrocommands.mixin.SPCMixinPlugin",
   "mixins": [
     "BlockBaseMixin",
     "MixinItemInstance",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "spc",
+  "id": "retrocommands",
   "version": "${version}",
   "name": "Retro Commands",
   "description": "Adds commands to singleplayer!",

@@ -59,7 +59,7 @@ Use `com.matthewperiut.api.SummonRegistry`
 SummonRegistry.add(...)  
 
 
-Examples from `com.matthewperiut.spc.util.VanillaMobs`
+Examples from `com.matthewperiut.retrocommands.util.VanillaMobs`
 ```java
 SummonRegistry.add(Creeper.class, (level, pos, param) -> {
     Creeper creeper = new Creeper(level);
