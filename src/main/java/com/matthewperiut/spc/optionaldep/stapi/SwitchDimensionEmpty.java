@@ -1,9 +1,9 @@
 package com.matthewperiut.spc.optionaldep.stapi;
 
-import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.entity.player.PlayerEntity;
 
 public class SwitchDimensionEmpty {
-    public static void go(PlayerBase player, String id) {
+    public static void go(PlayerEntity player, String id) {
 
     }
 }

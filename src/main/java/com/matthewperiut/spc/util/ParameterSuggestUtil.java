@@ -1,10 +1,9 @@
 package com.matthewperiut.spc.util;
 
-import com.matthewperiut.spc.command.server.ServerUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.entity.player.PlayerEntity;
 import net.modificationstation.stationapi.api.registry.ItemRegistry;
 import net.modificationstation.stationapi.api.util.Identifier;
 
@@ -55,9 +54,9 @@ public class ParameterSuggestUtil {
 
     public static String[] suggestPlayerName(String currentInput) {
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            List players = ((Minecraft) FabricLoader.getInstance().getGameInstance()).level.players;
+            List players = ((Minecraft) FabricLoader.getInstance().getGameInstance()).world.players;
             ArrayList<String> playerNames = new ArrayList<>();
-            players.forEach(player -> playerNames.add(((PlayerBase) player).name));
+            players.forEach(player -> playerNames.add(((PlayerEntity) player).name));
             playerNames.stream().filter(a -> a.startsWith(currentInput)).map(b -> b.substring(currentInput.length()));
         }
 

@@ -1,7 +1,7 @@
 package com.matthewperiut.spc.optionaldep.stapi.item;
 
 import com.matthewperiut.spc.api.ItemInstanceStr;
-import net.minecraft.item.ItemInstance;
+import net.minecraft.item.ItemStack;
 import net.modificationstation.stationapi.api.client.item.CustomTooltipProvider;
 import net.modificationstation.stationapi.api.template.item.TemplateBlockItem;
 
@@ -11,7 +11,7 @@ public class MobSpawnerBlockItem extends TemplateBlockItem implements CustomTool
     }
 
     @Override
-    public String[] getTooltip(ItemInstance itemInstance, String originalTooltip) {
+    public String[] getTooltip(ItemStack itemInstance, String originalTooltip) {
 
         if (((Object) itemInstance) instanceof ItemInstanceStr item) {
             String[] og = originalTooltip.split(" ");

@@ -2,7 +2,7 @@ package com.matthewperiut.spc.command.server;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.packet.play.ChatMessage0x3Packet;
+import net.minecraft.network.packet.play.ChatMessagePacket;
 
 public class Say implements Command {
     @Override
@@ -13,7 +13,7 @@ public class Say implements Command {
         }
         String joinedString = ServerUtil.appendEnd(1, parameters);
         ServerUtil.LOGGER.info("[" + commandSource.getName() + "] " + joinedString);
-        ServerUtil.getConnectionManager().sendToAll(new ChatMessage0x3Packet("§d[Server] " + joinedString));
+        ServerUtil.getConnectionManager().sendToAll(new ChatMessagePacket("§d[Server] " + joinedString));
     }
 
     @Override

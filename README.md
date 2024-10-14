@@ -1,4 +1,4 @@
-# SPC for Babric
+# Retro Commands for b1.7.3
  + it works on servers
  + it has an extensible API.
  + No dependencies required
@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    modImplementation('com.github.matthewperiut:spc-babric:0.5.0') {
+    modImplementation('com.github.matthewperiut:retro-commands:0.5.1') {
         transitive false
     }
 }

@@ -4,7 +4,7 @@ import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.api.PlayerWarps;
 import com.matthewperiut.spc.api.PosParse;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.ArrayList;
 
@@ -13,7 +13,7 @@ public class Warp implements Command {
 
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        PlayerBase player = commandSource.getPlayer();
+        PlayerEntity player = commandSource.getPlayer();
         if (player == null) {
             return;
         }

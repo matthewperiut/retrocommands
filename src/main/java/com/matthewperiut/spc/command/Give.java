@@ -4,12 +4,12 @@ import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.api.ItemInstanceStr;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.EntityBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityRegistry;
-import net.minecraft.entity.Living;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.item.ItemBase;
-import net.minecraft.item.ItemInstance;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.modificationstation.stationapi.api.registry.ItemRegistry;
 import net.modificationstation.stationapi.api.util.Identifier;
 
@@ -20,8 +20,8 @@ import static com.matthewperiut.spc.util.ParameterSuggestUtil.suggestItemIdentif
 
 public class Give implements Command {
 
-    public static boolean givePlayerItemInstance(SharedCommandSource commandSource, PlayerBase player, ItemInstance instance) {
-        ItemInstance[] inventory = player.inventory.main;
+    public static boolean givePlayerItemInstance(SharedCommandSource commandSource, PlayerEntity player, ItemStack instance) {
+        ItemStack[] inventory = player.inventory.main;
         for (int i = 0; i < inventory.length; i++) {
             if (inventory[i] == null) {
                 inventory[i] = instance;
@@ -29,16 +29,16 @@ public class Give implements Command {
             }
         }
 
-        commandSource.sendFeedback("Cannot give " + instance.getType().getTranslatedName() + " because inventory is full");
+        commandSource.sendFeedback("Cannot give " + instance.getItem().getTranslatedName() + " because inventory is full");
         return false;
     }
 
     public static int nameToItemId(String n) {
         String name = n.replace("_", "");
-        for (int i = 0; i < ItemBase.byId.length; i++) {
-            if (ItemBase.byId[i] == null)
+        for (int i = 0; i < Item.ITEMS.length; i++) {
+            if (Item.ITEMS[i] == null)
                 continue;
-            String translatedName = ItemBase.byId[i].getTranslatedName().replace(" ", ""); // Remove spaces
+            String translatedName = Item.ITEMS[i].getTranslatedName().replace(" ", ""); // Remove spaces
             if (translatedName.equalsIgnoreCase(name)) {
                 return i;
             }
@@ -47,7 +47,7 @@ public class Give implements Command {
     }
 
     public static int identifierToItemId(String n) {
-        Optional<ItemBase> item = ItemRegistry.INSTANCE.getOrEmpty(Identifier.of(n));
+        Optional<Item> item = ItemRegistry.INSTANCE.getOrEmpty(Identifier.of(n));
         return item.map(itemBase -> itemBase.id).orElse(-1);
     }
 
@@ -73,12 +73,12 @@ public class Give implements Command {
                 return;
             }
 
-            ItemBase itemType = ItemBase.byId[itemNumber];
+            Item itemType = Item.ITEMS[itemNumber];
             if (itemType == null) {
                 commandSource.sendFeedback("Item not found");
                 return;
             }
-            int stackSize = itemType.getMaxStackSize();
+            int stackSize = itemType.getMaxCount();
 
 
             if (parameters.length > 2) {
@@ -92,15 +92,15 @@ public class Give implements Command {
                 stackSize = requestedCount;
 
                 if (parameters.length > 3) {
-                    if (itemType.usesMeta() || itemType.getTranslatedName().equals("Monster Spawner")) {
+                    if (itemType.hasSubtypes() || itemType.getTranslatedName().equals("Monster Spawner")) {
                         try {
                             meta = Integer.parseInt(parameters[3]);
                         } catch (NumberFormatException e) {
                             if (itemType.getTranslatedName().equals("Monster Spawner")) {
-                                EntityBase entity = EntityRegistry.create(parameters[3], commandSource.getPlayer().level);
-                                if (entity instanceof Living l) {
-                                    setSPCStr = l.getStringId();
-                                    commandSource.sendFeedback(l.getStringId() + " inside");
+                                Entity entity = EntityRegistry.create(parameters[3], commandSource.getPlayer().world);
+                                if (entity instanceof LivingEntity l) {
+                                    setSPCStr = l.getRegistryEntry();
+                                    commandSource.sendFeedback(l.getRegistryEntry() + " inside");
                                 } else if (entity != null) {
                                     commandSource.sendFeedback("Entity must be living in spawners");
                                 } else {
@@ -116,7 +116,7 @@ public class Give implements Command {
                 }
             }
 
-            ItemInstance item = new ItemInstance(itemType, stackSize, meta);
+            ItemStack item = new ItemStack(itemType, stackSize, meta);
 
             if (!setSPCStr.isEmpty()) {
                 ((ItemInstanceStr) ((Object) item)).spc$setStr(setSPCStr);
@@ -163,10 +163,10 @@ public class Give implements Command {
 
             if (hasModId)
             {
-                Optional<ItemBase> id = ItemRegistry.INSTANCE.getOrEmpty(Identifier.of(itemId));
+                Optional<Item> id = ItemRegistry.INSTANCE.getOrEmpty(Identifier.of(itemId));
                 if (id.isPresent())
                 {
-                    return new String[]{ String.valueOf(id.get().getMaxStackSize()) };
+                    return new String[]{ String.valueOf(id.get().getMaxCount()) };
                 }
             }
         }

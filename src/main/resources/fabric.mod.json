@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "spc",
   "version": "${version}",
-  "name": "Single Player Commands",
+  "name": "Retro Commands",
   "description": "Adds commands to singleplayer!",
   "authors": [
     "slainlight"

@@ -7,16 +7,14 @@ import com.matthewperiut.spc.util.SPChatUtil;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.ScreenBase;
-import net.minecraft.client.gui.screen.ingame.Chat;
-import net.minecraft.client.render.TextRenderer;
-import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
@@ -27,11 +25,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.matthewperiut.spc.SPC.mjf;
 import static com.matthewperiut.spc.SPC.mp_op;
 
-@Mixin(value = Chat.class, priority = 1100)
-public abstract class ChatScreenMixin extends ScreenBase {
-    @Shadow protected String getText;
+@Mixin(value = ChatScreen.class, priority = 1100)
+public abstract class ChatScreenMixin extends Screen {
+    @Shadow protected String text;
 
-    @Shadow private int ticksRan;
+    @Shadow private int focusedTicks;
     @Unique private boolean autocomplete = false;
     @Unique private String[] suggestions = new String[0];
     @Unique private int chosen = 0;
@@ -44,8 +42,8 @@ public abstract class ChatScreenMixin extends ScreenBase {
             MJFChatAccess.setText(s);
         }
 
-        if (getText != null)
-            getText = s;
+        if (text != null)
+            text = s;
     }
 
     @Unique String getText() {
@@ -53,7 +51,7 @@ public abstract class ChatScreenMixin extends ScreenBase {
         if (mjf) {
             result = MJFChatAccess.getText();
         } else {
-            result = getText;
+            result = text;
         }
 
         if (result == null)
@@ -63,7 +61,7 @@ public abstract class ChatScreenMixin extends ScreenBase {
     }
 
     @Unique void appendText(String s) {
-        setText(getText + s);
+        setText(text + s);
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
@@ -119,7 +117,7 @@ public abstract class ChatScreenMixin extends ScreenBase {
 
         if (sections.length == 1 && currentWord.length() > 1 && currentWord.charAt(0) == '/' && !getText().endsWith(" ")) {
 
-            if (mc.level.isServerSide && !SPC.mp_spc) {
+            if (mc.world.isRemote && !SPC.mp_spc) {
                 suggestions = list.stream()
                         .filter(s -> s.startsWith(currentWord.substring(1)))
                         .map(s -> s.substring(getText().length() - 1))
@@ -127,25 +125,25 @@ public abstract class ChatScreenMixin extends ScreenBase {
             } else {
                 suggestions = SPChatUtil.commands.stream()
                         .filter(c -> c.name().startsWith(currentWord.substring(1)))
-                        .filter(c -> (!c.disableInSingleplayer() || mc.level.isServerSide))
-                        .filter(c -> (SPC.mp_op || !c.needsPermissions() || !mc.level.isServerSide))
+                        .filter(c -> (!c.disableInSingleplayer() || mc.world.isRemote))
+                        .filter(c -> (SPC.mp_op || !c.needsPermissions() || !mc.world.isRemote))
                         .map(c -> c.name().substring(getText().length() - 1))
                         .toArray(String[]::new);
             }
         } else {
             Command command = SPChatUtil.commands.stream()
                     .filter(c -> c.name().equals(sections[0].substring(1)))
-                    .filter(c -> (!c.disableInSingleplayer() || mc.level.isServerSide))
-                    .filter(c -> (SPC.mp_op || !c.needsPermissions() || !mc.level.isServerSide))
+                    .filter(c -> (!c.disableInSingleplayer() || mc.world.isRemote))
+                    .filter(c -> (SPC.mp_op || !c.needsPermissions() || !mc.world.isRemote))
                     .findFirst().orElse(null);
-            if (command != null && (!command.disableInSingleplayer() || mc.level.isServerSide)) {
-                PlayerBase player = mc.player;
+            if (command != null && (!command.disableInSingleplayer() || mc.world.isRemote)) {
+                PlayerEntity player = mc.player;
                 SharedCommandSource source = new SharedCommandSource(player);
                 suggestions = getText().endsWith(" ") ? command.suggestion(source, sections.length, "", getText()) : command.suggestion(source, sections.length - 1, currentWord, getText());
             }
         }
 
-        textWidthPixels = this.textManager.getTextWidth("> " + this.getText());
+        textWidthPixels = this.textRenderer.getWidth("> " + this.getText());
     }
 
     private boolean adjustChosenSuggestion(int par2) {
@@ -159,7 +157,7 @@ public abstract class ChatScreenMixin extends ScreenBase {
 
     private void calculateTextWidthPixelsBeforeCurrentWord(String[] sections) {
         for (int j = 0; j < sections.length - 1; j++) {
-            textWidthPixelsBeforeCurrentWord += textManager.getTextWidth(sections[j] + " ");
+            textWidthPixelsBeforeCurrentWord += textRenderer.getWidth(sections[j] + " ");
         }
     }
 
@@ -169,7 +167,7 @@ public abstract class ChatScreenMixin extends ScreenBase {
             AtomicBoolean valid = new AtomicBoolean(false);
             SPChatUtil.commands.stream().forEach(a -> {
                 if (a.name().equals(s)) {
-                    if (!minecraft.level.isServerSide) {
+                    if (!minecraft.world.isRemote) {
                         valid.set(true);
                     } else {
                         if (mp_op) {
@@ -196,26 +194,26 @@ public abstract class ChatScreenMixin extends ScreenBase {
         this.fill(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
         renderSuggestions(i,j,f);
         String alreadyRendered = "";
-        drawTextWithShadow(this.textManager, "> ", 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 14737632);
+        drawTextWithShadow(this.textRenderer, "> ", 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
         alreadyRendered += "> ";
         if (getText().startsWith("/") && !getText().contains(" ") && !tryMatch(getText().substring(1))) {
-            drawTextWithShadow(this.textManager,  "/", 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 14737632);
+            drawTextWithShadow(this.textRenderer,  "/", 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
             alreadyRendered += "/";
-            drawTextWithShadow(this.textManager,  this.getText().substring(1), 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 0xFC5454);
+            drawTextWithShadow(this.textRenderer,  this.getText().substring(1), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 0xFC5454);
             alreadyRendered += this.getText().substring(1);
         } else if (getText().startsWith("/")){
             if (!tryMatch(getText().split(" ")[0].substring(1))) {
-                drawTextWithShadow(this.textManager,  this.getText(), 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 0xFC5454);
+                drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 0xFC5454);
             } else {
-                drawTextWithShadow(this.textManager,  this.getText(), 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 14737632);
+                drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
             }
             alreadyRendered += this.getText();
         } else {
-            drawTextWithShadow(this.textManager,  this.getText(), 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 14737632);
+            drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
             alreadyRendered += this.getText();
         }
-        drawTextWithShadow(this.textManager,  (ticksRan / 6 % 2 == 0 ? "_" : ""), 4 + textManager.getTextWidth(alreadyRendered), this.height - 12, 14737632);
-        alreadyRendered += (ticksRan / 6 % 2 == 0 ? "_" : "");
+        drawTextWithShadow(this.textRenderer,  (focusedTicks / 6 % 2 == 0 ? "_" : ""), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
+        alreadyRendered += (focusedTicks / 6 % 2 == 0 ? "_" : "");
         super.render(i, j, f);
         ci.cancel();
     }
@@ -242,7 +240,7 @@ public abstract class ChatScreenMixin extends ScreenBase {
     }
 
     private void renderChosenSuggestion() {
-        this.drawTextWithShadow(this.textManager, suggestions[chosen], 4 + textWidthPixels, this.height - 12, 0xAAAAAA);
+        this.drawTextWithShadow(this.textRenderer, suggestions[chosen], 4 + textWidthPixels, this.height - 12, 0xAAAAAA);
         if (autocomplete) {
             appendText(suggestions[chosen]);
             autocomplete = false;
@@ -251,8 +249,8 @@ public abstract class ChatScreenMixin extends ScreenBase {
     }
 
     private void renderMultipleSuggestions() {
-        int textWidthCurrentWord = textManager.getTextWidth(currentWord);
-        textWidthPixelsBeforeCurrentWord = textManager.getTextWidth("> " + getText()) - textWidthCurrentWord;
+        int textWidthCurrentWord = textRenderer.getWidth(currentWord);
+        textWidthPixelsBeforeCurrentWord = textRenderer.getWidth("> " + getText()) - textWidthCurrentWord;
         fill(textWidthPixelsBeforeCurrentWord + 4,
                 this.height - 14 - (10 * suggestions.length),
                 textWidthPixelsBeforeCurrentWord + textWidthCurrentWord + getMaxSuggestionWidth() + 4,
@@ -260,14 +258,14 @@ public abstract class ChatScreenMixin extends ScreenBase {
                 0xFF000000);
 
         for (int i = 0; i < suggestions.length; i++) {
-            this.drawTextWithShadow(this.textManager, currentWord + suggestions[i], textWidthPixelsBeforeCurrentWord + 4, this.height - 12 - (10 * (i + 1)), i == chosen ? 0xfcfc00 : 0xFFFFFF);
+            this.drawTextWithShadow(this.textRenderer, currentWord + suggestions[i], textWidthPixelsBeforeCurrentWord + 4, this.height - 12 - (10 * (i + 1)), i == chosen ? 0xfcfc00 : 0xFFFFFF);
         }
     }
 
     private int getMaxSuggestionWidth() {
         int maxWidth = 0;
         for (String suggestion : suggestions) {
-            int width = textManager.getTextWidth(suggestion);
+            int width = textRenderer.getWidth(suggestion);
             if (maxWidth < width) {
                 maxWidth = width;
             }

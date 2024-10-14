@@ -1,9 +1,9 @@
 package com.matthewperiut.spc.mixin;
 
 import com.matthewperiut.spc.api.ItemInstanceStr;
-import net.minecraft.item.ItemInstance;
-import net.minecraft.util.io.CompoundTag;
-import net.minecraft.util.io.StringTag;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtString;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ItemInstance.class)
+@Mixin(ItemStack.class)
 public abstract class MixinItemInstance implements ItemInstanceStr {
     @Unique
     private String name;
@@ -26,22 +26,22 @@ public abstract class MixinItemInstance implements ItemInstanceStr {
         this.name = name;
     }
 
-    @Inject(method = "toTag", at = @At("RETURN"))
-    private void onToTag(CompoundTag arg, CallbackInfoReturnable<CompoundTag> cir) {
+    @Inject(method = "writeNbt", at = @At("RETURN"))
+    private void onToTag(NbtCompound arg, CallbackInfoReturnable<NbtCompound> cir) {
         if (this.name != null)
-            arg.put("spcName", new StringTag(this.name));
+            arg.put("spcName", new NbtString(this.name));
     }
 
-    @Inject(method = "fromTag", at = @At("HEAD"))
-    private void onFromTag(CompoundTag arg, CallbackInfo ci) {
-        if (arg.containsKey("spcName")) {
+    @Inject(method = "readNbt", at = @At("HEAD"))
+    private void onFromTag(NbtCompound arg, CallbackInfo ci) {
+        if (arg.contains("spcName")) {
             this.name = arg.getString("spcName");
         }
     }
 
 
     @Inject(method = "split", at = @At("RETURN"))
-    private void onSplit(int i, CallbackInfoReturnable<ItemInstance> cir) {
+    private void onSplit(int i, CallbackInfoReturnable<ItemStack> cir) {
         ItemInstanceStr copyMixin = (ItemInstanceStr) (Object) cir.getReturnValue();
         copyMixin.spc$setStr(this.name);
     }

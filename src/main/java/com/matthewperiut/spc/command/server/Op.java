@@ -2,7 +2,7 @@ package com.matthewperiut.spc.command.server;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.packet.play.UpdateSign0x82C2SPacket;
+import net.minecraft.network.packet.play.UpdateSignPacket;
 
 public class Op implements Command {
     @Override
@@ -12,15 +12,15 @@ public class Op implements Command {
             return;
         }
         String playerName = parameters[1];
-        ServerUtil.getConnectionManager().addOp(playerName);
+        ServerUtil.getConnectionManager().addToOperators(playerName);
         ServerUtil.sendFeedbackAndLog(commandSource.getName(), "Opping " + playerName);
-        ServerUtil.getConnectionManager().sendMessage(playerName, "§eYou are now op!");
+        ServerUtil.getConnectionManager().messagePlayer(playerName, "§eYou are now op!");
 
-        if (ServerUtil.getConnectionManager().getServerPlayer(playerName) != null) {
+        if (ServerUtil.getConnectionManager().getPlayer(playerName) != null) {
             // I would put this in a method... I would, but I'm informing SPC that you can autofill OP commands now
             String[] contents = new String[]{"", "", "", ""};
             contents[0] = "1";
-            ServerUtil.getConnectionManager().trySendPacket(playerName, new UpdateSign0x82C2SPacket(0, -1, 0, contents));
+            ServerUtil.getConnectionManager().sendPacket(playerName, new UpdateSignPacket(0, -1, 0, contents));
         }
     }
 

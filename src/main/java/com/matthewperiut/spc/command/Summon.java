@@ -4,9 +4,9 @@ import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.api.PosParse;
 import com.matthewperiut.spc.api.SummonRegistry;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.EntityBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityRegistry;
-import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,11 +15,11 @@ import java.util.Map;
 
 public class Summon implements Command {
 
-    public static Map<Class<? extends EntityBase>, String> help = new HashMap<>();
+    public static Map<Class<? extends Entity>, String> help = new HashMap<>();
 
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        PlayerBase player = commandSource.getPlayer();
+        PlayerEntity player = commandSource.getPlayer();
         if (player == null) {
             return;
         }
@@ -27,7 +27,7 @@ public class Summon implements Command {
         // help
         if (parameters.length == 2) {
             try {
-                Class<? extends EntityBase> entityClass = (Class<? extends EntityBase>) EntityRegistry.STRING_ID_TO_CLASS.get(parameters[1]);
+                Class<? extends Entity> entityClass = (Class<? extends Entity>) EntityRegistry.idToClass.get(parameters[1]);
                 String msg = "Usage is /summon " + parameters[1] + " {x} {y} {z} ";
                 if (help.containsKey(entityClass)) {
                     msg += help.get(entityClass);
@@ -50,12 +50,12 @@ public class Summon implements Command {
                 }
 
 
-                EntityBase entity;
+                Entity entity;
                 String extraMsg = "";
                 if (parameters.length > 5) {
                     try {
-                        Class<? extends EntityBase> entityClass = (Class<? extends EntityBase>) EntityRegistry.STRING_ID_TO_CLASS.get(parameters[1]);
-                        entity = SummonRegistry.create(entityClass, player.level, pos, parameters);
+                        Class<? extends Entity> entityClass = (Class<? extends Entity>) EntityRegistry.idToClass.get(parameters[1]);
+                        entity = SummonRegistry.create(entityClass, player.world, pos, parameters);
                         if (entity == null) {
                             commandSource.sendFeedback("Parameters caused entity to be null");
                         }
@@ -64,12 +64,12 @@ public class Summon implements Command {
                         return;
                     }
                 } else {
-                    entity = EntityRegistry.create(parameters[1], player.level);
+                    entity = EntityRegistry.create(parameters[1], player.world);
                 }
 
                 entity.setPosition(pos.x, pos.y, pos.z);
 
-                player.level.spawnEntity(entity);
+                player.world.spawnEntity(entity);
                 commandSource.sendFeedback("Summoned " + parameters[1] + extraMsg + " at " + pos);
             } catch (Exception e) {
                 System.out.println(e.getMessage());

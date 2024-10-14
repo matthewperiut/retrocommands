@@ -2,23 +2,23 @@ package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.item.ItemInstance;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 
 
 public class Hat implements Command {
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        PlayerBase player = commandSource.getPlayer();
+        PlayerEntity player = commandSource.getPlayer();
         if (player == null) {
             return;
         }
 
-        ItemInstance hand = player.inventory.getHeldItem() == null ? null : player.inventory.getHeldItem().copy();
-        ItemInstance hat = player.inventory.armour[3] == null ? null : player.inventory.armour[3].copy();
+        ItemStack hand = player.inventory.getSelectedItem() == null ? null : player.inventory.getSelectedItem().copy();
+        ItemStack hat = player.inventory.armor[3] == null ? null : player.inventory.armor[3].copy();
 
-        player.inventory.armour[3] = hand;
-        player.inventory.main[player.inventory.selectedHotbarSlot] = hat;
+        player.inventory.armor[3] = hand;
+        player.inventory.main[player.inventory.selectedSlot] = hat;
 
         commandSource.sendFeedback("Swapped hat with hand");
     }

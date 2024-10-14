@@ -2,14 +2,14 @@ package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.ArrayList;
 
 
 public class Time implements Command {
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        PlayerBase player = commandSource.getPlayer();
+        PlayerEntity player = commandSource.getPlayer();
         if (player == null) {
             return;
         }
@@ -45,7 +45,7 @@ public class Time implements Command {
                                 return;
                         }
                     }
-                    player.level.setLevelTime(time);
+                    player.world.setTime(time);
                     commandSource.sendFeedback("Time set to " + time);
                     break;
             }

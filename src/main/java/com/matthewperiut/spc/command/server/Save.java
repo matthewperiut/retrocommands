@@ -2,7 +2,7 @@ package com.matthewperiut.spc.command.server;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.server.ServerPlayerConnectionManager;
+import net.minecraft.server.PlayerManager;
 
 public class Save implements Command {
     @Override
@@ -12,17 +12,17 @@ public class Save implements Command {
             return;
         }
 
-        ServerPlayerConnectionManager scm = ServerUtil.getConnectionManager();
+        PlayerManager scm = ServerUtil.getConnectionManager();
 
         switch (parameters[1]) {
             case "all":
                 ServerUtil.sendFeedbackAndLog(commandSource.getName(), "Forcing save..");
                 if (scm != null) {
-                    scm.updateAllPlayers();
+                    scm.savePlayers();
                 }
 
-                for (int i = 0; i < ServerUtil.getServer().levels.length; ++i) {
-                    ServerUtil.getServer().levels[i].saveLevel(true, null);
+                for (int i = 0; i < ServerUtil.getServer().worlds.length; ++i) {
+                    ServerUtil.getServer().worlds[i].saveWithLoadingDisplay(true, null);
                 }
 
                 ServerUtil.sendFeedbackAndLog(commandSource.getName(), "Save complete.");
@@ -30,15 +30,15 @@ public class Save implements Command {
             case "off":
                 ServerUtil.sendFeedbackAndLog(commandSource.getName(), "Disabling level saving..");
 
-                for (int i = 0; i < ServerUtil.getServer().levels.length; ++i) {
-                    ServerUtil.getServer().levels[i].field_275 = true;
+                for (int i = 0; i < ServerUtil.getServer().worlds.length; ++i) {
+                    ServerUtil.getServer().worlds[i].savingDisabled = true;
                 }
                 break;
             case "on":
                 ServerUtil.sendFeedbackAndLog(commandSource.getName(), "Enabling level saving..");
 
-                for (int i = 0; i < ServerUtil.getServer().levels.length; ++i) {
-                    ServerUtil.getServer().levels[i].field_275 = false;
+                for (int i = 0; i < ServerUtil.getServer().worlds.length; ++i) {
+                    ServerUtil.getServer().worlds[i].savingDisabled = false;
                 }
                 break;
             default:

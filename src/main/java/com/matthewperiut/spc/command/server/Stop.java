@@ -7,7 +7,7 @@ public class Stop implements Command {
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
         ServerUtil.sendFeedbackAndLog(commandSource.getName(), "Stopping the server..");
-        ServerUtil.getServer().stopRunning();
+        ServerUtil.getServer().stop();
     }
 
     @Override

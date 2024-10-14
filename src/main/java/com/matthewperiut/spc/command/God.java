@@ -2,7 +2,7 @@ package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +16,7 @@ public class God implements Command {
     public void command(SharedCommandSource commandSource, String[] parameters) {
         boolean god = false;
 
-        PlayerBase player = commandSource.getPlayer();
+        PlayerEntity player = commandSource.getPlayer();
         if (player == null) {
             return;
         }

@@ -1,8 +1,8 @@
 package com.matthewperiut.spc.mixin;
 
-import net.minecraft.server.ServerGUI;
+import net.minecraft.server.dedicated.gui.DedicatedServerGui;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(ServerGUI.class)
+@Mixin(DedicatedServerGui.class)
 public class ServerGuiMixin {
 }

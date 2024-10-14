@@ -7,7 +7,7 @@ public class BanIp implements Command {
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
         String ip = ServerUtil.appendEnd(1, parameters).trim();
-        ServerUtil.getConnectionManager().addIpBan(ip);
+        ServerUtil.getConnectionManager().banIp(ip);
         ServerUtil.sendFeedbackAndLog(commandSource.getName(), "Banning ip " + ip);
     }
 

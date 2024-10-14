@@ -2,9 +2,9 @@ package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.level.Level;
-import net.minecraft.level.LevelProperties;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldProperties;
 
 import java.lang.reflect.Field;
 
@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
 public class ToggleDownfall implements Command {
     // Thank you mine_diver for this code, it's beautiful
 
-    private static final Field worldInfoField = getField(Level.class, new String[]{"properties", "field_220"});
+    private static final Field worldInfoField = getField(World.class, new String[]{"properties", "field_220"});
 
     // from HMI, blame mine_diver
     //clean mine_diver code
@@ -31,22 +31,22 @@ public class ToggleDownfall implements Command {
 
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        PlayerBase player = commandSource.getPlayer();
+        PlayerEntity player = commandSource.getPlayer();
         if (player == null) {
             return;
         }
 
-        LevelProperties worldInfo = null;
+        WorldProperties worldInfo = null;
         try {
-            worldInfo = (LevelProperties) worldInfoField.get(player.level);
+            worldInfo = (WorldProperties) worldInfoField.get(player.world);
         } catch (Exception ignored) {
 
         }
 
         try {
             assert worldInfo != null;
-            worldInfo.setThundering(!worldInfo.isThundering());
-            worldInfo.setRaining(!worldInfo.isRaining());
+            worldInfo.setThundering(!worldInfo.getThundering());
+            worldInfo.setRaining(!worldInfo.getRaining());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }

@@ -6,7 +6,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.CustomValue;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class Mods implements Command {
 

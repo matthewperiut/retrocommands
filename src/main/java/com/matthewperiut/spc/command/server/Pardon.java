@@ -10,7 +10,7 @@ public class Pardon implements Command {
             manual(commandSource);
             return;
         }
-        ServerUtil.getConnectionManager().removeBan(parameters[1]);
+        ServerUtil.getConnectionManager().unbanPlayer(parameters[1]);
         ServerUtil.sendFeedbackAndLog(commandSource.getName(), "Pardoning " + parameters[1]);
     }
 

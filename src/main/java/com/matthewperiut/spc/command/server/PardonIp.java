@@ -7,7 +7,7 @@ public class PardonIp implements Command {
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
         String ip = ServerUtil.appendEnd(1, parameters).trim();
-        ServerUtil.getConnectionManager().removeIpBan(ip);
+        ServerUtil.getConnectionManager().unbanIp(ip);
         ServerUtil.sendFeedbackAndLog(commandSource.getName(), "Pardoning ip " + ip);
     }
 

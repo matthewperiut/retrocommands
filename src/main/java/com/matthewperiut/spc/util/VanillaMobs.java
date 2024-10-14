@@ -2,58 +2,58 @@ package com.matthewperiut.spc.util;
 
 import com.matthewperiut.spc.api.SummonRegistry;
 import com.matthewperiut.spc.mixin.access.EntityAccessor;
-import net.minecraft.entity.PrimedTnt;
-import net.minecraft.entity.animal.Pig;
-import net.minecraft.entity.animal.Sheep;
-import net.minecraft.entity.monster.Creeper;
-import net.minecraft.entity.monster.Slime;
+import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.entity.mob.SlimeEntity;
+import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.passive.SheepEntity;
 
 public class VanillaMobs {
     public static void setupSummons() {
-        SummonRegistry.add(Creeper.class, (level, pos, param) -> {
-            Creeper creeper = new Creeper(level);
+        SummonRegistry.add(CreeperEntity.class, (level, pos, param) -> {
+            CreeperEntity creeper = new CreeperEntity(level);
 
             if (param.length > 5)
                 if (!param[5].isEmpty())
                     if (param[5].charAt(0) != '0')
-                        ((EntityAccessor) creeper).getDataTracker().setInt(17, (byte) 1);
+                        ((EntityAccessor) creeper).getDataTracker().set(17, (byte) 1);
 
             return creeper;
         }, "{charged (0 or 1)}");
 
-        SummonRegistry.add(Sheep.class, (level, pos, param) -> {
+        SummonRegistry.add(SheepEntity.class, (level, pos, param) -> {
             int color = Integer.parseInt(param[5]);
             int has_wool = 1;
             if (param.length > 6)
                 has_wool = Integer.parseInt(param[6]);
-            Sheep sheep = new Sheep(level);
+            SheepEntity sheep = new SheepEntity(level);
             sheep.setSheared(has_wool == 0);
-            sheep.setColour(color);
+            sheep.setColor(color);
             return sheep;
         }, "{wool color meta} {has wool (0/1)} ");
 
-        SummonRegistry.add(Pig.class, (level, pos, param) -> {
+        SummonRegistry.add(PigEntity.class, (level, pos, param) -> {
             int meta = Integer.parseInt(param[5]);
             if (meta != 0)
                 meta = 1;
 
-            Pig pig = new Pig(level);
-            ((EntityAccessor) pig).getDataTracker().setInt(16, (byte) meta);
+            PigEntity pig = new PigEntity(level);
+            ((EntityAccessor) pig).getDataTracker().set(16, (byte) meta);
             return pig;
         }, "{saddle (0 or 1)}");
 
-        SummonRegistry.add(Slime.class, (level, pos, param) -> {
+        SummonRegistry.add(SlimeEntity.class, (level, pos, param) -> {
             int meta = Integer.parseInt(param[5]);
-            Slime slime = new Slime(level);
+            SlimeEntity slime = new SlimeEntity(level);
             if (meta > 0) {
-                ((EntityAccessor) slime).getDataTracker().setInt(16, (byte) meta);
+                ((EntityAccessor) slime).getDataTracker().set(16, (byte) meta);
             }
             return slime;
         }, "{size (int > 0)}");
 
-        SummonRegistry.add(PrimedTnt.class, (level, pos, param) -> {
+        SummonRegistry.add(TntEntity.class, (level, pos, param) -> {
             int fuse = Integer.parseInt(param[5]);
-            PrimedTnt tnt = new PrimedTnt(level);
+            TntEntity tnt = new TntEntity(level);
             if (fuse > 0) {
                 tnt.fuse = fuse;
             }

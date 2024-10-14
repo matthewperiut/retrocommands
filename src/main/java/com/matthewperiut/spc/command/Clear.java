@@ -11,7 +11,7 @@ public class Clear implements Command {
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
         if (commandSource.isClient())
-            ((Minecraft) FabricLoader.getInstance().getGameInstance()).overlay.clearChat();
+            ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.clearChat();
         else
             commandSource.sendFeedback("Intended to clear chat for client only");
     }

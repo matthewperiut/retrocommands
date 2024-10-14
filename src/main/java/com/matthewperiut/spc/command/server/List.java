@@ -6,7 +6,7 @@ import com.matthewperiut.spc.util.SharedCommandSource;
 public class List implements Command {
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        commandSource.sendFeedback("Connected players: " + ServerUtil.getConnectionManager().getAllPlayerNames());
+        commandSource.sendFeedback("Connected players: " + ServerUtil.getConnectionManager().getPlayerList());
     }
 
     @Override

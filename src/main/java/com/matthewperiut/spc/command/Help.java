@@ -2,7 +2,6 @@ package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.command.server.ServerUtil;
-import com.matthewperiut.spc.util.SPChatUtil;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;

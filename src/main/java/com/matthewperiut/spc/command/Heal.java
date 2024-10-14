@@ -4,14 +4,14 @@ import com.matthewperiut.accessoryapi.api.PlayerExtraHP;
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.entity.player.PlayerEntity;
 
 
 public class Heal implements Command {
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
 
-        PlayerBase player = commandSource.getPlayer();
+        PlayerEntity player = commandSource.getPlayer();
         if (player == null) {
             return;
         }

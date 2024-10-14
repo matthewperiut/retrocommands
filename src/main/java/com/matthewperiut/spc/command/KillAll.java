@@ -2,8 +2,8 @@ package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.EntityBase;
-import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,19 +13,19 @@ public class KillAll implements Command {
 
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        PlayerBase player = commandSource.getPlayer();
+        PlayerEntity player = commandSource.getPlayer();
         if (player == null) {
             return;
         }
 
-        List<EntityBase> entities_to_kill = new ArrayList<>();
-        for (int i = 0; i < player.level.entities.size(); i++) {
-            EntityBase e = (EntityBase) player.level.entities.get(i);
-            if (e instanceof PlayerBase) continue;
+        List<Entity> entities_to_kill = new ArrayList<>();
+        for (int i = 0; i < player.world.entities.size(); i++) {
+            Entity e = (Entity) player.world.entities.get(i);
+            if (e instanceof PlayerEntity) continue;
             entities_to_kill.add(e);
         }
 
-        for (EntityBase e : entities_to_kill) {
+        for (Entity e : entities_to_kill) {
             e.damage(null, 1000);
         }
 

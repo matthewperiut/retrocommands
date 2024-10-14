@@ -1,5 +1,6 @@
 plugins {
-	id 'babric-loom' version '1.4.2'
+	id 'fabric-loom' version '1.7.3'
+	id 'babric-loom-extension' version '1.7.4'
 	id 'maven-publish'
 }
 
@@ -11,9 +12,6 @@ version = project.mod_version
 group = project.maven_group
 
 loom {
-	gluedMinecraftJar()
-	customMinecraftManifest.set("https://babric.github.io/manifest-polyfill/${minecraft_version}.json")
-	intermediaryUrl.set("https://maven.glass-launcher.net/babric/babric/intermediary/%1\$s/intermediary-%1\$s-v2.jar")
 	accessWidenerPath = file("src/main/resources/spc.accesswidener")
 }
 
@@ -67,34 +65,32 @@ repositories {
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.glasslauncher:bin:${project.yarn_mappings}"
+	mappings "net.glasslauncher:biny:${project.yarn_mappings}:v2"
 	modImplementation "babric:fabric-loader:${project.loader_version}"
 
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
 	implementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.2'
 
 	implementation("io.github.llamalad7:mixinextras-fabric:${mixinextras_version}")
+	implementation "blue.endless:jankson:1.2.1"
+	implementation 'com.google.guava:guava:33.2.1-jre'
 
 	modImplementation "net.modificationstation:StationAPI:${project.stapi_version}"
+	modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") { transitive false }
 
+	// API Extensions
 	modImplementation("maven.modrinth:bh-creative:${project.bhcreative_version}") { transitive false }
+	modImplementation("com.github.matthewperiut:accessory-api:${project.accessory_version}") { transitive false }
 
-	// Optional, but convenient mods for mod creators and users alike.
-	/*implementation "blue.endless:jankson:1.2.1"
-	modImplementation("com.github.calmilamsy:ModMenu:${project.modmenu_version}") {
-		transitive false
-	}
-	modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") {
-		transitive false
-	}
-	modImplementation("net.glasslauncher:HowManyItems-Fabric-Unofficial:${project.howmanyitems_version}") {
-		transitive false
-	}*/
-	modImplementation("com.github.matthewperiut:accessory-api:${project.accessory_version}") {
-		transitive false
-	}
+	// Runtime Convenience
+	modRuntimeOnly "com.github.GeyserMC:MCAuthLib:d9d773e5d50327c33898c65cd545a4f6ef3ba1b5" // needed for mojang fix
+	modRuntimeOnly ("maven.modrinth:mojangfix-stationapi-edition:${project.mojang_fix_stapi_version}") { transitive false }
+	modRuntimeOnly ("maven.modrinth:thirdpersonfix-babric:${project.thirdpersonfix_version}") { transitive false }
+	modRuntimeOnly ("maven.modrinth:modmenu-beta:${project.modmenu_version}") { transitive false }
+	modRuntimeOnly ("net.glasslauncher:HowManyItems-Fabric-Unofficial:${project.howmanyitems_version}") {transitive false }
+	modRuntimeOnly ("com.github.matthewperiut:stapi-fast-intro:17a7ed0dc4") { transitive false }
+
 	modCompileOnlyApi files("lib/mojangfixstationapi-1.4.0.jar")
-
 }
 
 processResources {

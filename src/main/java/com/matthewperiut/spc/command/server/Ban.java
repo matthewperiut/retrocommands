@@ -2,7 +2,7 @@ package com.matthewperiut.spc.command.server;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.player.ServerPlayer;
+import net.minecraft.entity.player.ServerPlayerEntity;
 
 public class Ban implements Command {
     @Override
@@ -12,11 +12,11 @@ public class Ban implements Command {
             return;
         }
         String var13 = parameters[1];
-        ServerUtil.getConnectionManager().addBan(var13);
+        ServerUtil.getConnectionManager().banPlayer(var13);
         ServerUtil.sendFeedbackAndLog(commandSource.getName(), "Banning " + var13);
-        ServerPlayer player = ServerUtil.getConnectionManager().getServerPlayer(var13);
+        ServerPlayerEntity player = ServerUtil.getConnectionManager().getPlayer(var13);
         if (player != null) {
-            player.packetHandler.kick("Banned by admin");
+            player.networkHandler.disconnect("Banned by admin");
         }
     }
 

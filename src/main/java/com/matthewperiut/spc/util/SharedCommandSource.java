@@ -5,9 +5,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.server.command.CommandSource;
-import net.minecraft.server.network.ServerPlayerPacketHandler;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.command.CommandOutput;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 
 public class SharedCommandSource {
     private final Object actualSource;
@@ -26,7 +26,7 @@ public class SharedCommandSource {
     }
 
     public String getName() {
-        if (actualSource instanceof PlayerBase player) {
+        if (actualSource instanceof PlayerEntity player) {
             return player.name;
         } else {
             EnvType side = FabricLoader.getInstance().getEnvironmentType();
@@ -40,8 +40,8 @@ public class SharedCommandSource {
         return "unknown";
     }
 
-    public PlayerBase getPlayer() {
-        if (actualSource instanceof PlayerBase player) {
+    public PlayerEntity getPlayer() {
+        if (actualSource instanceof PlayerEntity player) {
             return player;
         } else {
             EnvType side = FabricLoader.getInstance().getEnvironmentType();
@@ -56,13 +56,13 @@ public class SharedCommandSource {
     }
 
     @Environment(EnvType.CLIENT)
-    private PlayerBase getPlayerClient() {
+    private PlayerEntity getPlayerClient() {
         return ((Minecraft) FabricLoader.getInstance().getGameInstance()).player;
     }
 
     @Environment(EnvType.SERVER)
-    private PlayerBase getPlayerServer() {
-        if (actualSource instanceof ServerPlayerPacketHandler playerPacketHandler) {
+    private PlayerEntity getPlayerServer() {
+        if (actualSource instanceof ServerPlayNetworkHandler playerPacketHandler) {
             return ((ServerPlayerPacketHandlerAccessor) playerPacketHandler).getServerPlayer();
         } else {
             return null;
@@ -76,7 +76,7 @@ public class SharedCommandSource {
 
     @Environment(EnvType.SERVER)
     private String getNameServer() {
-        if (actualSource instanceof CommandSource cmdSrc) {
+        if (actualSource instanceof CommandOutput cmdSrc) {
             return cmdSrc.getName();
         }
         return "unknown";
@@ -84,12 +84,12 @@ public class SharedCommandSource {
 
     @Environment(EnvType.CLIENT)
     private void sendClientFeedback(String feedback) {
-        ((Minecraft) FabricLoader.getInstance().getGameInstance()).overlay.addChatMessage(feedback);
+        ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage(feedback);
     }
 
     @Environment(EnvType.SERVER)
     private void sendServerFeedback(String feedback) {
-        ((CommandSource) actualSource).sendFeedback(feedback);
+        ((CommandOutput) actualSource).sendMessage(feedback);
     }
 
     public boolean isClient() {

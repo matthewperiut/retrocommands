@@ -2,10 +2,10 @@ package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.EntityBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityRegistry;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.util.maths.Box;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.Box;
 
 import java.util.List;
 import java.util.TreeMap;
@@ -17,14 +17,14 @@ public class Ride implements Command {
 
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        PlayerBase player = commandSource.getPlayer();
+        PlayerEntity player = commandSource.getPlayer();
         if (player == null) {
             return;
         }
 
         if (parameters.length < 3) {
             if (player.vehicle != null) {
-                player.startRiding(null);
+                player.setVehicle(null);
                 return;
             }
             manual(commandSource);
@@ -34,11 +34,11 @@ public class Ride implements Command {
         String rider = parameters[1];
         String vehicle = parameters[2];
 
-        EntityBase riderEntity = null;
-        EntityBase vehicleEntity = null;
+        Entity riderEntity = null;
+        Entity vehicleEntity = null;
 
-        for (Object o : player.level.players) {
-            PlayerBase p = (PlayerBase) o;
+        for (Object o : player.world.players) {
+            PlayerEntity p = (PlayerEntity) o;
             System.out.println(p.name);
             if (p.name.equals(rider)) {
                 riderEntity = p;
@@ -58,13 +58,13 @@ public class Ride implements Command {
             commandSource.sendFeedback("Invalid entity id");
         }
 
-        for (Object o : player.level.entities) {
-            EntityBase e = (EntityBase) o;
+        for (Object o : player.world.entities) {
+            Entity e = (Entity) o;
 
-            if (e.entityId == riderId) {
+            if (e.id == riderId) {
                 riderEntity = e;
             }
-            if (e.entityId == vehicleId) {
+            if (e.id == vehicleId) {
                 vehicleEntity = e;
             }
         }
@@ -74,9 +74,9 @@ public class Ride implements Command {
             return;
         }
 
-        riderEntity.startRiding(vehicleEntity);
-        String riderString = riderEntity instanceof PlayerBase ? ((PlayerBase) riderEntity).name : "The " + (String) EntityRegistry.CLASS_TO_STRING_ID.get(riderEntity.getClass());
-        String vehicleString = vehicleEntity instanceof PlayerBase ? ((PlayerBase) vehicleEntity).name : "the " + (String) EntityRegistry.CLASS_TO_STRING_ID.get(vehicleEntity.getClass());
+        riderEntity.setVehicle(vehicleEntity);
+        String riderString = riderEntity instanceof PlayerEntity ? ((PlayerEntity) riderEntity).name : "The " + (String) EntityRegistry.classToId.get(riderEntity.getClass());
+        String vehicleString = vehicleEntity instanceof PlayerEntity ? ((PlayerEntity) vehicleEntity).name : "the " + (String) EntityRegistry.classToId.get(vehicleEntity.getClass());
         commandSource.sendFeedback(riderString + " is now on " + vehicleString);
     }
 
@@ -96,14 +96,14 @@ public class Ride implements Command {
     @Override
     public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput) {
         if (parameterNum == 1 || parameterNum == 2) {
-            PlayerBase p = source.getPlayer();
-            List<EntityBase> entities = p.level.getEntities(EntityBase.class, Box.create(p.x-20, p.y-20, p.z-20, p.x+20, p.y+20, p.z+20));
+            PlayerEntity p = source.getPlayer();
+            List<Entity> entities = p.world.collectEntitiesByClass(Entity.class, Box.create(p.x-20, p.y-20, p.z-20, p.x+20, p.y+20, p.z+20));
 
             // Use TreeMap to keep entries in order based on the distance
-            TreeMap<Double, EntityBase> distanceMap = new TreeMap<>();
+            TreeMap<Double, Entity> distanceMap = new TreeMap<>();
 
-            for (EntityBase entity : entities) {
-                double distance = p.distanceTo(entity);
+            for (Entity entity : entities) {
+                double distance = p.getDistance(entity);
                 // Handle potential duplicates (unlikely but possible)
                 while (distanceMap.containsKey(distance)) {
                     distance += 0.0001;  // Small offset to handle entities at almost same distance
@@ -115,10 +115,10 @@ public class Ride implements Command {
             // If entity is a PlayerBase, use getName() instead
             List<String> sortedEntityIDs = distanceMap.values().stream()
                     .map(entity -> {
-                        if (entity instanceof PlayerBase) {
-                            return ((PlayerBase) entity).name;
+                        if (entity instanceof PlayerEntity) {
+                            return ((PlayerEntity) entity).name;
                         } else {
-                            return Integer.toString(entity.entityId);
+                            return Integer.toString(entity.id);
                         }
                     })
                     .collect(Collectors.toList());

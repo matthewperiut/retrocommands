@@ -6,19 +6,19 @@ import com.matthewperiut.spc.optionaldep.stapi.SwitchDimension;
 import com.matthewperiut.spc.util.SharedCommandSource;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.entity.player.ServerPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 
 
 public class Teleport implements Command {
 
-    public static void teleport(PlayerBase p, double x, double y, double z) {
+    public static void teleport(PlayerEntity p, double x, double y, double z) {
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             p.setPosition(x, y, z);
-            p.setVelocity(0, 0, 0);
+            p.setVelocityClient(0, 0, 0);
         } else {
-            ServerPlayer sp = (ServerPlayer) p;
-            sp.packetHandler.method_832(x, y, z, p.yaw, p.pitch);
+            ServerPlayerEntity sp = (ServerPlayerEntity) p;
+            sp.networkHandler.teleport(x, y, z, p.yaw, p.pitch);
         }
     }
 
@@ -34,7 +34,7 @@ public class Teleport implements Command {
 
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        PlayerBase player = commandSource.getPlayer();
+        PlayerEntity player = commandSource.getPlayer();
         if (player == null) {
             return;
         }

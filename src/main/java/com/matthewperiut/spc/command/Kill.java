@@ -1,16 +1,15 @@
 package com.matthewperiut.spc.command;
 
 import com.matthewperiut.spc.api.Command;
-import com.matthewperiut.spc.util.ParameterSuggestUtil;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.entity.player.PlayerEntity;
 
 
 public class Kill implements Command {
 
     @Override
     public void command(SharedCommandSource commandSource, String[] parameters) {
-        PlayerBase player = commandSource.getPlayer();
+        PlayerEntity player = commandSource.getPlayer();
         if (player == null) {
             return;
         }

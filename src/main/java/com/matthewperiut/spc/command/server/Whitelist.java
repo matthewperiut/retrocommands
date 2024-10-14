@@ -29,12 +29,12 @@ public class Whitelist implements Command {
             String var5 = var4[1].toLowerCase();
             if ("on".equals(var5)) {
                 ServerUtil.sendFeedbackAndLog(string, "Turned on white-listing");
-                ServerUtil.getServer().serverProperties.setBoolean("white-list", true);
+                ServerUtil.getServer().properties.setProperty("white-list", true);
             } else if ("off".equals(var5)) {
                 ServerUtil.sendFeedbackAndLog(string, "Turned off white-listing");
-                ServerUtil.getServer().serverProperties.setBoolean("white-list", false);
+                ServerUtil.getServer().properties.setProperty("white-list", false);
             } else if ("list".equals(var5)) {
-                Set var6 = ServerUtil.getServer().serverPlayerConnectionManager.getWhitelist();
+                Set var6 = ServerUtil.getServer().playerManager.getWhitelist();
                 String var7 = "";
 
                 String var9;
@@ -47,14 +47,14 @@ public class Whitelist implements Command {
                 String var10;
                 if ("add".equals(var5) && var4.length == 3) {
                     var10 = var4[2].toLowerCase();
-                    ServerUtil.getServer().serverPlayerConnectionManager.addWhitelist(var10);
+                    ServerUtil.getServer().playerManager.addToWhitelist(var10);
                     ServerUtil.sendFeedbackAndLog(string, "Added " + var10 + " to white-list");
                 } else if ("remove".equals(var5) && var4.length == 3) {
                     var10 = var4[2].toLowerCase();
-                    ServerUtil.getServer().serverPlayerConnectionManager.removeWhitelist(var10);
+                    ServerUtil.getServer().playerManager.removeFromWhitelist(var10);
                     ServerUtil.sendFeedbackAndLog(string, "Removed " + var10 + " from white-list");
                 } else if ("reload".equals(var5)) {
-                    ServerUtil.getServer().serverPlayerConnectionManager.doLoadWhitelist();
+                    ServerUtil.getServer().playerManager.reloadWhitelist();
                     ServerUtil.sendFeedbackAndLog(string, "Reloaded white-list from file");
                 }
             }

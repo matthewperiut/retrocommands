@@ -1,10 +1,8 @@
 package com.matthewperiut.spc.command.server;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.packet.play.EntityVelocity0x1CS2CPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ServerPlayerConnectionManager;
+import net.minecraft.server.PlayerManager;
 
 import java.util.logging.Logger;
 
@@ -15,13 +13,13 @@ public class ServerUtil {
         return (MinecraftServer) FabricLoader.getInstance().getGameInstance();
     }
 
-    public static ServerPlayerConnectionManager getConnectionManager() {
-        return getServer().serverPlayerConnectionManager;
+    public static PlayerManager getConnectionManager() {
+        return getServer().playerManager;
     }
 
     public static void sendFeedbackAndLog(String user, String message) {
         String str = user + ": " + message;
-        ServerUtil.getConnectionManager().sendChatMessage("§7(" + str + ")");
+        ServerUtil.getConnectionManager().broadcast("§7(" + str + ")");
         LOGGER.info(str);
     }
 
@@ -35,6 +33,6 @@ public class ServerUtil {
     }
 
     public static boolean isOp(String name) {
-        return getServer().serverPlayerConnectionManager.isOp(name);
+        return getServer().playerManager.isOperator(name);
     }
 }

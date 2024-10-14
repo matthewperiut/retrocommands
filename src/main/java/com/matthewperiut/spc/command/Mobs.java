@@ -10,7 +10,7 @@ import java.util.Map;
 public class Mobs implements Command {
     public static Map<String, Class> getMobSet()
     {
-        return EntityRegistry.STRING_ID_TO_CLASS;
+        return EntityRegistry.idToClass;
     }
 
     @Override

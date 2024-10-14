@@ -1,6 +1,6 @@
 package com.matthewperiut.spc.api;
 
-import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.entity.player.PlayerEntity;
 
 public class PosParse {
     public double x;
@@ -9,13 +9,13 @@ public class PosParse {
 
     public boolean valid = true;
 
-    public PosParse(PlayerBase player) {
+    public PosParse(PlayerEntity player) {
         x = player.x;
         y = player.y;
         z = player.z;
     }
 
-    public PosParse(PlayerBase player, int start, String[] segments) {
+    public PosParse(PlayerEntity player, int start, String[] segments) {
         this(player.x, player.y, player.z, start, segments);
     }
 

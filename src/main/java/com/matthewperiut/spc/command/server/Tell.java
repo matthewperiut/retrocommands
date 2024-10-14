@@ -3,7 +3,7 @@ package com.matthewperiut.spc.command.server;
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.ParameterSuggestUtil;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.packet.play.ChatMessage0x3Packet;
+import net.minecraft.network.packet.play.ChatMessagePacket;
 
 import java.util.Arrays;
 
@@ -18,7 +18,7 @@ public class Tell implements Command {
             }
             String message = "§7" + commandSource.getName() + " whispers " + b;
             System.out.println(message + " to " + a);
-            if (!ServerUtil.getConnectionManager().trySendPacket(a, new ChatMessage0x3Packet(message))) {
+            if (!ServerUtil.getConnectionManager().sendPacket(a, new ChatMessagePacket(message))) {
                 commandSource.sendFeedback("§cThere's no player by that name online.");
             }
         }

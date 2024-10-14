@@ -2,8 +2,8 @@ package com.matthewperiut.spc.command.server;
 
 import com.matthewperiut.spc.api.Command;
 import com.matthewperiut.spc.util.SharedCommandSource;
-import net.minecraft.entity.player.ServerPlayer;
-import net.minecraft.server.ServerPlayerConnectionManager;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.PlayerManager;
 
 public class Kick implements Command {
     @Override
@@ -13,18 +13,18 @@ public class Kick implements Command {
             return;
         }
         String message = ServerUtil.appendEnd(2, parameters);
-        ServerPlayer player = null;
-        ServerPlayerConnectionManager scm = ServerUtil.getConnectionManager();
+        ServerPlayerEntity player = null;
+        PlayerManager scm = ServerUtil.getConnectionManager();
 
         for (int i = 0; i < scm.players.size(); ++i) {
-            ServerPlayer var9 = (ServerPlayer) scm.players.get(i);
+            ServerPlayerEntity var9 = (ServerPlayerEntity) scm.players.get(i);
             if (var9.name.equalsIgnoreCase(parameters[1])) {
                 player = var9;
             }
         }
 
         if (player != null) {
-            player.packetHandler.kick(parameters.length > 2 ? message : "Kicked by admin");
+            player.networkHandler.disconnect(parameters.length > 2 ? message : "Kicked by admin");
             ServerUtil.sendFeedbackAndLog(commandSource.getName(), "Kicking " + player.name);
         } else {
             commandSource.sendFeedback("Can't find user " + message + ". No kick.");
