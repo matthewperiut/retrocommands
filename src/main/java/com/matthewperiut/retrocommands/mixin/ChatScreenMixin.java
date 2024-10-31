@@ -113,37 +113,45 @@ public abstract class ChatScreenMixin extends Screen {
             }});
 
     private void fetchSuggestionsForCurrentWord(String[] sections) {
-        Minecraft mc = ((Minecraft) FabricLoader.getInstance().getGameInstance());
+        try {
+            Minecraft mc = ((Minecraft) FabricLoader.getInstance().getGameInstance());
 
-        if (sections.length == 1 && currentWord.length() > 1 && currentWord.charAt(0) == '/' && !getText().endsWith(" ")) {
+            if (getText().startsWith(" ")) {
+                return;
+            }
 
-            if (mc.world.isRemote && !RetroCommands.mp_spc) {
-                suggestions = list.stream()
-                        .filter(s -> s.startsWith(currentWord.substring(1)))
-                        .map(s -> s.substring(getText().length() - 1))
-                        .toArray(String[]::new);
+            if (sections.length == 1 && currentWord.length() > 1 && getText().charAt(0) == '/' && !getText().endsWith(" ")) {
+
+                if (mc.world.isRemote && !RetroCommands.mp_spc) {
+                    suggestions = list.stream()
+                            .filter(s -> s.startsWith(currentWord.substring(1)))
+                            .map(s -> s.substring(getText().length() - 1))
+                            .toArray(String[]::new);
+                } else {
+                    suggestions = RetroChatUtil.commands.stream()
+                            .filter(c -> c.name().startsWith(currentWord.substring(1)))
+                            .filter(c -> (!c.disableInSingleplayer() || mc.world.isRemote))
+                            .filter(c -> (RetroCommands.mp_op || !c.needsPermissions() || !mc.world.isRemote))
+                            .map(c -> c.name().substring(getText().length() - 1))
+                            .toArray(String[]::new);
+                }
             } else {
-                suggestions = RetroChatUtil.commands.stream()
-                        .filter(c -> c.name().startsWith(currentWord.substring(1)))
+                Command command = RetroChatUtil.commands.stream()
+                        .filter(c -> c.name().equals(sections[0].substring(1)))
                         .filter(c -> (!c.disableInSingleplayer() || mc.world.isRemote))
                         .filter(c -> (RetroCommands.mp_op || !c.needsPermissions() || !mc.world.isRemote))
-                        .map(c -> c.name().substring(getText().length() - 1))
-                        .toArray(String[]::new);
+                        .findFirst().orElse(null);
+                if (command != null && (!command.disableInSingleplayer() || mc.world.isRemote)) {
+                    PlayerEntity player = mc.player;
+                    SharedCommandSource source = new SharedCommandSource(player);
+                    suggestions = getText().endsWith(" ") ? command.suggestion(source, sections.length, "", getText()) : command.suggestion(source, sections.length - 1, currentWord, getText());
+                }
             }
-        } else {
-            Command command = RetroChatUtil.commands.stream()
-                    .filter(c -> c.name().equals(sections[0].substring(1)))
-                    .filter(c -> (!c.disableInSingleplayer() || mc.world.isRemote))
-                    .filter(c -> (RetroCommands.mp_op || !c.needsPermissions() || !mc.world.isRemote))
-                    .findFirst().orElse(null);
-            if (command != null && (!command.disableInSingleplayer() || mc.world.isRemote)) {
-                PlayerEntity player = mc.player;
-                SharedCommandSource source = new SharedCommandSource(player);
-                suggestions = getText().endsWith(" ") ? command.suggestion(source, sections.length, "", getText()) : command.suggestion(source, sections.length - 1, currentWord, getText());
-            }
-        }
 
-        textWidthPixels = this.textRenderer.getWidth("> " + this.getText());
+            textWidthPixels = this.textRenderer.getWidth("> " + this.getText());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private boolean adjustChosenSuggestion(int par2) {

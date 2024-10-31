@@ -24,4 +24,9 @@ public class List implements Command {
     public boolean disableInSingleplayer() {
         return true;
     }
+
+    @Override
+    public boolean needsPermissions() {
+        return false;
+    }
 }

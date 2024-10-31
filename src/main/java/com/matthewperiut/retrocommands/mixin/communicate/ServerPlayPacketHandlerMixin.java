@@ -21,6 +21,7 @@ public abstract class ServerPlayPacketHandlerMixin {
     void customPacket(UpdateSignPacket par1, CallbackInfo ci) {
         if (par1.x == 0 && par1.y == -1 && par1.z == 0) {
             if (par1.text[0].equals("op?")) {
+                // OP Status
                 String[] contents = new String[]{"", "", "", ""};
                 contents[0] = ServerUtil.isOp(player.name) ? "1" : "0";
                 sendPacket(new UpdateSignPacket(0, -1, 0, contents));

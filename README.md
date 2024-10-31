@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    modImplementation('com.github.matthewperiut:retrocommands:0.5.2') {
+    modImplementation('com.github.matthewperiut:retrocommands:0.5.3') {
         transitive false
     }
 }
@@ -61,8 +61,8 @@ SummonRegistry.add(...)
 
 Examples from `com.matthewperiut.retrocommands.util.VanillaMobs`
 ```java
-SummonRegistry.add(Creeper.class, (level, pos, param) -> {
-    Creeper creeper = new Creeper(level);
+SummonRegistry.add(Creeper.class, (world, pos, param) -> {
+    Creeper creeper = new Creeper(world);
 
     if (param.length > 5)
         if (!param[5].isEmpty())
@@ -72,12 +72,12 @@ SummonRegistry.add(Creeper.class, (level, pos, param) -> {
     return creeper;
 }, "{charged (0 or 1)}");
 
-SummonRegistry.add(Sheep.class, (level, pos, param) -> {
+SummonRegistry.add(Sheep.class, (world, pos, param) -> {
     int color = Integer.parseInt(param[5]);
     int has_wool = 1;
     if (param.length > 6)
         has_wool = Integer.parseInt(param[6]);
-    Sheep sheep = new Sheep(level);
+    Sheep sheep = new Sheep(world);
     sheep.setSheared(has_wool == 0);
     sheep.setColour(color);
     return sheep;

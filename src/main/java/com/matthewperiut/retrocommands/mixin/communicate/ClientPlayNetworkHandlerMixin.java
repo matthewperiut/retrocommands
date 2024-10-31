@@ -25,11 +25,16 @@ public abstract class ClientPlayNetworkHandlerMixin {
     }
 
     @Inject(method = "handleUpdateSign", at = @At("HEAD"))
-    void customPacket(UpdateSignPacket par1, CallbackInfo ci) {
+    void customPackets(UpdateSignPacket par1, CallbackInfo ci) {
         if (par1.x == 0 && par1.y == -1 && par1.z == 0) {
             if (par1.size() > 0) {
-                RetroCommands.mp_spc = true;
-                RetroCommands.mp_op = par1.text[0].startsWith("1");
+                if (par1.size() == 1) {
+                    RetroCommands.mp_spc = true;
+                    RetroCommands.mp_op = par1.text[0].startsWith("1");
+                } else if (par1.text[0].startsWith("players")) {
+                    RetroCommands.player_names = par1.text[1].split(",");
+                    System.out.println(par1.text[1]);
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ public class RetroCommands implements ModInitializer {
     public static boolean mjf = false;
     public static boolean mp_spc = false;
     public static boolean mp_op = false;
+    public static String[] player_names = null;
     @Override
     public void onInitialize() {
         RetroChatUtil.addDefaultCommands();

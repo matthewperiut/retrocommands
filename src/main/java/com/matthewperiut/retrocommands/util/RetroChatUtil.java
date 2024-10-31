@@ -38,8 +38,10 @@ public class RetroChatUtil {
         commands.add(new Id());
         commands.add(new Mobs());
         commands.add(new Summon());
+        commands.add(new Tpa());
         commands.add(new Teleport());
         commands.add(new Time());
+        commands.add(new Clock());
         commands.add(new ToggleDownfall());
         commands.add(new Ride());
         commands.add(new Hat());

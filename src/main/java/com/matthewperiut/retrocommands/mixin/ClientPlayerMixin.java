@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Arrays;
+
 @Mixin(MultiplayerClientPlayerEntity.class)
 public class ClientPlayerMixin {
     @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
@@ -20,6 +22,7 @@ public class ClientPlayerMixin {
         if (par1.startsWith("/perm")) {
             ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage("mp_op: " + RetroCommands.mp_op);
             ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage("mp_spc: " + RetroCommands.mp_op);
+            ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage("player_names: " + Arrays.toString(RetroCommands.player_names));
             ci.cancel();
         }
     }

@@ -53,4 +53,17 @@ public class PosParse {
     public String toString() {
         return String.format("%.1f %.1f %.1f", x, y, z);
     }
+
+    public static boolean canPosParse(String s) {
+        String new_s = s.replace("~", "");
+        if (new_s.isEmpty() && s.contains("~")) {
+            return true;
+        }
+        try {
+            int i = Integer.parseInt(new_s);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
 }

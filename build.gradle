@@ -76,11 +76,19 @@ dependencies {
 	implementation 'com.google.guava:guava:33.2.1-jre'
 
 	modImplementation "net.modificationstation:StationAPI:${project.stapi_version}"
-	modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") { transitive false }
 
 	// API Extensions
 	modImplementation("maven.modrinth:bh-creative:${project.bhcreative_version}") { transitive false }
 	modImplementation("com.github.matthewperiut:accessory-api:${project.accessory_version}") { transitive false }
+
+	implementation(include("me.carleslc:Simple-Yaml:1.8.4") as Dependency)
+	modImplementation("net.glasslauncher.mods:glass-networking:${project.glass_networking_version}") {
+		transitive false
+	}
+
+	modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") {
+		transitive false
+	}
 
 	// Runtime Convenience
 	modRuntimeOnly "com.github.GeyserMC:MCAuthLib:d9d773e5d50327c33898c65cd545a4f6ef3ba1b5" // needed for mojang fix

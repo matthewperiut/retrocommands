@@ -14,43 +14,56 @@ public class Time implements Command {
             return;
         }
 
-        if (parameters.length > 2) {
-            switch (parameters[1]) {
-                case "set":
-                    long time = -1;
-                    try {
-                        time = Integer.parseInt(parameters[2]);
-                    } catch (NumberFormatException e) {
-                        switch (parameters[2]) {
-                            case "day":
-                                time = 1000;
-                                break;
-                            case "noon":
-                                time = 6000;
-                                break;
-                            case "sunset":
-                                time = 12000;
-                                break;
-                            case "night":
-                                time = 13000;
-                                break;
-                            case "midnight":
-                                time = 18000;
-                                break;
-                            case "sunrise":
-                                time = 23000;
-                                break;
-                            default:
-                                commandSource.sendFeedback("Time is not properly formatted");
-                                return;
-                        }
+        if (parameters.length > 1) {
+            if (parameters[1].equals("set")) {
+                long additional_time = -1;
+                try {
+                    additional_time = Integer.parseInt(parameters[2]);
+                } catch (NumberFormatException e) {
+                    switch (parameters[2]) {
+                        case "day":
+                            additional_time = 1000;
+                            break;
+                        case "noon":
+                            additional_time = 6000;
+                            break;
+                        case "sunset":
+                            additional_time = 12000;
+                            break;
+                        case "night":
+                            additional_time = 13000;
+                            break;
+                        case "midnight":
+                            additional_time = 18000;
+                            break;
+                        case "sunrise":
+                            additional_time = 23000;
+                            break;
+                        default:
+                            commandSource.sendFeedback("Time is not properly formatted");
+                            return;
                     }
-                    player.world.setTime(time);
-                    commandSource.sendFeedback("Time set to " + time);
-                    break;
+                }
+                long time = player.world.getTime();
+                long left_over = time % 24000;
+                player.world.setTime(time + (additional_time - left_over));
+                commandSource.sendFeedback("Time set to " + additional_time);
+                return;
             }
-
-            return;
+            if (parameters[1].equals("get")) {
+                commandSource.sendFeedback("Time is " + String.valueOf(player.world.getTime()));
+                commandSource.sendFeedback("Days: " + String.valueOf(player.world.getTime()));
+                return;
+            }
+            if (parameters[1].equals("add")) {
+                try {
+                    long additional_time = Integer.parseInt(parameters[2]);
+                    player.world.setTime(player.world.getTime() + additional_time);
+                    commandSource.sendFeedback("You added " + additional_time + " to the time");
+                } catch (NumberFormatException e) {
+                    commandSource.sendFeedback("Cannot add a non-number amount of time");
+                }
+            }
         }
 
         manual(commandSource);
@@ -63,9 +76,10 @@ public class Time implements Command {
 
     @Override
     public void manual(SharedCommandSource commandSource) {
-        commandSource.sendFeedback("Usage: /time set {levelTime}");
+        commandSource.sendFeedback("Usage: /time set {worldTime}");
+        commandSource.sendFeedback("Usage: /time add {time}");
         commandSource.sendFeedback("Info: sets the time of day");
-        commandSource.sendFeedback("levelTime can be an integer usually between 0 and 24000 or keyword");
+        commandSource.sendFeedback("worldTime can be an integer usually between 0 and 24000 or keyword");
         commandSource.sendFeedback("preset keywords are day, noon, sunset, night, midnight, sunrise");
     }
 
