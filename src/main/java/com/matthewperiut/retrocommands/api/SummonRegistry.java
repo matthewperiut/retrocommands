@@ -13,7 +13,7 @@ public class SummonRegistry {
     public static void add(Class<? extends Entity> entity, SummonCommand cmd, String param_desc) {
         SummonCommand c = entityFactories.put(entity, cmd);
         if (c != null)
-            System.out.println("[SPC] Overwrote " + c + " with " + cmd + " for summoning " + entity);
+            System.out.println("[retrocommands] Overwrote " + c + " with " + cmd + " for summoning " + entity);
 
 
         Summon.help.put(entity, param_desc);

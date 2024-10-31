@@ -44,7 +44,6 @@ public class Teleport implements Command {
         if (parameters.length == 2) {
             if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
                 // teleport to player
-                System.out.printf(parameters[1]);
                 teleportToPlayer(commandSource, player, parameters[1]);
                 return;
             } else {
@@ -56,7 +55,6 @@ public class Teleport implements Command {
         if (parameters.length == 3) {
             if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
                 // teleport player to player
-                System.out.printf(parameters[1]);
                 teleportPlayerToPlayer(commandSource, parameters[1], parameters[2]);
                 return;
             } else {

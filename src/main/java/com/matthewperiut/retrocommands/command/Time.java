@@ -63,6 +63,7 @@ public class Time implements Command {
                 } catch (NumberFormatException e) {
                     commandSource.sendFeedback("Cannot add a non-number amount of time");
                 }
+                return;
             }
         }
 

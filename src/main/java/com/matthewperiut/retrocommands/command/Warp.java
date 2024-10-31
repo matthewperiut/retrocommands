@@ -83,7 +83,6 @@ public class Warp implements Command {
 
             commandSource.sendFeedback("Page " + (pg + 1) + "/" + pages);
             for (int i = numSkipped; i < end; i += 4) {
-                System.out.println(numSkipped + " " + i + " " + (numSkipped + (4 * 5)));
                 commandSource.sendFeedback(segments[i] + ": " + segments[i + 1] + " " + segments[i + 2] + " " + segments[i + 3]);
             }
 

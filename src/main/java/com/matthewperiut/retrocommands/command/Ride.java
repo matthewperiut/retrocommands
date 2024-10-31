@@ -39,7 +39,6 @@ public class Ride implements Command {
 
         for (Object o : player.world.players) {
             PlayerEntity p = (PlayerEntity) o;
-            System.out.println(p.name);
             if (p.name.equals(rider)) {
                 riderEntity = p;
             }

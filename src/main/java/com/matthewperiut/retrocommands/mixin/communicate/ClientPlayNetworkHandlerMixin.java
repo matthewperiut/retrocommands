@@ -33,7 +33,6 @@ public abstract class ClientPlayNetworkHandlerMixin {
                     RetroCommands.mp_op = par1.text[0].startsWith("1");
                 } else if (par1.text[0].startsWith("players")) {
                     RetroCommands.player_names = par1.text[1].split(",");
-                    System.out.println(par1.text[1]);
                 }
             }
         }
