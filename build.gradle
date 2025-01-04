@@ -1,6 +1,6 @@
 plugins {
-	id 'fabric-loom' version '1.7.3'
-	id 'babric-loom-extension' version '1.7.4'
+	id 'fabric-loom' version '1.8.12'
+	id 'babric-loom-extension' version '1.8.9'
 	id 'maven-publish'
 }
 
@@ -95,10 +95,9 @@ dependencies {
 	modRuntimeOnly ("maven.modrinth:mojangfix-stationapi-edition:${project.mojang_fix_stapi_version}") { transitive false }
 	modRuntimeOnly ("maven.modrinth:thirdpersonfix-babric:${project.thirdpersonfix_version}") { transitive false }
 	modRuntimeOnly ("maven.modrinth:modmenu-beta:${project.modmenu_version}") { transitive false }
-	modRuntimeOnly ("net.glasslauncher:HowManyItems-Fabric-Unofficial:${project.howmanyitems_version}") {transitive false }
-	modRuntimeOnly ("com.github.matthewperiut:stapi-fast-intro:17a7ed0dc4") { transitive false }
+	modRuntimeOnly ("maven.modrinth:fast-stapi-intro:${project.stapi_fast_intro_version}") { transitive false }
 
-	modCompileOnlyApi files("lib/mojangfixstationapi-1.4.0.jar")
+	modCompileOnlyApi files("lib/mojangfixstationapi-2.3.0.jar")
 }
 
 processResources {

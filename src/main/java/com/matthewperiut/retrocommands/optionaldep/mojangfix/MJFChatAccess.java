@@ -5,6 +5,15 @@ import pl.telvarost.mojangfixstationapi.client.text.chat.ChatScreenVariables;
 import static com.matthewperiut.retrocommands.RetroCommands.mjf;
 
 public class MJFChatAccess {
+    public static Integer getCursorPosition() {
+        try {
+            return ChatScreenVariables.chatCursorPosition;
+        } catch (Exception e) {
+            mjf = false;
+            return 0;
+        }
+    }
+
     public static String getText() {
         try {
             return ChatScreenVariables.textField.getText();
