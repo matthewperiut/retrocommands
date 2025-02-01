@@ -221,7 +221,7 @@ public abstract class ChatScreenMixin extends Screen {
             alreadyRendered += this.getText();
         }
         //drawTextWithShadow(this.textRenderer,  (focusedTicks / 6 % 2 == 0 ? "_" : ""), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
-        boolean caretVisible = true; //focusedTicks / 6 % 2 == 0;
+        boolean caretVisible = focusedTicks / 6 % 2 == 0;
         if (mjf) {
             int cursorPosition = MJFChatAccess.getCursorPosition();
             alreadyRendered = (new StringBuilder(alreadyRendered)).insert(alreadyRendered.length() + cursorPosition, caretVisible ? "_" : "").toString();
