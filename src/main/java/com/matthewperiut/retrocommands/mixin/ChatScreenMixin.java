@@ -202,26 +202,33 @@ public abstract class ChatScreenMixin extends Screen {
         this.fill(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
         renderSuggestions(i,j,f);
         String alreadyRendered = "";
-        drawTextWithShadow(this.textRenderer, "> ", 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
+        //drawTextWithShadow(this.textRenderer, "> ", 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
         alreadyRendered += "> ";
         if (getText().startsWith("/") && !getText().contains(" ") && !tryMatch(getText().substring(1))) {
-            drawTextWithShadow(this.textRenderer,  "/", 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
+            //drawTextWithShadow(this.textRenderer,  "/", 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
             alreadyRendered += "/";
-            drawTextWithShadow(this.textRenderer,  this.getText().substring(1), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 0xFC5454);
+            //drawTextWithShadow(this.textRenderer,  this.getText().substring(1), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 0xFC5454);
             alreadyRendered += this.getText().substring(1);
         } else if (getText().startsWith("/")){
             if (!tryMatch(getText().split(" ")[0].substring(1))) {
-                drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 0xFC5454);
+                //drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 0xFC5454);
             } else {
-                drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
+                //drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
             }
             alreadyRendered += this.getText();
         } else {
-            drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
+            //drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
             alreadyRendered += this.getText();
         }
-        drawTextWithShadow(this.textRenderer,  (focusedTicks / 6 % 2 == 0 ? "_" : ""), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
-        alreadyRendered += (focusedTicks / 6 % 2 == 0 ? "_" : "");
+        //drawTextWithShadow(this.textRenderer,  (focusedTicks / 6 % 2 == 0 ? "_" : ""), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
+        boolean caretVisible = focusedTicks / 6 % 2 == 0;
+        if (mjf) {
+            int cursorPosition = MJFChatAccess.getCursorPosition();
+            alreadyRendered = (new StringBuilder(alreadyRendered)).insert(alreadyRendered.length() + cursorPosition, caretVisible ? "_" : "").toString();
+        } else {
+            alreadyRendered += (caretVisible ? "_" : "");
+        }
+        drawTextWithShadow(this.textRenderer,  alreadyRendered, 4, this.height - 12, 14737632);
         super.render(i, j, f);
         ci.cancel();
     }
