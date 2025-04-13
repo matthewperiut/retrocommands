@@ -83,3 +83,19 @@ SummonRegistry.add(Sheep.class, (world, pos, param) -> {
     return sheep;
 }, "{wool color meta} {has wool (0/1)} ");
 ```
+
+# Configuration
+**Cryonic Config** is required for this feature.  
+__This file generates when using a command for the first time__  
+To disable commands go to `{mc_dir}/config/retrocommands.json` and in the json under "disabledCommands", set the value to commands you want to disable separated by commas  
+Examples:
+```json
+{
+  "disabledCommands": "help,give,hat"
+}
+```
+```json
+{
+  "disabledCommands": "hat"
+}
+```

@@ -1,12 +1,15 @@
 package com.matthewperiut.retrocommands.util;
 
+import com.matthewperiut.retrocommands.RetroCommands;
 import com.matthewperiut.retrocommands.api.Command;
 import com.matthewperiut.retrocommands.command.*;
 import com.matthewperiut.retrocommands.command.server.*;
+import com.periut.cryonicconfig.CryonicConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static java.lang.Character.isDigit;
 
@@ -50,6 +53,10 @@ public class RetroChatUtil {
         commands.add(new Warp());
         commands.add(new WhoAmI());
 
+        if (RetroCommands.cc) {
+            commands.add(new ReloadCryonicConfig());
+        }
+
         for (Command c : commands) {
             if (!c.disableInSingleplayer() || FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
                 Help.addHelpTip("/" + c.name(), c.needsPermissions());
@@ -62,6 +69,14 @@ public class RetroChatUtil {
         boolean page = help && isDigit(segments[1].charAt(0));
 
         String wanted = help ? segments[1] : segments[0];
+
+        if (RetroCommands.cc) {
+            RetroCommands.disabled_commands = CryonicConfig.getConfig(RetroCommands.MOD_ID).getString("disabledCommands", "").split(",");
+            if (Arrays.asList(RetroCommands.disabled_commands).contains(command)) {
+                commandSource.sendFeedback("This command has been disabled.");
+                return false;
+            }
+        }
 
         for (Command c : commands) {
             if (c.name() == null)
