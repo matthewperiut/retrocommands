@@ -1,7 +1,7 @@
 plugins {
-	id 'fabric-loom' version '1.8.12'
-	id 'babric-loom-extension' version '1.8.9'
 	id 'maven-publish'
+	id 'fabric-loom' version '1.9.2'
+	id 'babric-loom-extension' version '1.9.4'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -89,6 +89,8 @@ dependencies {
 	modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") {
 		transitive false
 	}
+
+	modImplementation("maven.modrinth:cryonicconfig:babric-b1.7.3-1.0.0")
 
 	// Runtime Convenience
 	modRuntimeOnly "com.github.GeyserMC:MCAuthLib:d9d773e5d50327c33898c65cd545a4f6ef3ba1b5" // needed for mojang fix
