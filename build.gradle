@@ -81,8 +81,8 @@ dependencies {
 	modImplementation("maven.modrinth:bh-creative:${project.bhcreative_version}") { transitive false }
 	modImplementation("com.github.matthewperiut:accessory-api:${project.accessory_version}") { transitive false }
 
-	implementation(include("me.carleslc:Simple-Yaml:1.8.4") as Dependency)
-	modImplementation("net.glasslauncher.mods:glass-networking:${project.glass_networking_version}") {
+	implementation("me.carleslc:Simple-Yaml:1.8.4")
+	include modImplementation("net.glasslauncher.mods:glass-networking:${project.glass_networking_version}") {
 		transitive false
 	}
 
@@ -94,8 +94,9 @@ dependencies {
 
 	// Runtime Convenience
 	modRuntimeOnly "com.github.GeyserMC:MCAuthLib:d9d773e5d50327c33898c65cd545a4f6ef3ba1b5" // needed for mojang fix
-	modRuntimeOnly ("maven.modrinth:mojangfix-stationapi-edition:${project.mojang_fix_stapi_version}") { transitive false }
+//	modRuntimeOnly ("maven.modrinth:mojangfix-stationapi-edition:${project.mojang_fix_stapi_version}") { transitive false }
 	modRuntimeOnly ("maven.modrinth:thirdpersonfix-babric:${project.thirdpersonfix_version}") { transitive false }
+	modRuntimeOnly ("maven.modrinth:retroauth:1.1.0") { transitive false }
 	modRuntimeOnly ("maven.modrinth:modmenu-beta:${project.modmenu_version}") { transitive false }
 	modRuntimeOnly ("maven.modrinth:fast-stapi-intro:${project.stapi_fast_intro_version}") { transitive false }
 

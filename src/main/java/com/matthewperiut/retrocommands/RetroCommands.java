@@ -11,7 +11,7 @@ public class RetroCommands implements ModInitializer {
     public static boolean mp_op = false;
     public static String[] player_names = null;
     public static boolean cc = false;
-    public static String[] disabled_commands;
+    public static String[] disabled_commands = null;
     public static final String MOD_ID = "retrocommands";
     @Override
     public void onInitialize() {

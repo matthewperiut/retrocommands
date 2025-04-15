@@ -17,6 +17,9 @@
   "entrypoints": {
     "main": [
       "com.matthewperiut.retrocommands.RetroCommands"
+    ],
+    "glassnetworking": [
+      "com.matthewperiut.retrocommands.util.NetworkingUtil"
     ]
   },
   "mixins": [

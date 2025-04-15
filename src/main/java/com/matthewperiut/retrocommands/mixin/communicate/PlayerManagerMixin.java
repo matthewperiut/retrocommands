@@ -1,9 +1,11 @@
 package com.matthewperiut.retrocommands.mixin.communicate;
 
+import com.matthewperiut.retrocommands.RetroCommands;
+import net.glasslauncher.mods.networking.GlassPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.play.UpdateSignPacket;
 import net.minecraft.server.PlayerManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,12 +31,12 @@ public abstract class PlayerManagerMixin {
         }
 
         playerNames = playerNames.substring(0, playerNames.length()-1);
-        String[] contents = new String[]{"players", playerNames, "", ""};
 
         for (Object object : players) {
             PlayerEntity player = (PlayerEntity) object;
-            sendPacket(player.name, new UpdateSignPacket(0, -1, 0, contents));
+            NbtCompound nbt = new NbtCompound();
+            nbt.putString("players", playerNames);
+            sendPacket(player.name, new GlassPacket(RetroCommands.MOD_ID, "players", nbt));
         }
-
     }
 }

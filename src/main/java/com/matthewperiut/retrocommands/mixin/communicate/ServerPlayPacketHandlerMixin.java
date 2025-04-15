@@ -1,9 +1,13 @@
 package com.matthewperiut.retrocommands.mixin.communicate;
 
+import com.matthewperiut.retrocommands.RetroCommands;
 import com.matthewperiut.retrocommands.command.server.ServerUtil;
+import net.glasslauncher.mods.networking.GlassPacket;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.Connection;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.play.UpdateSignPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,18 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerPlayPacketHandlerMixin {
     @Shadow public abstract void sendPacket(Packet arg);
 
-    @Shadow private ServerPlayerEntity player;
+    @Inject(method = "<init>", at = @At("TAIL"))
+    void tellOp(MinecraftServer server, Connection connection, ServerPlayerEntity player, CallbackInfo ci) {
 
-    @Inject(method = "handleUpdateSign", at = @At("HEAD"), cancellable = true)
-    void customPacket(UpdateSignPacket par1, CallbackInfo ci) {
-        if (par1.x == 0 && par1.y == -1 && par1.z == 0) {
-            if (par1.text[0].equals("op?")) {
-                // OP Status
-                String[] contents = new String[]{"", "", "", ""};
-                contents[0] = ServerUtil.isOp(player.name) ? "1" : "0";
-                sendPacket(new UpdateSignPacket(0, -1, 0, contents));
-                ci.cancel();
-            }
-        }
     }
 }

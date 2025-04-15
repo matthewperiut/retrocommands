@@ -1,13 +1,16 @@
 package com.matthewperiut.retrocommands.command.server;
 
+import com.matthewperiut.retrocommands.RetroCommands;
 import com.matthewperiut.retrocommands.api.PosParse;
 import com.matthewperiut.retrocommands.dimension.BareTravelAgent;
 import com.matthewperiut.retrocommands.util.SharedCommandSource;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
+import net.glasslauncher.mods.networking.GlassPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.world.World;
@@ -164,5 +167,11 @@ public class ServerUtil {
         } else {
             commandSource.sendFeedback("You must have a target to tpa to.");
         }
+    }
+
+    public static void informPlayerOpStatus(String playerName) {
+        NbtCompound nbt = new NbtCompound();
+        nbt.putBoolean("op", ServerUtil.isOp(playerName));
+        ServerUtil.getConnectionManager().sendPacket(playerName, new GlassPacket(RetroCommands.MOD_ID, "op", nbt));
     }
 }

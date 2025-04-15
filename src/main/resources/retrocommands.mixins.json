@@ -8,8 +8,7 @@
     "BlockBaseMixin",
     "MixinItemInstance",
     "PlayerBaseMixin",
-    "access.EntityAccessor",
-    "communicate.UpdateSignPacketMixin"
+    "access.EntityAccessor"
   ],
   "server": [
     "CommandManagerMixin",
