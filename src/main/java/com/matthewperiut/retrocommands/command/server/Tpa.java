@@ -2,6 +2,7 @@ package com.matthewperiut.retrocommands.command.server;
 
 import com.matthewperiut.retrocommands.api.Command;
 import com.matthewperiut.retrocommands.util.ParameterSuggestUtil;
+import com.matthewperiut.retrocommands.util.ServerUtil;
 import com.matthewperiut.retrocommands.util.SharedCommandSource;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -10,9 +11,9 @@ import java.util.ArrayList;
 
 public class Tpa implements Command {
     public static class Request {
-        long time;
-        String from;
-        String to;
+        public long time;
+        public String from;
+        public String to;
         public Request(String from, String to, long time) {
             this.from = from;
             this.to = to;

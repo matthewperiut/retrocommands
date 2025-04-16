@@ -1,6 +1,7 @@
 package com.matthewperiut.retrocommands.command.server;
 
 import com.matthewperiut.retrocommands.api.Command;
+import com.matthewperiut.retrocommands.util.ServerUtil;
 import com.matthewperiut.retrocommands.util.SharedCommandSource;
 import net.minecraft.network.packet.play.ChatMessagePacket;
 

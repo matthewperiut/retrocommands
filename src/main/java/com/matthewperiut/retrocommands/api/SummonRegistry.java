@@ -1,6 +1,6 @@
 package com.matthewperiut.retrocommands.api;
 
-import com.matthewperiut.retrocommands.command.Summon;
+import com.matthewperiut.retrocommands.command.vanilla.Summon;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
