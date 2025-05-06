@@ -10,15 +10,9 @@ public class NetworkingUtil implements GlassPacketListener {
     @Override
     public void registerGlassPackets() {
         registerGlassPacket("retrocommands:op", ((glassPacket, networkHandler) -> {
-            if (!networkHandler.isServerSide()) {
-                RetroCommands.mp_op = glassPacket.getNbt().getBoolean("op");
-                RetroCommands.mp_spc = true;
-            } else {
-                ServerPlayNetworkHandler serverPlayNetworkHandler = (ServerPlayNetworkHandler) networkHandler;
-                ServerUtil.informPlayerOpStatus(serverPlayNetworkHandler.getName());
-                ServerUtil.informPlayerDisabledCommands(serverPlayNetworkHandler.getName());
-            }
-        }), true, true);
+            RetroCommands.mp_op = glassPacket.getNbt().getBoolean("op");
+            RetroCommands.mp_spc = true;
+        }), true, false);
 
         registerGlassPacket("retrocommands:players", ((glassPacket, networkHandler) -> {
             RetroCommands.player_names = glassPacket.getNbt().getString("players").split(",");

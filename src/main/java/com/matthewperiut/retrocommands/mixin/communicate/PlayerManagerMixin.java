@@ -1,12 +1,14 @@
 package com.matthewperiut.retrocommands.mixin.communicate;
 
 import com.matthewperiut.retrocommands.RetroCommands;
+import com.matthewperiut.retrocommands.util.ServerUtil;
 import net.glasslauncher.mods.networking.GlassPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,6 +25,10 @@ public abstract class PlayerManagerMixin {
 
     @Inject(method = "addPlayer", at = @At("TAIL"))
     public void sendPlayersToAll(ServerPlayerEntity par1, CallbackInfo ci) {
+
+        ServerPlayNetworkHandler serverPlayNetworkHandler = (ServerPlayNetworkHandler) par1.networkHandler;
+        ServerUtil.informPlayerOpStatus(serverPlayNetworkHandler.getName());
+        ServerUtil.informPlayerDisabledCommands(serverPlayNetworkHandler.getName());
 
         String playerNames = "";
         for (Object object : players) {

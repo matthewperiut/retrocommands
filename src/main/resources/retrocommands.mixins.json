@@ -20,8 +20,7 @@
     "intercept.AbstractClientPlayerMixin",
     "intercept.ClientPlayerMixin",
     "client.ChatScreenMixin",
-    "client.MinecraftMixinChatEnabler",
-    "communicate.ClientPlayNetworkHandlerMixin"
+    "client.MinecraftMixinChatEnabler"
   ],
   "injectors": {
     "defaultRequire": 1
