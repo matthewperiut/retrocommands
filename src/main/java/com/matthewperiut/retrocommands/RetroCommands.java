@@ -17,7 +17,7 @@ public class RetroCommands implements ModInitializer {
     public static boolean bhCreative = false;
 
     // Multiplayer
-    public static boolean mp_spc = false;
+    public static boolean mp_rc = false;
     public static boolean mp_op = false;
 
     // String arrays for completions help

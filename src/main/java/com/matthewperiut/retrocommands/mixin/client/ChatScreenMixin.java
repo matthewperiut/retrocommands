@@ -129,7 +129,7 @@ public abstract class ChatScreenMixin extends Screen {
 
             if (sections.length == 1 && currentWord.length() > 1 && getText().charAt(0) == '/' && !getText().endsWith(" ")) {
 
-                if (mc.world.isRemote && !RetroCommands.mp_spc) {
+                if (mc.world.isRemote && !RetroCommands.mp_rc) {
                     suggestions = vanillaNoOPCommands.stream()
                             .filter(s -> s.startsWith(currentWord.substring(1)))
                             .map(s -> s.substring(getText().length() - 1))

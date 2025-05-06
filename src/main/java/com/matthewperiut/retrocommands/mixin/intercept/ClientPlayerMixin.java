@@ -21,7 +21,7 @@ public class ClientPlayerMixin {
         }
         if (par1.startsWith("/perm")) {
             ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage("mp_op: " + RetroCommands.mp_op);
-            ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage("mp_spc: " + RetroCommands.mp_op);
+            ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage("mp_rc: " + RetroCommands.mp_rc);
             ((Minecraft) FabricLoader.getInstance().getGameInstance()).inGameHud.addChatMessage("player_names: " + Arrays.toString(RetroCommands.player_names));
             ci.cancel();
         }

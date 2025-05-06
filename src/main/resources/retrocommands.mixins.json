@@ -5,22 +5,23 @@
   "compatibilityLevel": "JAVA_8",
   "plugin": "com.matthewperiut.retrocommands.mixin.plugin.RetroCommandsMixinPlugin",
   "mixins": [
+    "access.EntityAccessor",
     "feature.BlockBaseMixin",
     "feature.MixinItemInstance",
-    "feature.PlayerBaseMixin",
-    "access.EntityAccessor"
+    "feature.PlayerBaseMixin"
   ],
   "server": [
-    "intercept.CommandManagerMixin",
-    "intercept.ServerPlayerPacketHandlerMixin",
     "access.ServerPlayerPacketHandlerAccessor",
-    "communicate.PlayerManagerMixin"
+    "communicate.PlayerManagerMixin",
+    "intercept.CommandManagerMixin",
+    "intercept.ServerPlayerPacketHandlerMixin"
   ],
   "client": [
-    "intercept.AbstractClientPlayerMixin",
-    "intercept.ClientPlayerMixin",
     "client.ChatScreenMixin",
-    "client.MinecraftMixinChatEnabler"
+    "client.MinecraftMixinChatEnabler",
+    "communicate.ClientPlayNetworkHandlerMixin",
+    "intercept.AbstractClientPlayerMixin",
+    "intercept.ClientPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

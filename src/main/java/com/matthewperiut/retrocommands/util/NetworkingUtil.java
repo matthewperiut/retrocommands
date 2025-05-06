@@ -11,7 +11,7 @@ public class NetworkingUtil implements GlassPacketListener {
     public void registerGlassPackets() {
         registerGlassPacket("retrocommands:op", ((glassPacket, networkHandler) -> {
             RetroCommands.mp_op = glassPacket.getNbt().getBoolean("op");
-            RetroCommands.mp_spc = true;
+            RetroCommands.mp_rc = true;
         }), true, false);
 
         registerGlassPacket("retrocommands:players", ((glassPacket, networkHandler) -> {
