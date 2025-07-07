@@ -224,22 +224,23 @@ public abstract class ChatScreenMixin extends Screen {
 
         /* Determine text color and if text contains a command */
         textToRender += "> ";
-        if (getText().startsWith("/") && !getText().contains(" ") && !tryMatch(getText().substring(1))) {
-//            drawTextWithShadow(this.textRenderer, "> /", 4, this.height - 12, 0xE0E0E0);
-//            widthOffset = textRenderer.getWidth("> /");
-            textToRender += "/";
-            color = 0xFC5454;
-            textToRender += this.getText().substring(1);
-        } else if (getText().startsWith("/")){
-            if (!tryMatch(getText().split(" ")[0].substring(1))) {
-//                drawTextWithShadow(this.textRenderer, "> ", 4, this.height - 12, 0xE0E0E0);
-//                widthOffset = textRenderer.getWidth("> ");
-                color = 0xFC5454;
-            }
-            textToRender += this.getText();
-        } else {
-            textToRender += this.getText();
-        }
+//        if (getText().startsWith("/") && !getText().contains(" ") && !tryMatch(getText().substring(1))) {
+////            drawTextWithShadow(this.textRenderer, "> /", 4, this.height - 12, 0xE0E0E0);
+////            widthOffset = textRenderer.getWidth("> /");
+//            textToRender += "/";
+//            color = 0xFC5454;
+//            textToRender += this.getText().substring(1);
+//        } else if (getText().startsWith("/")){
+//            if (!tryMatch(getText().split(" ")[0].substring(1))) {
+////                drawTextWithShadow(this.textRenderer, "> ", 4, this.height - 12, 0xE0E0E0);
+////                widthOffset = textRenderer.getWidth("> ");
+//                color = 0xFC5454;
+//            }
+//            textToRender += this.getText();
+//        } else {
+//            textToRender += this.getText();
+//        }
+        textToRender += this.getText();
 
         /* Determine cursor position (0 means end of the string) */
         int cursorPosition = 0;
