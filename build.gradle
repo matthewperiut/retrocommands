@@ -100,7 +100,8 @@ dependencies {
 	modRuntimeOnly ("maven.modrinth:modmenu-beta:${project.modmenu_version}") { transitive false }
 	modRuntimeOnly ("maven.modrinth:fast-stapi-intro:${project.stapi_fast_intro_version}") { transitive false }
 
-	modCompileOnlyApi files("lib/mojangfixstationapi-2.3.0.jar")
+	// https://github.com/telvarost/MojangFix-StationAPI
+	modImplementation("maven.modrinth:mojangfix-stationapi-edition:${project.mojangfixstationapi_version}")
 }
 
 processResources {

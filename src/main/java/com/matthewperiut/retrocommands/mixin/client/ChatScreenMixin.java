@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.CharacterUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -177,8 +178,8 @@ public abstract class ChatScreenMixin extends Screen {
         }
     }
 
-    @Unique boolean tryMatch(String s) {
-
+    @Unique
+    boolean tryMatch(String s) {
         try {
             AtomicBoolean valid = new AtomicBoolean(false);
             RetroChatUtil.commands.stream().forEach(a -> {
@@ -229,13 +230,54 @@ public abstract class ChatScreenMixin extends Screen {
             alreadyRendered += this.getText();
         }
         //drawTextWithShadow(this.textRenderer,  (focusedTicks / 6 % 2 == 0 ? "_" : ""), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
+
+        int stringWidth = textRenderer.getWidth(alreadyRendered);
+        int shiftBy = -1;
+        if (stringWidth > (this.width - 15)) {
+            int fullLength = alreadyRendered.length();
+            int widthToRemove = 0;
+            int charIndex;
+
+            for(charIndex = 0; charIndex < alreadyRendered.length(); ++charIndex) {
+                if (alreadyRendered.charAt(charIndex) == 167) {
+                    ++charIndex;
+                } else {
+                    int validCharIndex = CharacterUtils.VALID_CHARACTERS.indexOf(alreadyRendered.charAt(charIndex));
+                    if (validCharIndex >= 0) {
+                        widthToRemove += textRenderer.characterWidths[validCharIndex + 32];
+                    }
+                }
+
+                if ((stringWidth - widthToRemove) < (this.width - 15)) {
+                    break;
+                }
+            }
+
+            if (mojangFix) {
+                int cursorPosition = MJFChatAccess.getCursorPosition();
+                if (charIndex <= (fullLength + (cursorPosition - 2))) {
+                    alreadyRendered = alreadyRendered.substring(charIndex);
+                } else {
+                    shiftBy = charIndex - (fullLength + (cursorPosition - 2));
+                    alreadyRendered = alreadyRendered.substring(charIndex - shiftBy, fullLength - shiftBy);
+                }
+            } else {
+                alreadyRendered = alreadyRendered.substring(charIndex);
+            }
+        }
+
         boolean caretVisible = focusedTicks / 6 % 2 == 0;
         if (mojangFix) {
             int cursorPosition = MJFChatAccess.getCursorPosition();
-            alreadyRendered = (new StringBuilder(alreadyRendered)).insert(alreadyRendered.length() + cursorPosition, caretVisible ? "_" : "").toString();
+            if (0 <= shiftBy) {
+                alreadyRendered = (new StringBuilder(alreadyRendered)).insert(2, (caretVisible) ? "_" : "").toString();
+            } else {
+                alreadyRendered = (new StringBuilder(alreadyRendered)).insert(alreadyRendered.length() + cursorPosition, (caretVisible) ? "_" : "").toString();
+            }
         } else {
-            alreadyRendered += (caretVisible ? "_" : "");
+            alreadyRendered += (caretVisible) ? "_" : "";
         }
+
         drawTextWithShadow(this.textRenderer,  alreadyRendered, 4, this.height - 12, 14737632);
         super.render(i, j, f);
         ci.cancel();
