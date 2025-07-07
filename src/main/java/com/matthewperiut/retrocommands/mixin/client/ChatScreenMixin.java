@@ -30,8 +30,8 @@ import static com.matthewperiut.retrocommands.RetroCommands.*;
 @Mixin(value = ChatScreen.class, priority = 1100)
 public abstract class ChatScreenMixin extends Screen {
     @Shadow protected String text;
-
     @Shadow private int focusedTicks;
+
     @Unique private boolean autocomplete = false;
     @Unique private String[] suggestions = new String[0];
     @Unique private int chosen = 0;
@@ -39,7 +39,8 @@ public abstract class ChatScreenMixin extends Screen {
     @Unique private int textWidthPixelsBeforeCurrentWord = 0;
     @Unique private String currentWord = "";
 
-    @Unique void setText(String s) {
+    @Unique
+    void setText(String s) {
         if (mojangFix) {
             MJFChatAccess.setText(s);
         }
@@ -48,7 +49,8 @@ public abstract class ChatScreenMixin extends Screen {
             text = s;
     }
 
-    @Unique String getText() {
+    @Unique
+    String getText() {
         String result;
         if (mojangFix) {
             result = MJFChatAccess.getText();
@@ -62,7 +64,8 @@ public abstract class ChatScreenMixin extends Screen {
         return result;
     }
 
-    @Unique void appendText(String s) {
+    @Unique
+    void appendText(String s) {
         setText(text + s);
     }
 
@@ -109,11 +112,13 @@ public abstract class ChatScreenMixin extends Screen {
         }
     }
 
+    @Unique
     private void resetValues() {
         currentWord = "";
         suggestions = new String[0];
     }
 
+    @Unique
     private static final List<String> vanillaNoOPCommands = Collections.unmodifiableList(
             new ArrayList<String>() {{
                 add("me");
@@ -121,6 +126,7 @@ public abstract class ChatScreenMixin extends Screen {
                 add("tell");
             }});
 
+    @Unique
     private void fetchSuggestionsForCurrentWord(String[] sections) {
         try {
             Minecraft mc = ((Minecraft) FabricLoader.getInstance().getGameInstance());
@@ -164,6 +170,7 @@ public abstract class ChatScreenMixin extends Screen {
         }
     }
 
+    @Unique
     private boolean adjustChosenSuggestion(int par2) {
         int initial = chosen;
         if (par2 == 200) { chosen++; }
@@ -173,6 +180,7 @@ public abstract class ChatScreenMixin extends Screen {
         return initial != chosen;
     }
 
+    @Unique
     private void calculateTextWidthPixelsBeforeCurrentWord(String[] sections) {
         for (int j = 0; j < sections.length - 1; j++) {
             textWidthPixelsBeforeCurrentWord += textRenderer.getWidth(sections[j] + " ");
@@ -217,11 +225,15 @@ public abstract class ChatScreenMixin extends Screen {
         /* Determine text color and if text contains a command */
         textToRender += "> ";
         if (getText().startsWith("/") && !getText().contains(" ") && !tryMatch(getText().substring(1))) {
+//            drawTextWithShadow(this.textRenderer, "> /", 4, this.height - 12, 0xE0E0E0);
+//            widthOffset = textRenderer.getWidth("> /");
             textToRender += "/";
             color = 0xFC5454;
             textToRender += this.getText().substring(1);
         } else if (getText().startsWith("/")){
             if (!tryMatch(getText().split(" ")[0].substring(1))) {
+//                drawTextWithShadow(this.textRenderer, "> ", 4, this.height - 12, 0xE0E0E0);
+//                widthOffset = textRenderer.getWidth("> ");
                 color = 0xFC5454;
             }
             textToRender += this.getText();
@@ -282,7 +294,8 @@ public abstract class ChatScreenMixin extends Screen {
         ci.cancel();
     }
 
-    public void renderSuggestions(int j, int f, float par3) {
+    @Unique
+    public void renderSuggestions(int mouseX, int mouseY, float delta) {
         try {
             if (suggestions.length > 0) {
                 ensureChosenIsInRange();
@@ -303,6 +316,7 @@ public abstract class ChatScreenMixin extends Screen {
         }
     }
 
+    @Unique
     private void renderChosenSuggestion() {
         this.drawTextWithShadow(this.textRenderer, suggestions[chosen], 4 + textWidthPixels, this.height - 12, 0xAAAAAA);
         if (autocomplete) {
@@ -312,6 +326,7 @@ public abstract class ChatScreenMixin extends Screen {
         }
     }
 
+    @Unique
     private void renderMultipleSuggestions() {
         int textWidthCurrentWord = textRenderer.getWidth(currentWord);
         textWidthPixelsBeforeCurrentWord = textRenderer.getWidth("> " + getText()) - textWidthCurrentWord;
@@ -326,6 +341,7 @@ public abstract class ChatScreenMixin extends Screen {
         }
     }
 
+    @Unique
     private int getMaxSuggestionWidth() {
         int maxWidth = 0;
         for (String suggestion : suggestions) {
