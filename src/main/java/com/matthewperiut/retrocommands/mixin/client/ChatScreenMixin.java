@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.CharacterUtils;
+import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -207,44 +208,49 @@ public abstract class ChatScreenMixin extends Screen {
     }
 
     @Inject(method = "render", at = @At(value = "HEAD"), cancellable = true)
-    public void replace(int i, int j, float f, CallbackInfo ci) {
+    public void replace(int mouseX, int mouseY, float delta, CallbackInfo ci) {
         this.fill(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
-        renderSuggestions(i,j,f);
-        String alreadyRendered = "";
-        //drawTextWithShadow(this.textRenderer, "> ", 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
-        alreadyRendered += "> ";
+        renderSuggestions(mouseX, mouseY, delta);
+        String textToRender = "";
+        int color = 0xE0E0E0;
+
+        /* Determine text color and if text contains a command */
+        textToRender += "> ";
         if (getText().startsWith("/") && !getText().contains(" ") && !tryMatch(getText().substring(1))) {
-            //drawTextWithShadow(this.textRenderer,  "/", 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
-            alreadyRendered += "/";
-            //drawTextWithShadow(this.textRenderer,  this.getText().substring(1), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 0xFC5454);
-            alreadyRendered += this.getText().substring(1);
+            textToRender += "/";
+            color = 0xFC5454;
+            textToRender += this.getText().substring(1);
         } else if (getText().startsWith("/")){
             if (!tryMatch(getText().split(" ")[0].substring(1))) {
-                //drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 0xFC5454);
-            } else {
-                //drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
+                color = 0xFC5454;
             }
-            alreadyRendered += this.getText();
+            textToRender += this.getText();
         } else {
-            //drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
-            alreadyRendered += this.getText();
+            textToRender += this.getText();
         }
-        //drawTextWithShadow(this.textRenderer,  (focusedTicks / 6 % 2 == 0 ? "_" : ""), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
 
-        int stringWidth = textRenderer.getWidth(alreadyRendered);
-        int shiftBy = -1;
+        /* Determine cursor position (0 means end of the string) */
+        int cursorPosition = 0;
+        if (mojangFix) {
+            cursorPosition = MJFChatAccess.getCursorPosition();
+        }
+
+        /* Determine if text goes off the screen and if so then determine how many characters need cut for it to fit on screen */
+        int stringWidth = textRenderer.getWidth(textToRender);
+        int shiftBy = -1; // -1 means do not shift
         if (stringWidth > (this.width - 15)) {
-            int fullLength = alreadyRendered.length();
+            int textToRenderFullLength = textToRender.length();
             int widthToRemove = 0;
-            int charIndex;
+            int textIndex;
 
-            for(charIndex = 0; charIndex < alreadyRendered.length(); ++charIndex) {
-                if (alreadyRendered.charAt(charIndex) == 167) {
-                    ++charIndex;
+            /* Remove characters from the start of the string until the string can fit on the screen */
+            for(textIndex = 0; textIndex < textToRender.length(); ++textIndex) {
+                if (textToRender.charAt(textIndex) == Keyboard.KEY_SECTION) {
+                    ++textIndex;
                 } else {
-                    int validCharIndex = CharacterUtils.VALID_CHARACTERS.indexOf(alreadyRendered.charAt(charIndex));
-                    if (validCharIndex >= 0) {
-                        widthToRemove += textRenderer.characterWidths[validCharIndex + 32];
+                    int charIndex = CharacterUtils.VALID_CHARACTERS.indexOf(textToRender.charAt(textIndex));
+                    if (charIndex >= 0) {
+                        widthToRemove += textRenderer.characterWidths[charIndex + 32];
                     }
                 }
 
@@ -253,33 +259,26 @@ public abstract class ChatScreenMixin extends Screen {
                 }
             }
 
-            if (mojangFix) {
-                int cursorPosition = MJFChatAccess.getCursorPosition();
-                if (charIndex <= (fullLength + (cursorPosition - 2))) {
-                    alreadyRendered = alreadyRendered.substring(charIndex);
-                } else {
-                    shiftBy = charIndex - (fullLength + (cursorPosition - 2));
-                    alreadyRendered = alreadyRendered.substring(charIndex - shiftBy, fullLength - shiftBy);
-                }
+            /* Determine what section of the string to render based on cursor position */
+            if (textIndex <= (textToRenderFullLength + (cursorPosition - 2))) {
+                textToRender = textToRender.substring(textIndex);
             } else {
-                alreadyRendered = alreadyRendered.substring(charIndex);
+                shiftBy = textIndex - (textToRenderFullLength + (cursorPosition - 2));
+                textToRender = textToRender.substring(textIndex - shiftBy, textToRenderFullLength - shiftBy);
             }
         }
 
+        /* Determine where to position cursor */
         boolean caretVisible = focusedTicks / 6 % 2 == 0;
-        if (mojangFix) {
-            int cursorPosition = MJFChatAccess.getCursorPosition();
-            if (0 <= shiftBy) {
-                alreadyRendered = (new StringBuilder(alreadyRendered)).insert(2, (caretVisible) ? "_" : "").toString();
-            } else {
-                alreadyRendered = (new StringBuilder(alreadyRendered)).insert(alreadyRendered.length() + cursorPosition, (caretVisible) ? "_" : "").toString();
-            }
+        if (0 <= shiftBy) {
+            textToRender = (new StringBuilder(textToRender)).insert(2, (caretVisible) ? "_" : "").toString();
         } else {
-            alreadyRendered += (caretVisible) ? "_" : "";
+            textToRender = (new StringBuilder(textToRender)).insert(textToRender.length() + cursorPosition, (caretVisible) ? "_" : "").toString();
         }
 
-        drawTextWithShadow(this.textRenderer,  alreadyRendered, 4, this.height - 12, 14737632);
-        super.render(i, j, f);
+        /* Render text */
+        drawTextWithShadow(this.textRenderer,  textToRender, 4, this.height - 12, color);
+        super.render(mouseX, mouseY, delta);
         ci.cancel();
     }
 
