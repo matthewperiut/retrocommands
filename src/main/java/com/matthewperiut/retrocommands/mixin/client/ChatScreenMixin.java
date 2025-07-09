@@ -11,6 +11,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.CharacterUtils;
+import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -28,8 +30,8 @@ import static com.matthewperiut.retrocommands.RetroCommands.*;
 @Mixin(value = ChatScreen.class, priority = 1100)
 public abstract class ChatScreenMixin extends Screen {
     @Shadow protected String text;
-
     @Shadow private int focusedTicks;
+
     @Unique private boolean autocomplete = false;
     @Unique private String[] suggestions = new String[0];
     @Unique private int chosen = 0;
@@ -37,7 +39,8 @@ public abstract class ChatScreenMixin extends Screen {
     @Unique private int textWidthPixelsBeforeCurrentWord = 0;
     @Unique private String currentWord = "";
 
-    @Unique void setText(String s) {
+    @Unique
+    void setText(String s) {
         if (mojangFix) {
             MJFChatAccess.setText(s);
         }
@@ -46,7 +49,8 @@ public abstract class ChatScreenMixin extends Screen {
             text = s;
     }
 
-    @Unique String getText() {
+    @Unique
+    String getText() {
         String result;
         if (mojangFix) {
             result = MJFChatAccess.getText();
@@ -60,7 +64,8 @@ public abstract class ChatScreenMixin extends Screen {
         return result;
     }
 
-    @Unique void appendText(String s) {
+    @Unique
+    void appendText(String s) {
         setText(text + s);
     }
 
@@ -107,11 +112,13 @@ public abstract class ChatScreenMixin extends Screen {
         }
     }
 
+    @Unique
     private void resetValues() {
         currentWord = "";
         suggestions = new String[0];
     }
 
+    @Unique
     private static final List<String> vanillaNoOPCommands = Collections.unmodifiableList(
             new ArrayList<String>() {{
                 add("me");
@@ -119,6 +126,7 @@ public abstract class ChatScreenMixin extends Screen {
                 add("tell");
             }});
 
+    @Unique
     private void fetchSuggestionsForCurrentWord(String[] sections) {
         try {
             Minecraft mc = ((Minecraft) FabricLoader.getInstance().getGameInstance());
@@ -162,6 +170,7 @@ public abstract class ChatScreenMixin extends Screen {
         }
     }
 
+    @Unique
     private boolean adjustChosenSuggestion(int par2) {
         int initial = chosen;
         if (par2 == 200) { chosen++; }
@@ -171,14 +180,15 @@ public abstract class ChatScreenMixin extends Screen {
         return initial != chosen;
     }
 
+    @Unique
     private void calculateTextWidthPixelsBeforeCurrentWord(String[] sections) {
         for (int j = 0; j < sections.length - 1; j++) {
             textWidthPixelsBeforeCurrentWord += textRenderer.getWidth(sections[j] + " ");
         }
     }
 
-    @Unique boolean tryMatch(String s) {
-
+    @Unique
+    boolean tryMatch(String s) {
         try {
             AtomicBoolean valid = new AtomicBoolean(false);
             RetroChatUtil.commands.stream().forEach(a -> {
@@ -206,42 +216,90 @@ public abstract class ChatScreenMixin extends Screen {
     }
 
     @Inject(method = "render", at = @At(value = "HEAD"), cancellable = true)
-    public void replace(int i, int j, float f, CallbackInfo ci) {
+    public void replace(int mouseX, int mouseY, float delta, CallbackInfo ci) {
         this.fill(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
-        renderSuggestions(i,j,f);
-        String alreadyRendered = "";
-        //drawTextWithShadow(this.textRenderer, "> ", 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
-        alreadyRendered += "> ";
-        if (getText().startsWith("/") && !getText().contains(" ") && !tryMatch(getText().substring(1))) {
-            //drawTextWithShadow(this.textRenderer,  "/", 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
-            alreadyRendered += "/";
-            //drawTextWithShadow(this.textRenderer,  this.getText().substring(1), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 0xFC5454);
-            alreadyRendered += this.getText().substring(1);
-        } else if (getText().startsWith("/")){
-            if (!tryMatch(getText().split(" ")[0].substring(1))) {
-                //drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 0xFC5454);
-            } else {
-                //drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
-            }
-            alreadyRendered += this.getText();
-        } else {
-            //drawTextWithShadow(this.textRenderer,  this.getText(), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
-            alreadyRendered += this.getText();
-        }
-        //drawTextWithShadow(this.textRenderer,  (focusedTicks / 6 % 2 == 0 ? "_" : ""), 4 + textRenderer.getWidth(alreadyRendered), this.height - 12, 14737632);
-        boolean caretVisible = focusedTicks / 6 % 2 == 0;
+        renderSuggestions(mouseX, mouseY, delta);
+        String textToRender = "> " + this.getText();
+        int textColor = 0xE0E0E0;
+
+        /* Determine cursor position (0 means end of the string) */
+        int cursorPosition = 0;
         if (mojangFix) {
-            int cursorPosition = MJFChatAccess.getCursorPosition();
-            alreadyRendered = (new StringBuilder(alreadyRendered)).insert(alreadyRendered.length() + cursorPosition, caretVisible ? "_" : "").toString();
-        } else {
-            alreadyRendered += (caretVisible ? "_" : "");
+            cursorPosition = MJFChatAccess.getCursorPosition();
         }
-        drawTextWithShadow(this.textRenderer,  alreadyRendered, 4, this.height - 12, 14737632);
-        super.render(i, j, f);
+
+        /* Determine if text goes off the screen and if so then determine how many characters need cut for it to fit on screen */
+        int stringWidth = textRenderer.getWidth(textToRender);
+        int shiftBy = -1; // -1 means do not shift
+        if (stringWidth > (this.width - 15)) {
+            int textToRenderFullLength = textToRender.length();
+            int widthToRemove = 0;
+            int textIndex;
+
+            /* Remove characters from the start of the string until the string can fit on the screen */
+            for(textIndex = 0; textIndex < textToRender.length(); ++textIndex) {
+                if (textToRender.charAt(textIndex) == Keyboard.KEY_SECTION) {
+                    ++textIndex;
+                } else {
+                    int charIndex = CharacterUtils.VALID_CHARACTERS.indexOf(textToRender.charAt(textIndex));
+                    if (charIndex >= 0) {
+                        widthToRemove += textRenderer.characterWidths[charIndex + 32];
+                    }
+                }
+
+                if ((stringWidth - widthToRemove) < (this.width - 15)) {
+                    break;
+                }
+            }
+
+            /* Determine what section of the string to render based on cursor position */
+            if (textIndex <= (textToRenderFullLength + (cursorPosition - 2))) {
+                textToRender = textToRender.substring(textIndex);
+            } else {
+                shiftBy = textIndex - (textToRenderFullLength + (cursorPosition - 2));
+                textToRender = textToRender.substring(textIndex - shiftBy, textToRenderFullLength - shiftBy);
+            }
+        }
+
+        /* Determine text color and render prompt text */
+        int widthOffset = 0;
+        int charsRendered = 0;
+        if (textToRender.startsWith("> ")) {
+            String typedText = textToRender.substring(2);
+            if (  typedText.startsWith("/")
+               && !typedText.contains(" ")
+               && !tryMatch(typedText.substring(1))
+            ) {
+                drawTextWithShadow(this.textRenderer, "> /", 4, this.height - 12, textColor);
+                widthOffset = textRenderer.getWidth("> /");
+                textColor = 0xFC5454;
+                charsRendered = 3;
+            } else if (typedText.startsWith("/")){
+                if (!tryMatch(typedText.split(" ")[0].substring(1))) {
+                    drawTextWithShadow(this.textRenderer, "> ", 4, this.height - 12, textColor);
+                    widthOffset = textRenderer.getWidth("> ");
+                    textColor = 0xFC5454;
+                    charsRendered = 2;
+                }
+            }
+        }
+
+        /* Determine where to position cursor */
+        boolean caretVisible = focusedTicks / 6 % 2 == 0;
+        if (0 <= shiftBy) {
+            textToRender = (new StringBuilder(textToRender)).insert(2, (caretVisible) ? "_" : "").toString();
+        } else {
+            textToRender = (new StringBuilder(textToRender)).insert(textToRender.length() + cursorPosition, (caretVisible) ? "_" : "").toString();
+        }
+
+        /* Render text, render screen, and cancel original method */
+        drawTextWithShadow(this.textRenderer,  textToRender.substring(charsRendered), 4 + widthOffset, this.height - 12, textColor);
+        super.render(mouseX, mouseY, delta);
         ci.cancel();
     }
 
-    public void renderSuggestions(int j, int f, float par3) {
+    @Unique
+    public void renderSuggestions(int mouseX, int mouseY, float delta) {
         try {
             if (suggestions.length > 0) {
                 ensureChosenIsInRange();
@@ -262,6 +320,7 @@ public abstract class ChatScreenMixin extends Screen {
         }
     }
 
+    @Unique
     private void renderChosenSuggestion() {
         this.drawTextWithShadow(this.textRenderer, suggestions[chosen], 4 + textWidthPixels, this.height - 12, 0xAAAAAA);
         if (autocomplete) {
@@ -271,6 +330,7 @@ public abstract class ChatScreenMixin extends Screen {
         }
     }
 
+    @Unique
     private void renderMultipleSuggestions() {
         int textWidthCurrentWord = textRenderer.getWidth(currentWord);
         textWidthPixelsBeforeCurrentWord = textRenderer.getWidth("> " + getText()) - textWidthCurrentWord;
@@ -285,6 +345,7 @@ public abstract class ChatScreenMixin extends Screen {
         }
     }
 
+    @Unique
     private int getMaxSuggestionWidth() {
         int maxWidth = 0;
         for (String suggestion : suggestions) {
