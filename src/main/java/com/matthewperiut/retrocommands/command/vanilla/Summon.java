@@ -66,8 +66,8 @@ public class Summon implements Command {
 
                             double degreeInterval = 360 / spawnAmount;
                             double degreeOffset = degreeInterval * spawnIndex;
-                            double xOffset = Math.sin(degreeOffset) * ((double)spawnAmount / 4);
-                            double zOffset = Math.cos(degreeOffset) * ((double)spawnAmount / 4);
+                            double xOffset = Math.sin(degreeOffset);
+                            double zOffset = Math.cos(degreeOffset);
 
                             entity.setPosition(pos.x + xOffset, pos.y, pos.z + zOffset);
 
@@ -83,6 +83,46 @@ public class Summon implements Command {
                     commandSource.sendFeedback("Non-number amount");
                     return;
                 }
+            }
+        }
+
+        if (parameters.length == 4) {
+            try {
+                int spawnAmount = Integer.parseInt(parameters[2]);
+
+
+                try {
+                    double spawnRadius = Double.parseDouble(parameters[3]);
+
+                    try {
+                        PosParse pos = new PosParse(player);
+
+                        for (int spawnIndex = 0; spawnIndex < spawnAmount; spawnIndex++) {
+                            Entity entity;
+                            entity = EntityRegistry.create(parameters[1], player.world);
+
+                            double degreeInterval = 360 / spawnAmount;
+                            double degreeOffset = degreeInterval * spawnIndex;
+                            double xOffset = Math.sin(degreeOffset) * spawnRadius;
+                            double zOffset = Math.cos(degreeOffset) * spawnRadius;
+
+                            entity.setPosition(pos.x + xOffset, pos.y, pos.z + zOffset);
+
+                            player.world.spawnEntity(entity);
+                        }
+
+                        commandSource.sendFeedback("Summoned " + spawnAmount + " " + parameters[1] + "s around " + pos);
+                        return;
+                    } catch (Exception e) {
+                        commandSource.sendFeedback("Failure to find entity (probably not registered)");
+                    }
+                } catch (NumberFormatException e) {
+                    commandSource.sendFeedback("Non-number spawn radius");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                commandSource.sendFeedback("Non-number amount");
+                return;
             }
         }
 
@@ -132,7 +172,7 @@ public class Summon implements Command {
     @Override
     public void manual(SharedCommandSource commandSource) {
         commandSource.sendFeedback("Usage: /summon {entity}");
-        commandSource.sendFeedback("Usage: /summon {entity} {amount}");
+        commandSource.sendFeedback("Usage: /summon {entity} {amount} {optional:radius}");
         commandSource.sendFeedback("Usage: /summon {entity} {x} {y} {z} {optional:parameters}");
         commandSource.sendFeedback("Info: spawns a mob or mobs into the world");
         commandSource.sendFeedback("entity: list of entities under /mobs");
@@ -160,7 +200,11 @@ public class Summon implements Command {
         {
             if (currentInput.length() == 0)
             {
-                return new String[]{"~"};
+                if (parameterNum == 2) {
+                    return new String[]{"~", "?"};
+                } else {
+                    return new String[]{"~"};
+                }
             }
         }
 
