@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class Summon implements Command {
 
     public static Map<Class<? extends Entity>, String> help = new HashMap<>();
@@ -25,31 +24,76 @@ public class Summon implements Command {
             return;
         }
 
-        // help
         if (parameters.length == 2) {
             try {
-                Class<? extends Entity> entityClass = (Class<? extends Entity>) EntityRegistry.idToClass.get(parameters[1]);
-                String msg = "Usage is /summon " + parameters[1] + " {x} {y} {z} ";
-                if (help.containsKey(entityClass)) {
-                    msg += help.get(entityClass);
-                }
-                commandSource.sendFeedback(msg);
+                Entity entity;
+                PosParse pos = new PosParse(player);
+
+                entity = EntityRegistry.create(parameters[1], player.world);
+                entity.setPosition(pos.x, pos.y, pos.z);
+                player.world.spawnEntity(entity);
+
+                commandSource.sendFeedback("Summoned " + parameters[1] + " at " + pos);
                 return;
             } catch (Exception e) {
                 commandSource.sendFeedback("Failure to find entity (probably not registered)");
             }
         }
 
+        if (parameters.length == 3) {
+            if (parameters[2].startsWith("?")) {
+                try {
+                    Class<? extends Entity> entityClass = (Class<? extends Entity>) EntityRegistry.idToClass.get(parameters[1]);
+                    String msg = "Usage is /summon " + parameters[1] + " {x} {y} {z} ";
+                    if (help.containsKey(entityClass)) {
+                        msg += help.get(entityClass);
+                    }
+                    commandSource.sendFeedback(msg);
+                    return;
+                } catch (Exception e) {
+                    commandSource.sendFeedback("Failure to find entity (probably not registered)");
+                }
+            } else {
+                try {
+                    int spawnAmount = Integer.parseInt(parameters[2]);
+
+                    try {
+                        PosParse pos = new PosParse(player);
+
+                        for (int spawnIndex = 0; spawnIndex < spawnAmount; spawnIndex++) {
+                            Entity entity;
+                            entity = EntityRegistry.create(parameters[1], player.world);
+
+                            double degreeInterval = 360 / spawnAmount;
+                            double degreeOffset = degreeInterval * spawnIndex;
+                            double xOffset = Math.sin(degreeOffset) * ((double)spawnAmount / 4);
+                            double zOffset = Math.cos(degreeOffset) * ((double)spawnAmount / 4);
+
+                            entity.setPosition(pos.x + xOffset, pos.y, pos.z + zOffset);
+
+                            player.world.spawnEntity(entity);
+                        }
+
+                        commandSource.sendFeedback("Summoned " + spawnAmount + " " + parameters[1] + "s around " + pos);
+                        return;
+                    } catch (Exception e) {
+                        commandSource.sendFeedback("Failure to find entity (probably not registered)");
+                    }
+                } catch (NumberFormatException e) {
+                    commandSource.sendFeedback("Non-number amount");
+                    return;
+                }
+            }
+        }
+
         if (parameters.length > 4) {
             try {
-
                 PosParse pos = new PosParse(player, 2, parameters);
 
                 if (!pos.valid) {
                     commandSource.sendFeedback("Non-number position");
                     return;
                 }
-
 
                 Entity entity;
                 String extraMsg = "";
@@ -67,14 +111,12 @@ public class Summon implements Command {
                 } else {
                     entity = EntityRegistry.create(parameters[1], player.world);
                 }
-
                 entity.setPosition(pos.x, pos.y, pos.z);
-
                 player.world.spawnEntity(entity);
+
                 commandSource.sendFeedback("Summoned " + parameters[1] + extraMsg + " at " + pos);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
-
                 commandSource.sendFeedback("Invalid Entity");
             }
             return;
@@ -89,10 +131,12 @@ public class Summon implements Command {
 
     @Override
     public void manual(SharedCommandSource commandSource) {
-        commandSource.sendFeedback("Usage: /summon {entity} {x} {y} {z}");
-        commandSource.sendFeedback("Info: spawns a mob in the world at given position");
+        commandSource.sendFeedback("Usage: /summon {entity}");
+        commandSource.sendFeedback("Usage: /summon {entity} {amount}");
+        commandSource.sendFeedback("Usage: /summon {entity} {x} {y} {z} {optional:parameters}");
+        commandSource.sendFeedback("Info: spawns a mob or mobs into the world");
         commandSource.sendFeedback("entity: list of entities under /mobs");
-        commandSource.sendFeedback("For a specific entity do /summon {entity} for parameters");
+        commandSource.sendFeedback("parameters: list of parameters under '/summon {entity} ?'");
     }
 
     @Override
