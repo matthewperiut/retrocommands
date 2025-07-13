@@ -41,34 +41,48 @@ public class Summon implements Command {
         }
 
         if (parameters.length == 3) {
-            try {
-                int spawnAmount = Integer.parseInt(parameters[2]);
-
+            if (parameters[2].startsWith("?")) {
                 try {
-                    PosParse pos = new PosParse(player);
-
-                    for (int spawnIndex = 0; spawnIndex < spawnAmount; spawnIndex++) {
-                        Entity entity;
-                        entity = EntityRegistry.create(parameters[1], player.world);
-
-                        double degreeInterval = 360 / spawnAmount;
-                        double degreeOffset = degreeInterval * spawnIndex;
-                        double xOffset = Math.sin(degreeOffset) * ((double)spawnAmount / 4);
-                        double zOffset = Math.cos(degreeOffset) * ((double)spawnAmount / 4);
-
-                        entity.setPosition(pos.x + xOffset, pos.y, pos.z + zOffset);
-
-                        player.world.spawnEntity(entity);
+                    Class<? extends Entity> entityClass = (Class<? extends Entity>) EntityRegistry.idToClass.get(parameters[1]);
+                    String msg = "Usage is /summon " + parameters[1] + " {x} {y} {z} ";
+                    if (help.containsKey(entityClass)) {
+                        msg += help.get(entityClass);
                     }
-
-                    commandSource.sendFeedback("Summoned " + spawnAmount + " " + parameters[1] + "s around " + pos);
+                    commandSource.sendFeedback(msg);
                     return;
                 } catch (Exception e) {
                     commandSource.sendFeedback("Failure to find entity (probably not registered)");
                 }
-            } catch (NumberFormatException e) {
-                commandSource.sendFeedback("Non-number amount");
-                return;
+            } else {
+                try {
+                    int spawnAmount = Integer.parseInt(parameters[2]);
+
+                    try {
+                        PosParse pos = new PosParse(player);
+
+                        for (int spawnIndex = 0; spawnIndex < spawnAmount; spawnIndex++) {
+                            Entity entity;
+                            entity = EntityRegistry.create(parameters[1], player.world);
+
+                            double degreeInterval = 360 / spawnAmount;
+                            double degreeOffset = degreeInterval * spawnIndex;
+                            double xOffset = Math.sin(degreeOffset) * ((double)spawnAmount / 4);
+                            double zOffset = Math.cos(degreeOffset) * ((double)spawnAmount / 4);
+
+                            entity.setPosition(pos.x + xOffset, pos.y, pos.z + zOffset);
+
+                            player.world.spawnEntity(entity);
+                        }
+
+                        commandSource.sendFeedback("Summoned " + spawnAmount + " " + parameters[1] + "s around " + pos);
+                        return;
+                    } catch (Exception e) {
+                        commandSource.sendFeedback("Failure to find entity (probably not registered)");
+                    }
+                } catch (NumberFormatException e) {
+                    commandSource.sendFeedback("Non-number amount");
+                    return;
+                }
             }
         }
 
@@ -122,6 +136,7 @@ public class Summon implements Command {
         commandSource.sendFeedback("Usage: /summon {entity} {x} {y} {z} {optional:parameters}");
         commandSource.sendFeedback("Info: spawns a mob or mobs into the world");
         commandSource.sendFeedback("entity: list of entities under /mobs");
+        commandSource.sendFeedback("parameters: list of parameters under '/summon {entity} ?'");
     }
 
     @Override
