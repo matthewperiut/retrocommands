@@ -30,7 +30,7 @@ public class VanillaMobs {
             sheep.setSheared(has_wool == 0);
             sheep.setColor(color);
             return sheep;
-        }, "{wool color meta} {has wool (0/1)} ");
+        }, "{color meta} {has wool (0 or 1)}");
 
         SummonRegistry.add(PigEntity.class, (level, pos, param) -> {
             int meta = Integer.parseInt(param[5]);
