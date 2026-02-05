@@ -1,72 +1,54 @@
 plugins {
 	id 'maven-publish'
-	id 'fabric-loom' version '1.9.2'
-	id 'babric-loom-extension' version '1.9.4'
+	id 'net.fabricmc.fabric-loom-remap' version '1.15.+'
+	id 'ploceus' version '1.15-SNAPSHOT'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
+
+ploceus {
+	setIntermediaryGeneration(2)
+}
 
 loom {
 	accessWidenerPath = file("src/main/resources/retrocommands.accesswidener")
 }
 
 repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
-
-	// Used for the fabric toolchain in this project.
-	maven {
-		name = 'Babric'
-		url = 'https://maven.glass-launcher.net/babric'
-	}
-	// Used for mappings.
-	maven {
-		name = 'Glass Releases'
-		url = 'https://maven.glass-launcher.net/releases'
-	}
-	// Used for StationAPI and HowManyItems.
-	maven {
-		name = 'Glass Snapshots'
-		url = 'https://maven.glass-launcher.net/snapshots'
-	}
-	// Used for a StationAPI dependency.
-	maven {
-		name = 'Froge'
-		url 'https://maven.minecraftforge.net/'
-	}
-	// Used for projects that do not have a maven repository, but do have a GitHub repository with working build scripts.
-	maven {
-		name = 'Jitpack'
-		url = 'https://jitpack.io'
-	}
-	// Used for another StationAPI dependency
+	mavenLocal()
+	maven { url = 'https://mvn.devos.one/releases' }
+	maven { url = "https://maven.glass-launcher.net/releases" }
+	maven { url = "https://maven.glass-launcher.net/babric" }
+	maven { url = "https://maven.glass-launcher.net/snapshots" }
+	maven { url = "https://maven.ornithemc.net/releases" }
+	maven { url = "https://matthewperiut.github.io/repository" }
+	maven { url = "https://jitpack.io/" }
+	mavenCentral()
 	exclusiveContent {
 		forRepository {
-			maven {
-				name = "Modrinth"
-				url = "https://api.modrinth.com/maven"
-			}
+			maven{ url = "https://api.modrinth.com/maven" }
 		}
 		filter {
-			includeGroup "maven.modrinth"
+			includeGroup("maven.modrinth")
 		}
 	}
-	mavenCentral()
 }
 
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.glasslauncher:biny:${project.yarn_mappings}:v2"
-	modImplementation "babric:fabric-loader:${project.loader_version}"
+
+	mappings(ploceus.mappings("net.glasslauncher:biny-ornithe:b1.7.3+build.${project.biny_mappings}:mergedv2"))
+
+	clientExceptions ploceus.raven(project.client_raven_build, 'client')
+	serverExceptions ploceus.raven(project.server_raven_build, 'server')
+	clientSignatures ploceus.sparrow(project.client_sparrow_build, 'client')
+	serverSignatures ploceus.sparrow(project.server_sparrow_build, 'server')
+	"clientNests"("net.glasslauncher:biny-nests:b1.7.3-client+build.2")
+	"serverNests"("net.glasslauncher:biny-nests:b1.7.3-server+build.2")
+
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
 	implementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.2'
@@ -78,30 +60,37 @@ dependencies {
 	modImplementation "net.modificationstation:StationAPI:${project.stapi_version}"
 
 	// API Extensions
-	modImplementation("maven.modrinth:bh-creative:${project.bhcreative_version}") { transitive false }
-	modImplementation("com.github.matthewperiut:accessory-api:${project.accessory_version}") { transitive false }
+//	modImplementation("maven.modrinth:bh-creative:${project.bhcreative_version}") { transitive false }
+	modImplementation("com.periut:accessory-api:${project.accessory_version}") { transitive false }
 
-	implementation("me.carleslc:Simple-Yaml:1.8.4")
-	include modImplementation("net.glasslauncher.mods:glass-networking:${project.glass_networking_version}") {
-		transitive false
-	}
+//	implementation("me.carleslc:Simple-Yaml:1.8.4")
+//	include modImplementation("net.glasslauncher.mods:glass-networking:${project.glass_networking_version}") {
+//		transitive false
+//	}
 
 	modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") {
 		transitive false
 	}
 
-	modImplementation("maven.modrinth:cryonicconfig:babric-b1.7.3-1.0.0")
+	modImplementation("com.periut.cryonicconfig:cryonicconfig-ornithe:${project.cryonic_config_version}")
+
+	modImplementation "com.periut:starac:${project.starac_version}"
 
 	// Runtime Convenience
 	modRuntimeOnly "com.github.GeyserMC:MCAuthLib:d9d773e5d50327c33898c65cd545a4f6ef3ba1b5" // needed for mojang fix
 //	modRuntimeOnly ("maven.modrinth:mojangfix-stationapi-edition:${project.mojang_fix_stapi_version}") { transitive false }
-	modRuntimeOnly ("maven.modrinth:thirdpersonfix-babric:${project.thirdpersonfix_version}") { transitive false }
+//	modRuntimeOnly ("maven.modrinth:thirdpersonfix-babric:${project.thirdpersonfix_version}") { transitive false }
 	modRuntimeOnly ("maven.modrinth:retroauth:1.1.0") { transitive false }
-	modRuntimeOnly ("maven.modrinth:modmenu-beta:${project.modmenu_version}") { transitive false }
-	modRuntimeOnly ("maven.modrinth:fast-stapi-intro:${project.stapi_fast_intro_version}") { transitive false }
+//	modRuntimeOnly ("maven.modrinth:modmenu-beta:${project.modmenu_version}") { transitive false }
+//	modRuntimeOnly ("maven.modrinth:fast-stapi-intro:${project.stapi_fast_intro_version}") { transitive false }
 
 	// https://github.com/telvarost/MojangFix-StationAPI
-	modImplementation("maven.modrinth:mojangfix-stationapi-edition:${project.mojangfixstationapi_version}")
+//	modImplementation("maven.modrinth:mojangfix-stationapi-edition:${project.mojangfixstationapi_version}")
+}
+
+// Exclude Legacy Fabric LWJGL 2 wrapper (starac provides LWJGL 3)
+configurations.configureEach {
+	exclude group: 'org.lwjgl.lwjgl'
 }
 
 processResources {
@@ -113,9 +102,8 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-	// Loom also requires J17.
-	it.options.release = 17
+	// Loom requires J21.
+	it.options.release = 21
 }
 
 java {
@@ -127,7 +115,7 @@ java {
 
 jar {
 	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
+		rename { "${it}_${project.archives_base_name}"}
 	}
 }
 

@@ -16,10 +16,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.matthewperiut.retrocommands.RetroCommands"
+      "com.periut.retrocommands.RetroCommands"
     ],
     "glassnetworking": [
-      "com.matthewperiut.retrocommands.util.NetworkingUtil"
+      "com.periut.retrocommands.util.NetworkingUtil"
     ]
   },
   "mixins": [

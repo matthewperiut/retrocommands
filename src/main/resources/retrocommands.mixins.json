@@ -1,9 +1,9 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.matthewperiut.retrocommands.mixin",
+  "package": "com.periut.retrocommands.mixin",
   "compatibilityLevel": "JAVA_8",
-  "plugin": "com.matthewperiut.retrocommands.mixin.plugin.RetroCommandsMixinPlugin",
+  "plugin": "com.periut.retrocommands.mixin.plugin.RetroCommandsMixinPlugin",
   "mixins": [
     "access.EntityAccessor",
     "feature.BlockBaseMixin",

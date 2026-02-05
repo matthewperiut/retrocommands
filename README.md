@@ -46,20 +46,20 @@ public static void init_of_some_sort()
 }
 ```
 
-implement `com.matthewperiut.retrocommands.api.Command`  
+implement `api.com.periut.retrocommands.Command`  
 
-register with `com.matthewperiut.retrocommands.api.CommandRegistry`  
+register with `api.com.periut.retrocommands.CommandRegistry`  
 `CommandRegistry.add(new Command())`  
 
 new Command() replaced with your custom command.  
 
 ### Add your own summon command for your entities
 
-Use `com.matthewperiut.retrocommands.api.SummonRegistry`  
+Use `api.com.periut.retrocommands.SummonRegistry`  
 SummonRegistry.add(...)  
 
 
-Examples from `com.matthewperiut.retrocommands.util.VanillaMobs`
+Examples from `util.com.periut.retrocommands.VanillaMobs`
 ```java
 SummonRegistry.add(Creeper.class, (world, pos, param) -> {
     Creeper creeper = new Creeper(world);
