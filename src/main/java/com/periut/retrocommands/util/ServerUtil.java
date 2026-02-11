@@ -7,16 +7,16 @@ import com.periut.retrocommands.dimension.BareTravelAgent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
-import net.glasslauncher.mods.networking.GlassPacket;
+import com.periut.retrocommands.RetroCommandsNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.world.World;
 import net.modificationstation.stationapi.api.registry.DimensionRegistry;
 import net.modificationstation.stationapi.api.util.Identifier;
 import net.modificationstation.stationapi.api.world.dimension.DimensionHelper;
+import net.ornithemc.osl.networking.api.server.ServerPlayNetworking;
 
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -170,18 +170,22 @@ public class ServerUtil {
     }
 
     public static void informPlayerOpStatus(String playerName) {
-        NbtCompound nbt = new NbtCompound();
-        nbt.putBoolean("op", ServerUtil.isOp(playerName));
-        ServerUtil.getConnectionManager().sendPacket(playerName, new GlassPacket(RetroCommands.MOD_ID, "op", nbt));
+        ServerPlayerEntity player = (ServerPlayerEntity) getConnectionManager().getPlayer(playerName);
+        if (player == null) return;
+        ServerPlayNetworking.send(player, RetroCommandsNetworking.OP_CHANNEL, buffer -> {
+            buffer.writeBoolean(isOp(playerName));
+        });
     }
 
     public static void informPlayerDisabledCommands(String playerName) {
-        NbtCompound nbt = new NbtCompound();
-        if (!RetroCommands.cryConfig) {
-            nbt.putString("disabled", "");
-        } else {
-            nbt.putString("disabled", String.join(",", RetroCommands.disabled_commands));
-        }
-        ServerUtil.getConnectionManager().sendPacket(playerName, new GlassPacket(RetroCommands.MOD_ID, "disabled", nbt));
+        ServerPlayerEntity player = (ServerPlayerEntity) getConnectionManager().getPlayer(playerName);
+        if (player == null) return;
+        ServerPlayNetworking.send(player, RetroCommandsNetworking.DISABLED_CHANNEL, buffer -> {
+            if (!RetroCommands.cryConfig) {
+                buffer.writeString("");
+            } else {
+                buffer.writeString(String.join(",", RetroCommands.disabled_commands));
+            }
+        });
     }
 }

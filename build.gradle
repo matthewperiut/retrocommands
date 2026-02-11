@@ -57,20 +57,21 @@ dependencies {
 	implementation "blue.endless:jankson:1.2.1"
 	implementation 'com.google.guava:guava:33.2.1-jre'
 
-	modImplementation "net.modificationstation:StationAPI:${project.stapi_version}"
+	modCompileOnly "net.modificationstation:StationAPI:${project.stapi_version}"
 
 	// API Extensions
 //	modImplementation("maven.modrinth:bh-creative:${project.bhcreative_version}") { transitive false }
 	modImplementation("com.periut:accessory-api:${project.accessory_version}") { transitive false }
 
-//	implementation("me.carleslc:Simple-Yaml:1.8.4")
-//	include modImplementation("net.glasslauncher.mods:glass-networking:${project.glass_networking_version}") {
+	modImplementation(include("net.ornithemc.osl-gen2:core:0.7.0-alpha.1"))
+	modImplementation(include("net.ornithemc.osl-gen2:entrypoints:0.5.0-alpha.2+mca1.0.1_01-mc1.5.2"))
+	modImplementation(include("net.ornithemc.osl-gen2:lifecycle-events:0.6.0-alpha.2+mcb1.4-mcb1.7.3"))
+	modImplementation(include("net.ornithemc.osl-gen2:networking:0.9.0-alpha.5+mcb1.0-mc13w39b"))
+	modImplementation(include("net.ornithemc.osl-gen2:networking-impl:0.1.0-alpha.5+mcb1.5-mc11w48a"))
+
+//	modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") {
 //		transitive false
 //	}
-
-	modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") {
-		transitive false
-	}
 
 	modImplementation("com.periut.cryonicconfig:cryonicconfig-ornithe:${project.cryonic_config_version}")
 
@@ -80,7 +81,7 @@ dependencies {
 	modRuntimeOnly "com.github.GeyserMC:MCAuthLib:d9d773e5d50327c33898c65cd545a4f6ef3ba1b5" // needed for mojang fix
 //	modRuntimeOnly ("maven.modrinth:mojangfix-stationapi-edition:${project.mojang_fix_stapi_version}") { transitive false }
 //	modRuntimeOnly ("maven.modrinth:thirdpersonfix-babric:${project.thirdpersonfix_version}") { transitive false }
-	modRuntimeOnly ("maven.modrinth:retroauth:1.1.0") { transitive false }
+//	modRuntimeOnly ("maven.modrinth:retroauth:1.1.0") { transitive false }
 //	modRuntimeOnly ("maven.modrinth:modmenu-beta:${project.modmenu_version}") { transitive false }
 //	modRuntimeOnly ("maven.modrinth:fast-stapi-intro:${project.stapi_fast_intro_version}") { transitive false }
 

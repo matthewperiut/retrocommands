@@ -1,24 +1,29 @@
 package com.periut.retrocommands.util;
 
 import com.periut.retrocommands.RetroCommands;
-import net.glasslauncher.mods.networking.GlassPacketListener;
+import com.periut.retrocommands.RetroCommandsNetworking;
+import net.fabricmc.api.ClientModInitializer;
+import net.ornithemc.osl.networking.api.client.ClientPlayNetworking;
 
 import java.util.List;
 
-public class NetworkingUtil implements GlassPacketListener {
+public class NetworkingUtil implements ClientModInitializer {
     @Override
-    public void registerGlassPackets() {
-        registerGlassPacket("retrocommands:op", ((glassPacket, networkHandler) -> {
-            RetroCommands.mp_op = glassPacket.getNbt().getBoolean("op");
+    public void onInitializeClient() {
+        ClientPlayNetworking.registerListener(RetroCommandsNetworking.OP_CHANNEL, (ctx, buffer) -> {
+            ctx.ensureOnMainThread();
+            RetroCommands.mp_op = buffer.readBoolean();
             RetroCommands.mp_rc = true;
-        }), true, false);
+        });
 
-        registerGlassPacket("retrocommands:players", ((glassPacket, networkHandler) -> {
-            RetroCommands.player_names = glassPacket.getNbt().getString("players").split(",");
-        }), true, false);
+        ClientPlayNetworking.registerListener(RetroCommandsNetworking.PLAYERS_CHANNEL, (ctx, buffer) -> {
+            ctx.ensureOnMainThread();
+            RetroCommands.player_names = buffer.readString().split(",");
+        });
 
-        registerGlassPacket("retrocommands:disabled", ((glassPacket, networkHandler) -> {
-            RetroCommands.disabled_commands = List.of(glassPacket.getNbt().getString("disabled").split(","));
-        }), true, false);
+        ClientPlayNetworking.registerListener(RetroCommandsNetworking.DISABLED_CHANNEL, (ctx, buffer) -> {
+            ctx.ensureOnMainThread();
+            RetroCommands.disabled_commands = List.of(buffer.readString().split(","));
+        });
     }
 }

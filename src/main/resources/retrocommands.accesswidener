@@ -3,3 +3,4 @@ accessible method net/minecraft/entity/Entity getRegistryEntry ()Ljava/lang/Stri
 accessible field net/minecraft/entity/EntityRegistry idToClass Ljava/util/Map;
 accessible field net/minecraft/entity/EntityRegistry classToId Ljava/util/Map;
 accessible field net/minecraft/client/font/TextRenderer characterWidths [I
+accessible method net/minecraft/block/SpawnerBlock <init> (II)V

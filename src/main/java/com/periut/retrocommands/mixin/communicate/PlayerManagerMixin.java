@@ -1,14 +1,12 @@
 package com.periut.retrocommands.mixin.communicate;
 
-import com.periut.retrocommands.RetroCommands;
+import com.periut.retrocommands.RetroCommandsNetworking;
 import com.periut.retrocommands.util.ServerUtil;
-import net.glasslauncher.mods.networking.GlassPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.ornithemc.osl.networking.api.server.ServerPlayNetworking;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,8 +18,6 @@ import java.util.List;
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
     @Shadow public List players;
-
-    @Shadow public abstract boolean sendPacket(String player, Packet packet);
 
     @Inject(method = "addPlayer", at = @At("TAIL"))
     public void sendPlayersToAll(ServerPlayerEntity par1, CallbackInfo ci) {
@@ -38,11 +34,12 @@ public abstract class PlayerManagerMixin {
 
         playerNames = playerNames.substring(0, playerNames.length()-1);
 
+        String finalPlayerNames = playerNames;
         for (Object object : players) {
-            PlayerEntity player = (PlayerEntity) object;
-            NbtCompound nbt = new NbtCompound();
-            nbt.putString("players", playerNames);
-            sendPacket(player.name, new GlassPacket(RetroCommands.MOD_ID, "players", nbt));
+            ServerPlayerEntity player = (ServerPlayerEntity) object;
+            ServerPlayNetworking.send(player, RetroCommandsNetworking.PLAYERS_CHANNEL, buffer -> {
+                buffer.writeString(finalPlayerNames);
+            });
         }
     }
 }
