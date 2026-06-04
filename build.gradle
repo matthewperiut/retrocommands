@@ -63,11 +63,7 @@ dependencies {
 //	modImplementation("maven.modrinth:bh-creative:${project.bhcreative_version}") { transitive false }
 	modImplementation("com.periut:accessory-api:${project.accessory_version}") { transitive false }
 
-	modImplementation(include("net.ornithemc.osl-gen2:core:0.7.0-alpha.1"))
-	modImplementation(include("net.ornithemc.osl-gen2:entrypoints:0.5.0-alpha.2+mca1.0.1_01-mc1.5.2"))
-	modImplementation(include("net.ornithemc.osl-gen2:lifecycle-events:0.6.0-alpha.2+mcb1.4-mcb1.7.3"))
-	modImplementation(include("net.ornithemc.osl-gen2:networking:0.9.0-alpha.5+mcb1.0-mc13w39b"))
-	modImplementation(include("net.ornithemc.osl-gen2:networking-impl:0.1.0-alpha.5+mcb1.5-mc11w48a"))
+	ploceus.dependOsl(project.osl_version)
 
 //	modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") {
 //		transitive false
