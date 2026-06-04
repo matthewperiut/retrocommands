@@ -1,6 +1,7 @@
 package com.periut.retrocommands.util;
 
 import com.periut.retrocommands.RetroCommands;
+import com.periut.retrocommands.optionaldep.retroapi.RetroApiCompat;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.modificationstation.stationapi.api.registry.ItemRegistry;
@@ -13,7 +14,16 @@ import java.util.HashSet;
 public class ParameterSuggestUtil {
     public static String[] suggestItemIdentifier(String currentInput)
     {
-        if (!FabricLoader.getInstance().isModLoaded("station-registry-api-v0"))
+        HashSet<String> identifiers = new HashSet<>();
+        if (FabricLoader.getInstance().isModLoaded("station-registry-api-v0"))
+        {
+            collectStationIdentifiers(identifiers);
+        }
+        if (FabricLoader.getInstance().isModLoaded("retroapi"))
+        {
+            identifiers.addAll(RetroApiCompat.itemIdentifiers());
+        }
+        if (identifiers.isEmpty())
             return new String[0];
 
         boolean autofillingModId = !currentInput.contains(":");
@@ -24,31 +34,46 @@ public class ParameterSuggestUtil {
         }
 
         HashSet<String> outputs = new HashSet<>();
-        for (Identifier id : ItemRegistry.INSTANCE.getIds())
+        for (String id : identifiers)
         {
+            int sep = id.indexOf(':');
+            if (sep < 0) continue;
+            String namespace = id.substring(0, sep);
+            String path = id.substring(sep + 1);
+
             if (autofillingModId)
             {
-                if (id.namespace.toString().startsWith(currentInput))
+                if (namespace.startsWith(currentInput))
                 {
-                    outputs.add(id.namespace.toString().substring(currentInput.length()) + ":");
+                    outputs.add(namespace.substring(currentInput.length()) + ":");
                 }
             }
             else
             {
-                if (id.namespace.toString().equals(modId))
+                if (namespace.equals(modId))
                 {
                     String[] segments = currentInput.split(":");
-                    if (segments.length > 1)
+                    String typedPath = segments.length > 1 ? segments[1] : "";
+                    if (path.startsWith(typedPath))
                     {
-                        if (id.path.startsWith(segments[1]))
-                        {
-                            outputs.add(id.path.substring(segments[1].length()));
-                        }
+                        outputs.add(path.substring(typedPath.length()));
                     }
                 }
             }
         }
         return outputs.toArray(new String[0]);
+    }
+
+    /**
+     * StationAPI references stay inside this method so its classes are only resolved
+     * when station-registry-api-v0 is actually present.
+     */
+    private static void collectStationIdentifiers(HashSet<String> identifiers)
+    {
+        for (Identifier id : ItemRegistry.INSTANCE.getIds())
+        {
+            identifiers.add(id.namespace.toString() + ":" + id.path);
+        }
     }
 
     public static String[] suggestPlayerName(String currentInput) {

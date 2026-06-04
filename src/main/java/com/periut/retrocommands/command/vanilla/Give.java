@@ -2,6 +2,7 @@ package com.periut.retrocommands.command.vanilla;
 
 import com.periut.retrocommands.api.Command;
 import com.periut.retrocommands.api.ItemInstanceStr;
+import com.periut.retrocommands.optionaldep.retroapi.RetroApiCompat;
 import com.periut.retrocommands.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
@@ -62,10 +63,16 @@ public class Give implements Command {
             try {
                 itemNumber = Integer.parseInt(parameters[1]);
             } catch (NumberFormatException e) {
-                itemNumber =
-                        FabricLoader.getInstance().isModLoaded("station-registry-api-v0") ?
-                                identifierToItemId(parameters[1]) :
-                                nameToItemId(parameters[1]);
+                itemNumber = -1;
+                if (FabricLoader.getInstance().isModLoaded("station-registry-api-v0")) {
+                    itemNumber = identifierToItemId(parameters[1]);
+                }
+                if (itemNumber == -1 && FabricLoader.getInstance().isModLoaded("retroapi")) {
+                    itemNumber = RetroApiCompat.identifierToItemId(parameters[1]);
+                }
+                if (itemNumber == -1) {
+                    itemNumber = nameToItemId(parameters[1]);
+                }
             }
 
             if (itemNumber == -1) {
@@ -148,11 +155,9 @@ public class Give implements Command {
     @Override
     public String[] suggestion(SharedCommandSource source, int parameterNum, String currentInput, String totalInput)
     {
-        if (!FabricLoader.getInstance().isModLoaded("station-registry-api-v0"))
-            return new String[0];
-
         if (parameterNum == 1)
         {
+            // suggestItemIdentifier gates StationAPI/RetroAPI internally
             return suggestItemIdentifier(currentInput);
         }
 
@@ -163,10 +168,21 @@ public class Give implements Command {
 
             if (hasModId)
             {
-                Optional<Item> id = ItemRegistry.INSTANCE.getOrEmpty(Identifier.of(itemId));
-                if (id.isPresent())
+                if (FabricLoader.getInstance().isModLoaded("station-registry-api-v0"))
                 {
-                    return new String[]{ String.valueOf(id.get().getMaxCount()) };
+                    Optional<Item> id = ItemRegistry.INSTANCE.getOrEmpty(Identifier.of(itemId));
+                    if (id.isPresent())
+                    {
+                        return new String[]{ String.valueOf(id.get().getMaxCount()) };
+                    }
+                }
+                if (FabricLoader.getInstance().isModLoaded("retroapi"))
+                {
+                    int maxCount = RetroApiCompat.maxCountOf(itemId);
+                    if (maxCount != -1)
+                    {
+                        return new String[]{ String.valueOf(maxCount) };
+                    }
                 }
             }
         }
