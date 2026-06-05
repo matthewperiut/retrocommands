@@ -38,6 +38,14 @@ public abstract class ChatScreenMixin extends Screen {
     @Unique private int textWidthPixelsBeforeCurrentWord = 0;
     @Unique private String currentWord = "";
 
+    /* Mixin field initializers are merged by injecting into the target constructor;
+     * that merge can silently fail, leaving @Unique fields null. Never rely on it. */
+    @Unique
+    private void ensureFieldsInitialized() {
+        if (suggestions == null) suggestions = new String[0];
+        if (currentWord == null) currentWord = "";
+    }
+
     @Unique
     void setText(String s) {
         if (mojangFix) {
@@ -70,6 +78,7 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("HEAD"))
     void init(CallbackInfo ci) {
+        ensureFieldsInitialized();
         if (cryConfig && !minecraft.isWorldRemote()) {
             ConfigUtil.refreshDisabledCommands();
         }
@@ -77,6 +86,7 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void keyPressedInit(char i, int par2, CallbackInfo ci) {
+        ensureFieldsInitialized();
         if (par2 == 15 && suggestions.length > 0) {
             autocomplete = true;
         }
@@ -218,6 +228,7 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Inject(method = "render", at = @At(value = "HEAD"), cancellable = true)
     public void replace(int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        ensureFieldsInitialized();
         this.fill(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
         renderSuggestions(mouseX, mouseY, delta);
         String textToRender = "> " + this.getText();
