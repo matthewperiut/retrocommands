@@ -61,8 +61,8 @@ dependencies {
 
 	// API Extensions
 //	modImplementation("maven.modrinth:bh-creative:${project.bhcreative_version}") { transitive false }
-	modImplementation("com.periut:accessory-api:${project.accessory_version}") { transitive false }
-	modImplementation("com.periut:retroapi:${project.retroapi_version}") { transitive false }
+	modCompileOnlyApi("com.periut:accessory-api:${project.accessory_version}") { transitive false }
+	modCompileOnlyApi("com.periut:retroapi:${project.retroapi_version}") { transitive false }
 
 	ploceus.dependOsl(project.osl_version)
 
