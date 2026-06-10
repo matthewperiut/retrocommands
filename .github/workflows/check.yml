@@ -1,0 +1,32 @@
+# Per-commit build check. Generic: works for any mod laid out like bare-retroapi-template
+# (Gradle wrapper at the repo root, Java 21 toolchain). Runs the plain `build` task and
+# uploads everything under build/libs as a CI artifact.
+name: Build Check
+
+on: [ pull_request, push ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-libs
+          path: build/libs/**/*
