@@ -1,6 +1,5 @@
 package com.periut.retrocommands.command.extra;
 
-import com.periut.accessoryapi.api.PlayerExtraHP;
 import com.periut.retrocommands.api.Command;
 import com.periut.retrocommands.util.SharedCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
@@ -25,13 +24,22 @@ public class Heal implements Command {
 
         commandSource.sendFeedback("Healed fully!");
 
-        if (FabricLoader.getInstance().isModLoaded("accessoryapi")) {
-            player.health = 20 + ((PlayerExtraHP)player).getExtraHP();
+        player.health = 20 + getExtraHP(player);
+    }
+
+    private static int getExtraHP(PlayerEntity player) {
+        if (!FabricLoader.getInstance().isModLoaded("accessoryapi")) {
+            return 0;
         }
-        else
-        {
-            player.health = 20;
+        try {
+            Class<?> extraHPClass = Class.forName("com.periut.accessoryapi.api.PlayerExtraHP");
+            if (extraHPClass.isInstance(player)) {
+                Object result = extraHPClass.getMethod("getExtraHP").invoke(player);
+                return ((Number) result).intValue();
+            }
+        } catch (Throwable ignored) {
         }
+        return 0;
     }
 
     @Override

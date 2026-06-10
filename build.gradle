@@ -2,6 +2,8 @@ plugins {
 	id 'maven-publish'
 	id 'net.fabricmc.fabric-loom-remap' version '1.15.+'
 	id 'ploceus' version '1.15-SNAPSHOT'
+	// Emits retrocommands-<version>-babric.jar: reverse-converted to babric and bundled with OSL.
+	id 'com.periut.retroconvert' version '1.0.0'
 }
 
 version = project.mod_version
@@ -13,6 +15,17 @@ ploceus {
 
 loom {
 	accessWidenerPath = file("src/main/resources/retrocommands.accesswidener")
+}
+
+// The -babric jar bundles these OSL gen2 modules (reverse-converted) under META-INF/jars/,
+// so it runs standalone on babric. osl-networking hard-depends on core, entrypoints and
+// lifecycle-events, and networking-impl provides the b1.7.3 implementation. Versions track OSL 0.18.0.
+retroconvert {
+	bundle "net.ornithemc.osl-gen2:core:0.7.1"
+	bundle "net.ornithemc.osl-gen2:entrypoints:0.6.0+mca1.0.1_01-mc1.5.2"
+	bundle "net.ornithemc.osl-gen2:lifecycle-events:0.6.0+mcb1.3-mcb1.7.3"
+	bundle "net.ornithemc.osl-gen2:networking:0.9.0+mcb1.0-mc13w39b"
+	bundle "net.ornithemc.osl-gen2:networking-impl:0.1.1+mcb1.5-mc11w48a"
 }
 
 repositories {
@@ -45,8 +58,8 @@ dependencies {
 	serverExceptions ploceus.raven(project.server_raven_build, 'server')
 	clientSignatures ploceus.sparrow(project.client_sparrow_build, 'client')
 	serverSignatures ploceus.sparrow(project.server_sparrow_build, 'server')
-	"clientNests"("net.glasslauncher:biny-nests:b1.7.3-client+build.2")
-	"serverNests"("net.glasslauncher:biny-nests:b1.7.3-server+build.2")
+	clientNests "net.glasslauncher:biny-nests:b1.7.3-client+build.${project.client_nests_build}"
+	serverNests "net.glasslauncher:biny-nests:b1.7.3-server+build.${project.server_nests_build}"
 
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
@@ -60,30 +73,17 @@ dependencies {
 	modCompileOnly "net.modificationstation:StationAPI:${project.stapi_version}"
 
 	// API Extensions
-//	modImplementation("maven.modrinth:bh-creative:${project.bhcreative_version}") { transitive false }
-	modCompileOnlyApi("com.periut:accessory-api:${project.accessory_version}") { transitive false }
 	modCompileOnlyApi("com.periut:retroapi:${project.retroapi_version}") { transitive false }
 
 	ploceus.dependOsl(project.osl_version)
 
-//	modImplementation("net.glasslauncher.mods:GlassConfigAPI:${project.gcapi_version}") {
-//		transitive false
-//	}
+	// osl-networking's API uses netty ByteBuf, which b1.7.3 doesn't ship - JiJ it (same as retroapi).
+	include "io.netty:netty-buffer:4.1.77.Final"
+	include "io.netty:netty-common:4.1.77.Final"
 
 	modImplementation("com.periut.cryonicconfig:cryonicconfig-ornithe:${project.cryonic_config_version}")
 
 	modImplementation "com.periut:starac:${project.starac_version}"
-
-	// Runtime Convenience
-	modRuntimeOnly "com.github.GeyserMC:MCAuthLib:d9d773e5d50327c33898c65cd545a4f6ef3ba1b5" // needed for mojang fix
-//	modRuntimeOnly ("maven.modrinth:mojangfix-stationapi-edition:${project.mojang_fix_stapi_version}") { transitive false }
-//	modRuntimeOnly ("maven.modrinth:thirdpersonfix-babric:${project.thirdpersonfix_version}") { transitive false }
-//	modRuntimeOnly ("maven.modrinth:retroauth:1.1.0") { transitive false }
-//	modRuntimeOnly ("maven.modrinth:modmenu-beta:${project.modmenu_version}") { transitive false }
-//	modRuntimeOnly ("maven.modrinth:fast-stapi-intro:${project.stapi_fast_intro_version}") { transitive false }
-
-	// https://github.com/telvarost/MojangFix-StationAPI
-//	modImplementation("maven.modrinth:mojangfix-stationapi-edition:${project.mojangfixstationapi_version}")
 }
 
 // Exclude Legacy Fabric LWJGL 2 wrapper (starac provides LWJGL 3)

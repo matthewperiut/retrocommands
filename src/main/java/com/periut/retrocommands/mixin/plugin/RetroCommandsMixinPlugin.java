@@ -12,7 +12,7 @@ public final class RetroCommandsMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.equals("com.periut.spc.mixin.MinecraftMixinChatEnabler")) {
+        if (mixinClassName.equals("com.periut.retrocommands.mixin.client.MinecraftMixinChatEnabler")) {
             return !FabricLoader.getInstance().isModLoaded("cpm");
         } else {
             return true;

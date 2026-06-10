@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.periut.retrocommands.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_21",
   "plugin": "com.periut.retrocommands.mixin.plugin.RetroCommandsMixinPlugin",
   "mixins": [
     "access.EntityAccessor",
