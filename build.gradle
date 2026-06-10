@@ -83,11 +83,16 @@ dependencies {
 
 	modImplementation("com.periut.cryonicconfig:cryonicconfig-ornithe:${project.cryonic_config_version}")
 
-	modImplementation "com.periut:starac:${project.starac_version}"
+	// starac brings LWJGL 3, which would clash with vanilla
+	// Minecraft's LWJGL 2 API, so keep it off the compile classpath.
+	modRuntimeOnly "com.periut:starac:${project.starac_version}"
 }
 
-// Exclude Legacy Fabric LWJGL 2 wrapper (starac provides LWJGL 3)
-configurations.configureEach {
+// Exclude the Legacy Fabric LWJGL 2 wrapper at RUNTIME only (starac provides LWJGL 3).
+// It must stay on the compile/minecraft classpath so Condor (Ploceus LVT generator)
+// can resolve org.lwjgl.* classes referenced by b1.7.3 — a blanket exclude here
+// strips LWJGL 2 from minecraftCompileLibraries and crashes LVT generation.
+configurations.matching { it.name.toLowerCase().contains('runtime') }.configureEach {
 	exclude group: 'org.lwjgl.lwjgl'
 }
 
