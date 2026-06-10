@@ -36,7 +36,7 @@ env:
   # Space-separated gradle.properties keys whose values should be rewritten to the new
   # version across the pages docs (retroapi/*.html) and the two template zips when this
   # mod publishes. Leave empty for no docs rewriting. Example: "starac_version"
-  DOCS_PROPERTIES: ""
+  DOCS_PROPERTIES: "retrocommands_version"
 
 jobs:
   publish:
