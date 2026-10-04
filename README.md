@@ -16,15 +16,45 @@ Note: Please make Retro Commands optional!!
 build.gradle
 ```gradle
 repositories {
-    maven {
-        name = "Jitpack"
-        url "https://jitpack.io/"
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
     }
 }
 
 dependencies {
-    modImplementation('com.github.matthewperiut:retrocommands:0.5.3') {
-        transitive false
+    def retroCommandsJar = configurations.detachedConfiguration(
+      dependencies.create("maven.modrinth:retrocommands:${project.properties['retrocommands_version']}")
+    )
+    retroCommandsJar.transitive = false
+    modLocalRuntime files(zipTree(retroCommandsJar.singleFile).matching { include 'META-INF/jars/*.jar' }.files)
+}
+```
+or build.gradle.kts if that's your tempo
+```gradle
+repositories {
+    exclusiveContent {
+         forRepository {
+                 maven("https://api.modrinth.com/maven")
+         }
+         filter {
+                 includeGroup("maven.modrinth")
+         }
+    }
+}
+
+dependencies {
+        val retroCommandsJar = configurations.detachedConfiguration(
+            dependencies.create("maven.modrinth:retrocommands:${project.properties["retrocommands_version"]}")
+          ).apply { isTransitive = false }
+          modLocalRuntime(files(zipTree(retroCommandsJar.singleFile).matching { include("META-INF/jars/*.jar") }.files))
     }
 }
 ```
